@@ -1,0 +1,28 @@
+DEPARTMENT_ID;DEPARTMENT_NAME     ;LOCATION
+10           ;Administration      ;Amman
+20           ;Marketing           ;Irbid
+30           ;Purchasing          ;Aqaba
+40           ;Human Resources     ;Zarqaa
+50           ;Shipping            ;Zarqaa
+60           ;IT                  ;Zarqaa
+70           ;Public Relations    ;Zarqaa
+80           ;Sales               ;Amman
+90           ;Executive           ;Amman
+100          ;Finance             ;Amman
+110          ;Accounting          ;Amman
+120          ;Treasury            ;Amman
+130          ;Corporate Tax       ;Amman
+140          ;Control And Credit  ;Amman
+150          ;Shareholder Services;Amman
+160          ;Benefits            ;Amman
+170          ;Manufacturing       ;Amman
+180          ;Construction        ;Amman
+190          ;Contracting         ;Amman
+200          ;Operations          ;Irbid
+210          ;IT Support          ;Irbid
+220          ;NOC                 ;Irbid
+230          ;IT Helpdesk         ;Irbid
+240          ;Government Sales    ;Irbid
+250          ;Retail Sales        ;Irbid
+260          ;Recruiting          ;Aqaba
+270          ;Payroll             ;Aqaba
