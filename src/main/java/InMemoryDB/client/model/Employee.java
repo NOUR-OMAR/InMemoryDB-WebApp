@@ -12,6 +12,7 @@ public class Employee extends User {
     private int id;
     private String name;
     private int salary;
+    private Department department;
 
     public Employee(String id, String name, String salary) {
         setId(id);

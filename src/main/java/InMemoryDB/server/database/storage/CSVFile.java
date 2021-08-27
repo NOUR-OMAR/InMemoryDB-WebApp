@@ -1,7 +1,9 @@
 package InMemoryDB.server.database.storage;
 
+import InMemoryDB.client.model.Department;
 import InMemoryDB.client.model.Employee;
 import InMemoryDB.server.database.Database;
+import InMemoryDB.server.database.record.DepartmentRecord;
 import InMemoryDB.server.database.record.EmployeeRecord;
 import InMemoryDB.server.database.record.RecordHandler;
 import InMemoryDB.server.database.storage.log.TransactionLog;
@@ -13,6 +15,7 @@ import java.io.*;
 import java.util.Map;
 
 import static InMemoryDB.utils.Constant.CSV_PATH;
+import static InMemoryDB.utils.Constant.DEPARTMENTS_CSV_PATH;
 import static InMemoryDB.utils.Constant.Display.display;
 
 
@@ -22,7 +25,8 @@ public class CSVFile implements FileHandler {
     @Getter
     private static long rowCount = 0;
     public TransactionLogger transactionLog = new TransactionLog();
-    RecordHandler recordHandler = new EmployeeRecord();
+    RecordHandler employeeRecordHandler = new EmployeeRecord();
+    RecordHandler departmentRecordHandler = new DepartmentRecord();
 
     public CSVFile() throws IOException {
     }
@@ -31,15 +35,16 @@ public class CSVFile implements FileHandler {
     public void initialize() throws IOException {
 
         display("Loading data from file " + CSV_PATH);
-        loadData();
+        loadEmployeeData();
+        loadDepartmentsData();
 
     }
 
 
-    private void loadData() throws IOException {
+    private void loadEmployeeData() throws IOException {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(CSV_PATH))) {
 
-            readBuffer(bufferedReader);
+            readEmployeeBuffer(bufferedReader);
         } catch (FileNotFoundException fileNotFoundException) {
             display("The provided csv file was not found.A new empty server.database file will be created");
             try (FileWriter fileWriter = new FileWriter(CSV_PATH, true)) {
@@ -49,17 +54,64 @@ public class CSVFile implements FileHandler {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+
+
     }
 
-    private void readBuffer(BufferedReader bufferedReader) throws IOException {
+    private void loadDepartmentsData() throws IOException {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(DEPARTMENTS_CSV_PATH))) {
+
+            readDepartmentsBuffer(bufferedReader);
+        } catch (FileNotFoundException fileNotFoundException) {
+            display("The provided csv file was not found.A new empty server.database file will be created");
+            try (FileWriter fileWriter = new FileWriter(DEPARTMENTS_CSV_PATH, true)) {
+                display("A new empty server.database file will be created" + fileWriter.toString());
+            }
+
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    private void readEmployeeBuffer(BufferedReader bufferedReader) throws IOException {
         String record;
+        int iteration = 0;
         while ((record = bufferedReader.readLine()) != null) {
+            if (iteration == 0) {
+                iteration++;
+                continue;
+            }
             setRowCount(getRowCount() + 1);
-            Employee employee = (Employee) recordHandler.parseRecord(record);
+
+
+            Employee employee = (Employee) employeeRecordHandler.parseRecord(record);
             if (employee != null) {
                 Database.getAllEmployees().put(employee.getId(), employee);
                 //  setEmployeeLRUCache(employee.getId(), employee);
             }
+
+
+        }
+    }
+
+    private void readDepartmentsBuffer(BufferedReader bufferedReader) throws IOException {
+        String record;
+        int iteration = 0;
+        while ((record = bufferedReader.readLine()) != null) {
+            if (iteration == 0) {
+                iteration++;
+                continue;
+            }
+            setRowCount(getRowCount() + 1);
+
+
+            Department department = (Department) departmentRecordHandler.parseRecord(record);
+            /*if (employee != null) {
+                Database.getAllEmployees().put(employee.getId(), employee);
+                //  setEmployeeLRUCache(employee.getId(), employee);
+            }*/
+
+
         }
     }
 

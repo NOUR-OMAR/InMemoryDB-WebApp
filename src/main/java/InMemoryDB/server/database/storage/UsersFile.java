@@ -54,9 +54,13 @@ public class UsersFile implements FileHandler {
 
     private void readBuffer(BufferedReader bufferedReader) throws IOException {
         String row;
+        int iteration = 0;
         while ((row = bufferedReader.readLine()) != null) {
-
-            User user = recordHandler.parseRecord(row);
+            if (iteration == 0) {
+                iteration++;
+                continue;
+            }
+            User user = (User) recordHandler.parseRecord(row);
             if (user != null) {
 
                 UsersDatabase.getAllUsers().put(user.getUsername(), user);
