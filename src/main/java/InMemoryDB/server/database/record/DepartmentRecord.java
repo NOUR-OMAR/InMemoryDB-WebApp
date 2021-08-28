@@ -27,7 +27,7 @@ public class DepartmentRecord implements RecordHandler {
         department.setId(departmentRecord[0]);
         department.setName(departmentRecord[1]);
         department.setLocation(departmentRecord[2]);
-
+        Department.departments.put(departmentRecord[0], department);
 
     }
 

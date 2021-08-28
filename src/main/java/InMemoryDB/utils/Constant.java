@@ -6,14 +6,16 @@ import lombok.Data;
 public final class Constant {
     public static final String SERVER_NOT_RESPONDING = "server not responding";
     public static final String SERVER_ADDRESS = "localhost";
-    public static final String CSV_PATH = "C:\\Users\\Dell\\Desktop\\InMemoryDB spring\\InMemoryDB\\employees.csv";
+    public static final String EMPLOYEES_CSV_PATH = "C:\\Users\\Dell\\Desktop\\InMemoryDB spring\\InMemoryDB\\employees.csv";
     public static final String DEPARTMENTS_CSV_PATH = "C:\\Users\\Dell\\Desktop\\InMemoryDB spring\\InMemoryDB\\departments.csv";
 
     public static final String USERS_FILE_PATH = "C:\\Users\\Dell\\Desktop\\InMemoryDB spring\\InMemoryDB\\Users.csv";
     public static final int PORT_NUMBER = 2525;
-    public static final String LOGGER_FILE = "logger.txt";
+    public static final String EMPLOYEES_LOGGER_FILE = "employees_logger.txt";
+    public static final String DEPARTMENTS_LOGGER_FILE = "departments_logger.txt";
+
     public static final int MAX_SIZE = 1000;
-    public static final int RECORD_LENGTH = 4;
+    public static final int EMPLOYEES_RECORD_LENGTH = 4;
     public static final int DEPARTMENT_RECORD_LENGTH = 3;
     public static final int ROW_LENGTH = 2;
     public static final int MIN_SALARY = 1000;

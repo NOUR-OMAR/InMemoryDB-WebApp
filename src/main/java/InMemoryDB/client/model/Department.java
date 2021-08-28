@@ -2,12 +2,16 @@ package InMemoryDB.client.model;
 
 import lombok.Data;
 
+import java.util.HashMap;
+
+
 @Data
-public class Department {
+public class Department implements Table {
 
     int id;
     String name;
     String location;
+    public static HashMap<String, Department> departments = new HashMap<>();
 
     public Department(String id, String name, String location) {
         setId(id);
@@ -27,8 +31,11 @@ public class Department {
         setId(Integer.parseInt(id));
     }
 
+
     public void setId(int id) {
 
         this.id = id;
     }
+
+
 }

@@ -28,7 +28,7 @@ public class AdminMenu implements Menu {
             display("3 : Create employee");
             display("4 : Update employee");
             display("5 : Read employees by name");
-            display("6 : Filter to get specific salary");
+            display("6 : Filter to getEmployee specific salary");
             display("7 : Select All");
             display("8 : Help");
             display("9 :Close and save");

@@ -2,13 +2,12 @@ package InMemoryDB.client.model;
 
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+
 @ToString
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class Employee extends User {
+public class Employee extends User implements Table {
     private int id;
     private String name;
     private int salary;
@@ -21,6 +20,14 @@ public class Employee extends User {
     }
 
     public Employee() {
+    }
+
+    public Employee(String id, String name, String salary, String departmentId) {
+        setId(id);
+        setSalary(salary);
+        this.name = name;
+        getDepartment().setId(departmentId);
+
     }
 
     public Employee(String userName, String password) {

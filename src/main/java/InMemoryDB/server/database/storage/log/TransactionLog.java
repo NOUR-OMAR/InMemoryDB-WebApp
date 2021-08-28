@@ -6,9 +6,9 @@ import InMemoryDB.server.database.Database;
 import java.io.*;
 import java.util.Map;
 
-import static InMemoryDB.utils.Constant.CSV_PATH;
 import static InMemoryDB.utils.Constant.Display.display;
-import static InMemoryDB.utils.Constant.LOGGER_FILE;
+import static InMemoryDB.utils.Constant.EMPLOYEES_CSV_PATH;
+import static InMemoryDB.utils.Constant.EMPLOYEES_LOGGER_FILE;
 
 
 public class TransactionLog implements TransactionLogger {
@@ -18,7 +18,10 @@ public class TransactionLog implements TransactionLogger {
     }
 
     private static void stringBuilder(StringBuilder stringBuilder) {
-        Database.getAllEmployees().putAll(Database.getEmployeeLRUCache());
+        for (Integer integer : Database.getTableLRUCache().keySet()) {
+            Database.getAllEmployees().put(integer, (Employee) Database.getTableLRUCache().get(integer));
+        }
+        //  Database.getAllEmployees().putAll((Map<? extends Integer, ? extends Employee>) Database.getTableLRUCache().values());
         for (Map.Entry<Integer, Employee> entry : Database.getAllEmployees().entrySet()) {
             Employee employee = entry.getValue();
             stringBuilder.append(toRecord(employee));
@@ -39,8 +42,8 @@ public class TransactionLog implements TransactionLogger {
 
     @Override
     public void writeToCSV() {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(LOGGER_FILE))) {
-            readBuffer(bufferedReader);
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(EMPLOYEES_LOGGER_FILE))) {
+            readEmployeeBuffer(bufferedReader);
 
         } catch (FileNotFoundException fileNotFoundException) {
             display("The provided file was not found.A new empty file will be created");
@@ -52,7 +55,7 @@ public class TransactionLog implements TransactionLogger {
 
     private void tryWritingToFile(StringBuilder stringBuilder) {
         try {
-            FileWriter myWriter = new FileWriter(LOGGER_FILE);
+            FileWriter myWriter = new FileWriter(EMPLOYEES_LOGGER_FILE);
             myWriter.write(stringBuilder.toString());
             myWriter.close();
             display("Successfully wrote to the file.");
@@ -62,9 +65,9 @@ public class TransactionLog implements TransactionLogger {
         }
     }
 
-    private void readBuffer(BufferedReader bufferedReader) throws IOException {
+    private void readEmployeeBuffer(BufferedReader bufferedReader) throws IOException {
         String row;
-        try (FileWriter myWriter = new FileWriter(CSV_PATH, false)) {
+        try (FileWriter myWriter = new FileWriter(EMPLOYEES_CSV_PATH, false)) {
             while ((row = bufferedReader.readLine()) != null) {
 
                 myWriter.write(row + "\n");
@@ -74,6 +77,24 @@ public class TransactionLog implements TransactionLogger {
             display("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+
+    public void loadEmployeeData() throws IOException {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(EMPLOYEES_CSV_PATH))) {
+
+            readEmployeeBuffer(bufferedReader);
+        } catch (FileNotFoundException fileNotFoundException) {
+            display("The provided csv file was not found.A new empty server.database file will be created");
+            try (FileWriter fileWriter = new FileWriter(EMPLOYEES_CSV_PATH, true)) {
+                display("A new empty server.database file will be created" + fileWriter.toString());
+            }
+
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+
+
     }
 }
 
