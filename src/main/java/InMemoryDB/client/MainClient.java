@@ -6,9 +6,9 @@ import InMemoryDB.client.model.Employee;
 import InMemoryDB.client.model.User;
 import InMemoryDB.common.menu.AdminMenu;
 import InMemoryDB.common.menu.EmployeeMenu;
+import InMemoryDB.server.database.Database;
 import InMemoryDB.server.database.storage.log.TransactionLog;
 import InMemoryDB.server.database.storage.log.TransactionLogger;
-import InMemoryDB.server.database.user_database.UsersDatabase;
 import lombok.Data;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ class MainClient {
 
 
     private static void start() throws IOException {
-        UsersDatabase userTable = UsersDatabase.getUsersDatabase();
+        Database userTable = Database.getDatabase();
         String userName, password;
         Scanner scanner = new Scanner(System.in);
         display("Enter the username: ");
@@ -57,8 +57,8 @@ class MainClient {
 
     }
 
-    private static boolean isUser(UsersDatabase userTable, String userName, String password) {
-        return UsersDatabase.getAllUsers().containsKey(userName) && userTable.get(userName).getPassword().equals(password);
+    private static boolean isUser(Database userTable, String userName, String password) {
+        return Database.getAllUsers().containsKey(userName) && userTable.getUser(userName).getPassword().equals(password);
     }
 
 
@@ -78,14 +78,14 @@ class MainClient {
     }
 
     private static class UserChecker {
-        private final UsersDatabase userTable;
+        private final Database userTable;
         private final String userName;
         private final String password;
         private final Scanner scanner;
         private final Client client;
         private boolean myResult;
 
-        public UserChecker(UsersDatabase userTable, String userName, String password, Scanner scanner, Client client) {
+        public UserChecker(Database userTable, String userName, String password, Scanner scanner, Client client) {
             this.userTable = userTable;
             this.userName = userName;
             this.password = password;
@@ -93,7 +93,7 @@ class MainClient {
             this.client = client;
         }
 
-        private static boolean isAdmin(UsersDatabase userTable, String password) {
+        private static boolean isAdmin(Database userTable, String password) {
             return isUser(userTable, "admin123", password);
         }
 
@@ -105,7 +105,7 @@ class MainClient {
             return myResult;
         }
 
-        public boolean invoke() {
+        public boolean invoke() throws IOException {
             if (isAdmin(userTable, password)) {
                 if (!isClientStarted(client)) {
                     return true;
@@ -124,8 +124,8 @@ class MainClient {
             } else {
                 display("Not a user , want to register?");
                 User user = User.registerUser(scanner);
-                UsersDatabase.getUsersDatabase().put(user);
-                UsersDatabase.getUsersDatabase().close();
+                Database.getDatabase().putUser(user);
+                Database.getDatabase().closeUsersTB();
                 if (!isClientStarted(client)) return true;
                 else {
                     new UserInfo(userName, password).invokeForEmployee();

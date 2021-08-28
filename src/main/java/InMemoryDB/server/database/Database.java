@@ -2,6 +2,7 @@ package InMemoryDB.server.database;
 
 import InMemoryDB.client.model.Department;
 import InMemoryDB.client.model.Employee;
+import InMemoryDB.client.model.User;
 import InMemoryDB.server.database.cache.LRUCache;
 import InMemoryDB.server.database.storage.CSVFile;
 import lombok.Data;
@@ -9,18 +10,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static InMemoryDB.utils.Constant.*;
 import static InMemoryDB.utils.Constant.Display.display;
-import static InMemoryDB.utils.Constant.MAX_SIZE;
 
 
 @Data
 public class Database {
 
+    /* @Getter
+     private static final Map<Integer, Object> tableLRUCache = LRUHashMap.newInstance(MAX_SIZE);*/
     @Getter
-    private static final Map<Integer, Object> tableLRUCache = LRUCache.newInstance(MAX_SIZE);
+    private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(MAX_SIZE);
 
 
     @Setter
@@ -29,6 +33,10 @@ public class Database {
     @Setter
     @Getter
     private static ConcurrentHashMap<Integer, Department> allDepartments;
+
+
+    private static final HashMap<String, User> allUsers = new HashMap<>();
+
     @Setter
     private static Database database;
     CSVFile csvFile = new CSVFile();
@@ -38,9 +46,9 @@ public class Database {
 
         setAllEmployees(new ConcurrentHashMap<>());
         csvFile.initialize();
-        csvFile.transactionLog.write();
-        displayDepartmentsTable();
-        displayEmployeeTable();
+        writeInLogger();
+        // displayDepartmentsTable();
+        //displayEmployeeTable();
         displayCache();
     }
 
@@ -66,14 +74,9 @@ public class Database {
         return getAllDepartments();
     }
 
+    public static HashMap<String, User> getAllUsers() {
+        return allUsers;
 
-    public void displayCache() {
-        display("\n--- Cache content: ---");
-        getTableLRUCache().forEach((k, v) -> display(v.toString()));
-        // getEmployeesLRUCache().forEach((k, v) -> display(v.toString()));
-        //getDepartmentsLRUCache().forEach((k, v) -> display(v.toString()));
-        //    display("----------------------------------");
-        //   display("In-Memory Database has " + CSVFile.getEmployeesCSVRowCount() + " rows. Loaded " + getTablesLRUCache().size() + " data records in server.database.cache.");
     }
 
     public void displayEmployeeTable() {
@@ -91,8 +94,17 @@ public class Database {
         display("File has " + CSVFile.getDepartmentsCSVRowCount() + " rows. Loaded " + getAllDepartments().size() + " data records.");
     }
 
+    public void displayCache() {
+        display("\n--- Cache content: ---");
+
+        getTableLRUCache().snapshot().forEach((k, v) -> display(v.toString()));
+
+        display("----------------------------------");
+        display(getTableLRUCache().getMemorySize() + " data records in cache.");
+    }
+
     public Employee getEmployee(Integer id) {
-        if (getTableLRUCache().containsKey(id)) {
+        if (getTableLRUCache().snapshot().containsKey(id)) {
             display("Cache hit");
             return (Employee) getTableLRUCache().get(id);
         } else if (getAllEmployees().containsKey(id)) {
@@ -108,7 +120,7 @@ public class Database {
     }
 
     public Department getDepartment(Integer id) {
-        if (getTableLRUCache().containsKey(id)) {
+        if (getTableLRUCache().snapshot().containsKey(id)) {
             display("Cache hit");
             return (Department) getTableLRUCache().get(id);
         } else if (getAllDepartments().containsKey(id)) {
@@ -125,79 +137,85 @@ public class Database {
     public void putInEmployeesTable(Employee employee) {
         synchronized (getTableLRUCache()) {
 
-            for (Integer integer : getTableLRUCache().keySet()) {
-                getAllEmployees().put(integer, (Employee) getTableLRUCache().get(integer));
+            for (Integer integer : getTableLRUCache().snapshot().keySet()) {
+                getAllEmployees().put(integer, (Employee) Objects.requireNonNull(getTableLRUCache().get(integer)));
             }
-            // getAllEmployees().putAll((Map<? extends Integer, ? extends Employee>) getTableLRUCache().values());
             getTableLRUCache().put(employee.getId(), employee);
         }
-
-        csvFile.transactionLog.write();
+        writeInLogger();
     }
 
     public void putInDepartmentsTable(Department department) {
         synchronized (getTableLRUCache()) {
 
-            for (Integer integer : getTableLRUCache().keySet()) {
-                getAllDepartments().put(integer, (Department) getTableLRUCache().get(integer));
+            for (Integer integer : getTableLRUCache().snapshot().keySet()) {
+                getAllDepartments().put(integer, (Department) Objects.requireNonNull(getTableLRUCache().get(integer)));
             }
             // getAllDepartments().putAll((Map<? extends Integer, ? extends Department>) getTableLRUCache().values());
             getTableLRUCache().put(department.getId(), department);
         }
 
-        csvFile.transactionLog.write();
+        writeInLogger();
     }
-
 
     public void removeFromTableCache(int id) {
         synchronized (getTableLRUCache()) {
             getTableLRUCache().remove(id);
         }
-        csvFile.transactionLog.write();//
+        writeInLogger();
     }
-
-   /* public void removeFromDepartmentCache(int id) {
-        synchronized (getDepartmentsLRUCache()) {
-            getDepartmentsLRUCache().remove(id);
-        }
-        csvFile.transactionLog.write();
-    }*/
 
     public void removeFromEmployeeTable(int id) {
         synchronized (getAllEmployees()) {
             getAllEmployees().remove(id);
         }
-        csvFile.transactionLog.write();
+        writeInLogger();
     }
-
 
     public void removeFromDepartmentsTable(int id) {
         synchronized (getAllDepartments()) {
             getAllDepartments().remove(id);
         }
-        csvFile.transactionLog.write();//
+        writeInLogger();
+    }
+
+    public void close() {
+
+        csvFile.write(EMPLOYEES_CSV_PATH);
+        csvFile.write(DEPARTMENTS_CSV_PATH);
+
+    }
+
+    public void closeUsersTB() {
+        //StringBuilder stringBuilder = new StringBuilder();
+        csvFile.write(USERS_FILE_PATH);
+        // usersFile.tryWritingToFile(stringBuilder);
+
+    }
+
+    public User getUser(String username) {
+
+        return getAllUsers().get(username);
+
+    }
+
+    public void putUser(User user) {
+        synchronized (getAllUsers()) {
+            getAllUsers().put(user.getUsername(), user);
+
+        }
     }
 
 
-    public void close() {
-        StringBuilder stringBuilder = new StringBuilder();
-        csvFile.setEmployeeRecordStringBuilder(stringBuilder);
-        csvFile.tryWritingToEmployeesFile(stringBuilder);
-        csvFile.setDepartmentRecordStringBuilder(stringBuilder);
-        csvFile.tryWritingToEmployeesFile(stringBuilder);
-
+    private void writeInLogger() {
+        csvFile.transactionLog.write(EMPLOYEES_LOGGER_FILE);
+        csvFile.transactionLog.write(DEPARTMENTS_LOGGER_FILE);
     }
 
     private void setTableLRUCache(int key, Object object) {
 
-        getTableLRUCache().putIfAbsent(key, object);
+        getTableLRUCache().put(key, object);
     }
-
-    /*private void setDepartmentsLRUCache(int key, Department department) {
-
-        getDepartmentsLRUCache().putIfAbsent(key, department);
-    }
-*/
 
 
 }

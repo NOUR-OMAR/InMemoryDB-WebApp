@@ -65,7 +65,7 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     @Override
     public void deleteEmployee(String id) {
         synchronized (getDatabase()) {
-            if (Database.getTableLRUCache().containsKey(Integer.parseInt(id))) {
+            if (Database.getTableLRUCache().snapshot().containsKey(Integer.parseInt(id))) {
                 getDatabase().removeFromTableCache(Integer.parseInt(id));
             } else if (Database.getAllEmployees().containsKey(Integer.parseInt(id))) {
                 getDatabase().removeFromEmployeeTable(Integer.parseInt(id));

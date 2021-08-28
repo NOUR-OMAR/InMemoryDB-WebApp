@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 
 @Data
-public class Department implements Table {
+public class Department {
 
     int id;
     String name;

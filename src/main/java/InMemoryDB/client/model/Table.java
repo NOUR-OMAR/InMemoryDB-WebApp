@@ -1,4 +1,7 @@
 package InMemoryDB.client.model;
 
-public interface Table {
+public class Table {
+
+    Department department;
+    Employee employee;
 }

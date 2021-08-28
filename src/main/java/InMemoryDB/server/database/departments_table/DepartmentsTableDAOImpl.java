@@ -64,7 +64,7 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
     @Override //
     public void deleteDepartment(String id) {
         synchronized (getDatabase()) {
-            if (Database.getTableLRUCache().containsKey(Integer.parseInt(id))) {
+            if (Database.getTableLRUCache().snapshot().containsKey(Integer.parseInt(id))) {
                 getDatabase().removeFromTableCache(Integer.parseInt(id));
             } else if (Database.getAllDepartments().containsKey(Integer.parseInt(id))) {
                 getDatabase().removeFromDepartmentsTable(Integer.parseInt(id));

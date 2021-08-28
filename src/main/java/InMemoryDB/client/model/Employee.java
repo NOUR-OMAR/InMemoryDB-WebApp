@@ -7,7 +7,7 @@ import lombok.ToString;
 
 @ToString
 @Data
-public class Employee extends User implements Table {
+public class Employee extends User {
     private int id;
     private String name;
     private int salary;
