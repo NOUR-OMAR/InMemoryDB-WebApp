@@ -24,6 +24,8 @@ public class Server {
 
     public void start() throws IOException {
         setDatabase(Database.getDatabase());
+        getDatabase().displayDepartmentsTable();
+        getDatabase().displayEmployeeTable();
 
         try {
             ServerSocket serverSocket = new ServerSocket(getPort());

@@ -35,9 +35,9 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
     @Override
     public Employee createEmployee(String id, String name, String salary) {
-        if (getDatabase().get(Integer.parseInt(id)) == null) {
+        if (getDatabase().getEmployee(Integer.parseInt(id)) == null) {
             Employee newEmployee = new Employee(id, name, salary);
-            getDatabase().put(newEmployee);
+            getDatabase().putInEmployeesTable(newEmployee);
             return newEmployee;
         } else {
             display("Can't create, employee with id " + id + " already existed.");
@@ -47,14 +47,14 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
     @Override
     public Employee readEmployee(String id) {
-        return getDatabase().get(Integer.parseInt(id));
+        return getDatabase().getEmployee(Integer.parseInt(id));
     }
 
     @Override
     public Employee updateEmployee(String id, String name, String salary) {
-        if (getDatabase().get(Integer.parseInt(id)) != null) {
+        if (getDatabase().getEmployee(Integer.parseInt(id)) != null) {
             Employee newEmployee = new Employee(id, name, salary);
-            getDatabase().put(newEmployee);
+            getDatabase().putInEmployeesTable(newEmployee);
             return newEmployee;
         } else {
             display("Can't update, employee with id " + id + " doesn't exist.");
@@ -65,10 +65,10 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     @Override
     public void deleteEmployee(String id) {
         synchronized (getDatabase()) {
-            if (Database.getEmployeeLRUCache().containsKey(Integer.parseInt(id))) {
-                getDatabase().removeFromCache(Integer.parseInt(id));
+            if (Database.getTableLRUCache().snapshot().containsKey(Integer.parseInt(id))) {
+                getDatabase().removeFromTableCache(Integer.parseInt(id));
             } else if (Database.getAllEmployees().containsKey(Integer.parseInt(id))) {
-                getDatabase().removeFromTable(Integer.parseInt(id));
+                getDatabase().removeFromEmployeeTable(Integer.parseInt(id));
             } else {
                 display("Can't delete,employee with id " + id + " doesn't exist");
             }
@@ -141,7 +141,7 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
     @Override
     public String selectAll() {
-        return getDatabase().selectAll().values().toString();
+        return getDatabase().selectAllEmployees().values().toString();
     }
 
 }
