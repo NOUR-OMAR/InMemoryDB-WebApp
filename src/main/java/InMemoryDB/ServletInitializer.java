@@ -1,4 +1,4 @@
-package InMemoryDB.InMemoryDB;
+package InMemoryDB;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

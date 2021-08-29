@@ -112,7 +112,7 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
     @Override
     public String selectAll() {
-        return getDatabase().selectAllDepartments().values().toString();
+        return getDatabase().getDepartmentsTable().values().toString();
     }
 
 }

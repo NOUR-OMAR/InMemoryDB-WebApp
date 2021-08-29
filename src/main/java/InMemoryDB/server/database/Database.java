@@ -64,19 +64,20 @@ public class Database {
         return Database.getDatabase();
     }
 
-    public ConcurrentHashMap<Integer, Employee> selectAllEmployees() {
+    public static HashMap<String, User> getAllUsers() {
+        return allUsers;
+
+    }
+
+    public ConcurrentHashMap<Integer, Employee> getEmployeesTable() {
+
 
         return getAllEmployees();
     }
 
-    public ConcurrentHashMap<Integer, Department> selectAllDepartments() {
+    public ConcurrentHashMap<Integer, Department> getDepartmentsTable() {
 
         return getAllDepartments();
-    }
-
-    public static HashMap<String, User> getAllUsers() {
-        return allUsers;
-
     }
 
     public void displayEmployeeTable() {
@@ -85,7 +86,6 @@ public class Database {
         display("----------------------------------");
         display("File has " + CSVFile.getEmployeesCSVRowCount() + " rows. Loaded " + getAllEmployees().size() + " data records.");
     }
-
 
     public void displayDepartmentsTable() {
         display("\n--- Departments Table content: ---");

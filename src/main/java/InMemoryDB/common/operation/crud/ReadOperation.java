@@ -2,9 +2,13 @@ package InMemoryDB.common.operation.crud;
 
 
 import InMemoryDB.common.ResponseBuilder;
-import InMemoryDB.common.operation.AbstractOperation;
+import InMemoryDB.server.database.employee_table.EmployeeTableDAO;
 import InMemoryDB.server.database.employee_table.EmployeeTableDAOImpl;
 import lombok.val;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.IOException;
 
@@ -12,33 +16,36 @@ import static InMemoryDB.common.operation.OperationTypes.Read;
 import static InMemoryDB.utils.Constant.ERROR_MESSAGE;
 import static InMemoryDB.utils.Constant.NULL;
 
-public class ReadOperation extends AbstractOperation {
 
+@Controller
+public class ReadOperation {
+    protected String[] parameters;
+    protected EmployeeTableDAO employeeTableDAO;
 
-    public ReadOperation(String[] parameters) throws IOException {
+   /* public ReadOperation(String[] parameters) throws IOException {
         this.parameters = parameters;
         employeeTableDAO = EmployeeTableDAOImpl.createEmployeeDAOTableImpl();
     }
 
-    public static ReadOperation createReadOperation(String[] parameters) throws IOException {
+    public static ReadOperation createReadOperation() throws IOException {
+        //String [] parameters=new String[1];
+        //parameters[0]=String.valueOf(id);
         return new ReadOperation(parameters);
-    }
+    }*/
 
-    @Override
-    public void run() {
-        runOperation();
-    }
 
-    @Override
-    public String runOperation() {
+    @RequestMapping(value = "/ReadEmployee/{id}", method = RequestMethod.GET)
+    public String runOperation(@PathVariable("id") int id) throws IOException {
         if (isCommandValid()) {
-            doDelay();
+            //    doDelay();
+            employeeTableDAO = EmployeeTableDAOImpl.createEmployeeDAOTableImpl();
 
-            val readEmployee = employeeTableDAO.readEmployee(parameters[0]);
+            val readEmployee = employeeTableDAO.readEmployee(String.valueOf(id));
             if (readEmployee == null)
                 return new ResponseBuilder().createResponse().buildResponse(NULL, Read);
             else
-                return new ResponseBuilder().createResponse().buildEmpResponse(readEmployee, Read);
+                // return new ResponseBuilder().createResponse().buildEmpResponse(readEmployee, Read);
+                return readEmployee.toString();
 
         } else {
 

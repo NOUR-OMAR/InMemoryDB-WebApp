@@ -3,17 +3,17 @@ package InMemoryDB.server.database.employee_table;
 import InMemoryDB.client.model.Employee;
 import InMemoryDB.server.database.Database;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 import static InMemoryDB.server.database.Database.getInitialisedDatabase;
 import static InMemoryDB.utils.Constant.Display.display;
 
 
 @Data
+@Service
 public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
 
@@ -140,8 +140,11 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     }
 
     @Override
-    public String selectAll() {
-        return getDatabase().selectAllEmployees().values().toString();
+    public List<Employee> selectAll() {
+        List<Employee> employees = new ArrayList<>();
+        for (Employee employee : getDatabase().getEmployeesTable().values())
+            employees.add(employee);
+        return employees;
     }
 
 }

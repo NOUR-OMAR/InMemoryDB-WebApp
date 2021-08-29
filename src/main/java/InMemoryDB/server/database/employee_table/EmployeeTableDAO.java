@@ -3,6 +3,7 @@ package InMemoryDB.server.database.employee_table;
 import InMemoryDB.client.model.Employee;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 //DAO (Data Access Object) class
@@ -26,6 +27,6 @@ public interface EmployeeTableDAO {
 
     void close() throws IOException;
 
-    String selectAll();
+    List<Employee> selectAll();
 
 }
