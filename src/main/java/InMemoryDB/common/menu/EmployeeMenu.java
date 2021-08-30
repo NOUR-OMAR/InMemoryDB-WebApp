@@ -1,7 +1,5 @@
 package InMemoryDB.common.menu;
 
-import InMemoryDB.common.RequestBuilder;
-
 import java.util.Scanner;
 
 import static InMemoryDB.utils.Constant.Display.display;

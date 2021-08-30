@@ -6,9 +6,9 @@ import InMemoryDB.client.model.Employee;
 import InMemoryDB.client.model.User;
 import InMemoryDB.common.menu.AdminMenu;
 import InMemoryDB.common.menu.EmployeeMenu;
-import InMemoryDB.server.database.Database;
-import InMemoryDB.server.database.storage.log.TransactionLog;
-import InMemoryDB.server.database.storage.log.TransactionLogger;
+import InMemoryDB.database.Database;
+import InMemoryDB.database.storage.log.TransactionLog;
+import InMemoryDB.database.storage.log.TransactionLogger;
 import lombok.Data;
 
 import java.io.IOException;

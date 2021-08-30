@@ -4,6 +4,8 @@ package InMemoryDB.client.model;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.HashMap;
+
 
 @ToString
 @Data
@@ -12,22 +14,26 @@ public class Employee extends User {
     private String name;
     private int salary;
     private Department department;
+    public static HashMap<Employee, Department> employeesDepartments = new HashMap<>();
 
-    public Employee(String id, String name, String salary) {
-        setId(id);
-        setSalary(salary);
+    public Employee(int id, String name, int salary) {
+        this.id=id;
+        this.salary=salary;
         this.name = name;
     }
 
     public Employee() {
     }
 
-    public Employee(String id, String name, String salary, String departmentId) {
-        setId(id);
-        setSalary(salary);
+    public Employee(int id, String name, int salary, int departmentId) {
+       this.id=id;
+       this.salary=salary;
         this.name = name;
-        getDepartment().setId(departmentId);
 
+       department=new Department();
+       department.setId(departmentId);
+       department.setName(Department.departments.get(departmentId).getName());
+       department.setLocation(Department.departments.get(departmentId).getLocation());
     }
 
     public Employee(String userName, String password) {
@@ -35,23 +41,8 @@ public class Employee extends User {
     }
 
 
-    public void setId(String id) {
-        setId(Integer.parseInt(id));
-    }
 
-    public void setId(int id) {
 
-        this.id = id;
-    }
-
-    public void setSalary(String salary) {
-        setSalary(Integer.parseInt(salary));
-    }
-
-    public void setSalary(int salary) {
-
-        this.salary = salary;
-    }
 
 
 }

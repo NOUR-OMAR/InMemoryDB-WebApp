@@ -11,10 +11,10 @@ public class Department {
     int id;
     String name;
     String location;
-    public static HashMap<String, Department> departments = new HashMap<>();
+    public static HashMap<Integer, Department> departments = new HashMap<>();
 
-    public Department(String id, String name, String location) {
-        setId(id);
+    public Department(int id, String name, String location) {
+       this.id=id;
         this.name = name;
         this.location = location;
     }
@@ -23,19 +23,11 @@ public class Department {
 
     }
 
-    public Department(String id) {
-        setId(id);
-    }
-
-    public void setId(String id) {
-        setId(Integer.parseInt(id));
+    public Department(int id) {
+        this.id=id;
     }
 
 
-    public void setId(int id) {
-
-        this.id = id;
-    }
 
 
 }

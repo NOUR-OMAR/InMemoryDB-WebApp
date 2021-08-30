@@ -3,7 +3,7 @@ package InMemoryDB;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"InMemoryDB"})
 public class InMemoryDbApplication {
 
     public static void main(String[] args) {
