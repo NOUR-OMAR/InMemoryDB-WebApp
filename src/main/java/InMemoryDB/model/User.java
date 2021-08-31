@@ -1,18 +1,16 @@
-package InMemoryDB.client.model;
+package InMemoryDB.model;
 
-import InMemoryDB.common.menu.Menu;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Scanner;
 
 @Data
 public class User {
 
+    private int id;
     private String username;
     private String password;
-    private Menu menu;
+    private String role;
 
+    private boolean enabled;
 
     public User() {
     }
@@ -22,8 +20,13 @@ public class User {
         this.username = userName;
         this.password = password;
     }
+    public User(String userName, String password,String role) {
+        this.username = userName;
+        this.password = password;
+        this.role=role;
+    }
 
-    @NotNull
+  /*  @NotNull
     public static User registerUser(Scanner scanner) {
         String userName;
         String password;
@@ -34,9 +37,9 @@ public class User {
         return new Employee(userName, password);
     }
 
-    public void display(Menu menu) {
+   public void display(Menu menu) {
         menu.displayMenu();
     }
-
+*/
 
 }

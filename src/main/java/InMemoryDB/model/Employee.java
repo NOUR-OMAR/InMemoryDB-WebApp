@@ -1,4 +1,4 @@
-package InMemoryDB.client.model;
+package InMemoryDB.model;
 
 
 import lombok.Data;
@@ -36,8 +36,8 @@ public class Employee extends User {
        department.setLocation(Department.departments.get(departmentId).getLocation());
     }
 
-    public Employee(String userName, String password) {
-        super(userName, password);
+    public Employee(String userName, String password,String role) {
+        super(userName, password,"EMPLOYEE");
     }
 
 

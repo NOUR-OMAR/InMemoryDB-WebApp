@@ -1,6 +1,6 @@
 package InMemoryDB.database.employee_table;
 
-import InMemoryDB.client.model.Employee;
+import InMemoryDB.model.Employee;
 
 import java.io.IOException;
 import java.util.List;

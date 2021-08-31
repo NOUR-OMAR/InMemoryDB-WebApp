@@ -15,7 +15,7 @@
 			style="background-color: LightGray">
 
 			<ul class="navbar-nav">
-				<li><a href="<%=request.getContextPath()%>/login"
+				<li><a href="<%=request.getContextPath()%>/logout"
 					class="nav-link">Log out</a></li>
 			</ul>
 		</nav>
@@ -24,12 +24,12 @@
 <div class="container col-md-5" >
 		<div class="card">
 			<div class="card-body">
-			  <form action="${pageContext.request.contextPath}/login" method="POST">
+			  <form action="${pageContext.request.contextPath}/login" >
 			      <p><font color="red">${errorMessage}</font></p>
 
 		<fieldset class="form-group">
     					<label>Name </label> <input type="text"
-    						name="name" required="required">
+    						name="username" required="required">
     				</fieldset>
 
 

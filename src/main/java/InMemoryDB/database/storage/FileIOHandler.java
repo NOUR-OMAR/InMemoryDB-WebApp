@@ -1,9 +1,10 @@
 package InMemoryDB.database.storage;
 
-import InMemoryDB.client.model.Department;
-import InMemoryDB.client.model.Employee;
-import InMemoryDB.client.model.User;
+import InMemoryDB.model.Department;
+import InMemoryDB.model.Employee;
+import InMemoryDB.model.User;
 import InMemoryDB.database.Database;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,8 +20,10 @@ public class FileIOHandler {
                 department.getName() + ";" +
                 department.getLocation() + "\n";
     }
-
+    @Nullable
     public static String toEmployeeRecord(Employee employee) {
+        if (employee.getDepartment()==null)
+         employee.setDepartment(new Department());
         return employee.getId() + ";" +
                 employee.getName() + ";" +
                 employee.getSalary() + ";" +
@@ -58,7 +61,7 @@ public class FileIOHandler {
     protected static void buildUsersRecordString(StringBuilder stringBuilder) {
         for (Map.Entry<String, User> entry : Database.getAllUsers().entrySet()) {
             User user = entry.getValue();
-            stringBuilder.append(user.getUsername()).append(";").append(user.getPassword()).append("\n");
+            stringBuilder.append(user.getUsername()).append(";").append(user.getPassword()).append(";").append(user.getRole()).append("\n");
         }
     }
 

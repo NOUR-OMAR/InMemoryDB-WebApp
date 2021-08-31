@@ -1,8 +1,8 @@
 package InMemoryDB.database.storage;
 
-import InMemoryDB.client.model.Department;
-import InMemoryDB.client.model.Employee;
-import InMemoryDB.client.model.User;
+import InMemoryDB.model.Department;
+import InMemoryDB.model.Employee;
+import InMemoryDB.model.User;
 import InMemoryDB.database.Database;
 import InMemoryDB.database.record.DepartmentRecord;
 import InMemoryDB.database.record.EmployeeRecord;
@@ -93,109 +93,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
     }
 
-    /*
-        private void readEmployeeBuffer(BufferedReader bufferedReader) throws IOException {
-            String record;
-            int iteration = 0;
-            while ((record = bufferedReader.readLine()) != null) {
-                if (iteration == 0) {
-                    iteration++;
-                    continue;
-                }
-                setEmployeesCSVRowCount(getEmployeesCSVRowCount() + 1);
 
-
-                Employee employee = (Employee) employeeRecordHandler.parseRecord(record.replaceAll("\\s+", ""));
-                if (employee != null) {
-                    Database.getAllEmployees().put(employee.getId(), employee);
-                }
-
-
-            }
-        }
-
-        private void readDepartmentsBuffer(BufferedReader bufferedReader) throws IOException {
-            String record;
-            int iteration = 0;
-            while ((record = bufferedReader.readLine()) != null) {
-                if (iteration == 0) {
-                    iteration++;
-                    continue;
-                }
-                setDepartmentsCSVRowCount(getDepartmentsCSVRowCount() + 1);
-
-
-                Department department = (Department) departmentRecordHandler.parseRecord(record.replaceAll("\\s+", ""));
-                if (department != null) {
-                    Database.getAllDepartments().put(department.getId(), department);
-                    //  setEmployeeLRUCache(employee.getId(), employee);
-                }
-
-
-            }
-        }
-
-        public void tryWritingToFile(StringBuilder stringBuilder,String filePath) {
-            try (FileWriter fileWriter = new FileWriter(filePath, false)) {
-                fileWriter.write(stringBuilder.toString());
-                fileWriter.flush();
-                fileWriter.close();
-
-                display("Data saved to file: " + filePath);
-            } catch (IOException ignored) {
-                display("Error: Saving the data is failed!");
-            }
-        }
-
-
-        public static String toDepartmentRecord(Department department) {
-            return department.getId() + ";" +
-                    department.getName() + ";" +
-                    department.getLocation() + "\n";
-        }
-
-        public static String toEmployeeRecord(Employee employee) {
-            return employee.getId() + ";" +
-                    employee.getName() + ";" +
-                    employee.getSalary() + ";" +
-                    employee.getDepartment().getId() + "\n";
-        }
-
-
-
-        private static void buildEmployeeRecordString(StringBuilder stringBuilder) {
-
-            for (Integer integer : Database.getTableLRUCache().snapshot().keySet()) {
-                if (Database.getTableLRUCache().snapshot() instanceof Department)
-
-                    Database.getAllEmployees().put(integer, (Employee) Objects.requireNonNull(Database.getTableLRUCache().get(integer)));
-            }
-
-            for (Map.Entry<Integer, Employee> entry : Database.getAllEmployees().entrySet()) {
-                Employee employee = entry.getValue();
-                stringBuilder.append(toEmployeeRecord(employee));
-            }
-        }
-
-
-
-        private static void buildDepartmentRecordString(StringBuilder stringBuilder) {
-
-            for (Integer integer : Database.getTableLRUCache().snapshot().keySet()) {
-                if (Database.getTableLRUCache().snapshot() instanceof Department)
-
-                    Database.getAllDepartments().put(integer, (Department) Objects.requireNonNull(Database.getTableLRUCache().get(integer)));
-            }
-
-            for (Map.Entry<Integer, Department> entry : Database.getAllDepartments().entrySet()) {
-                Department department = entry.getValue();
-                stringBuilder.append(toDepartmentRecord(department));
-            }
-        }
-
-
-
-    */
     @Override
     public void write(String fileName) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -213,12 +111,9 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
     private void readEmployeeBuffer(BufferedReader bufferedReader) throws IOException {
         String record;
-        int iteration = 0;
+
         while ((record = bufferedReader.readLine()) != null) {
-            if (iteration == 0) {
-                iteration++;
-                continue;
-            }
+
             setEmployeesCSVRowCount(getEmployeesCSVRowCount() + 1);
 
 
@@ -233,19 +128,16 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
     private void readDepartmentsBuffer(BufferedReader bufferedReader) throws IOException {
         String record;
-        int iteration = 0;
+
         while ((record = bufferedReader.readLine()) != null) {
-            if (iteration == 0) {
-                iteration++;
-                continue;
-            }
+
             setDepartmentsCSVRowCount(getDepartmentsCSVRowCount() + 1);
 
 
             Department department = (Department) departmentRecordHandler.parseRecord(record.replaceAll("\\s+", ""));
             if (department != null) {
                 Database.getAllDepartments().put(department.getId(), department);
-                //  setEmployeeLRUCache(employee.getId(), employee);
+
             }
 
 
@@ -254,12 +146,9 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
     private void readUsersBuffer(BufferedReader bufferedReader) throws IOException {
         String row;
-        int iteration = 0;
+
         while ((row = bufferedReader.readLine()) != null) {
-            if (iteration == 0) {
-                iteration++;
-                continue;
-            }
+
             User user = (User) userRecordHandler.parseRecord(row);
             if (user != null) {
 

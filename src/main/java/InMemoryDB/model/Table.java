@@ -1,4 +1,4 @@
-package InMemoryDB.client.model;
+package InMemoryDB.model;
 
 public class Table {
 

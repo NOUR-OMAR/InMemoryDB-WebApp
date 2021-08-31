@@ -1,8 +1,8 @@
 package InMemoryDB.database.record;
 
 
-import InMemoryDB.client.model.Department;
-import InMemoryDB.client.model.Employee;
+import InMemoryDB.model.Department;
+import InMemoryDB.model.Employee;
 
 import static InMemoryDB.utils.Constant.Display.display;
 import static InMemoryDB.utils.Constant.EMPLOYEES_RECORD_LENGTH;

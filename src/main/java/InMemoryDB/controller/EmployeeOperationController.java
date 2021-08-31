@@ -1,9 +1,9 @@
 package InMemoryDB.controller;
 
-import InMemoryDB.client.model.Employee;
 import InMemoryDB.database.Database;
 import InMemoryDB.database.departments_table.DepartmentsTableDAO;
 import InMemoryDB.database.employee_table.EmployeeTableDAO;
+import InMemoryDB.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,44 +27,22 @@ public class EmployeeOperationController {
 
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String loginGet() {
-        return "/LoginView";
+    public String showLoginPage() {
+        return "LoginView";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String loginPost(@RequestParam String name, @RequestParam String password, ModelMap modelMap) {
-        modelMap.addAttribute("name", name);
-        modelMap.addAttribute("password", password);
+    public String showPage(@RequestParam String username,  ModelMap modelMap) throws IOException {
 
-        if (Database.getAllUsers().containsKey(name))
+      // String username= String.valueOf(modelMap.getAttribute("username"));
+        modelMap.addAttribute("username", username);
+        int userId = Database.getDatabase().getUser(username).getId();
+        if (Database.getDatabase().getUser(username).getRole().equals("ADMIN"))
             return showAdminView(modelMap);
-        // int userId = service.getUserID(name, password);
-        //String userLevel = service.getUserLevel(userId);
-        // boolean isValidUser = service.validateUser(name, password);
-       /* if (isValidUser) {
-            modelMap.addAttribute("name", name);
-          //  modelMap.addAttribute("id", userId);
+        else if (Database.getDatabase().getUser(username).getRole().equals("EMPLOYEE"))
+            return showEmployeeInfo(userId, modelMap);
 
-            if (userLevel.equals("1")) {
-
-                return showAdminView(name, password, modelMap);
-
-            } else if (userLevel.equals("2")) {
-
-                return showInstructorsView(name, password, modelMap);
-
-            } else if (userLevel.equals("3")) {
-
-                return listGradesForStudent(modelMap, userId);
-
-            }
-
-        } else {
-            modelMap.addAttribute("errorMessage", "Invalid Credentials!!");
-        }*/
-        return "/login";
-
-    }
+    return showLoginPage();}
 
 
     @RequestMapping(value = "/adminView")
@@ -73,7 +51,6 @@ public class EmployeeOperationController {
         List<Employee> employees = employeeTableDAO.selectAll();
         modelMap.addAttribute("employees", employees);
         return "adminView";
-
 
     }
 
@@ -106,7 +83,7 @@ public class EmployeeOperationController {
 
 
     @RequestMapping(value = "/deleteEmployee-{id}", method = RequestMethod.GET)
-    public String updateEmployee(@PathVariable int id) throws IOException {
+    public String deleteEmployee(@PathVariable int id) throws IOException {
         employeeTableDAO.deleteEmployee(id);
 
         return "redirect:/adminView";
@@ -142,11 +119,12 @@ public class EmployeeOperationController {
         return "ListView";
     }
 
-    @RequestMapping(value = "/close", method = RequestMethod.GET)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String close() throws IOException {
         employeeTableDAO.close();
-        return "LoginView";
+        return "logout";
     }
+
     @RequestMapping(value = "/listNames", method = RequestMethod.GET)
     public String showNames(@RequestParam String name, ModelMap modelMap) throws IOException {
         List<Employee> employees = new ArrayList<>();
@@ -154,6 +132,14 @@ public class EmployeeOperationController {
         modelMap.addAttribute("employees", employees);
 
         return "ListView";
+    }
+
+    @RequestMapping(value = "/employeeView", method = RequestMethod.GET)
+    public String showEmployeeInfo(@RequestParam int id, ModelMap modelMap) throws IOException {
+        Employee employee = employeeTableDAO.readEmployee(id);
+        modelMap.addAttribute("employee", employee);
+
+        return "employeeView";
     }
 
 

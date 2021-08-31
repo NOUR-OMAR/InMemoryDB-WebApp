@@ -1,6 +1,6 @@
 package InMemoryDB.database.employee_table;
 
-import InMemoryDB.client.model.Employee;
+import InMemoryDB.model.Employee;
 import InMemoryDB.database.Database;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,8 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     @Override
     public void updateEmployee(Employee employee) {
         if (getDatabase().getEmployee(employee.getId()) != null) {
-            //Employee newEmployee = new Employee(id, name, salary,departmentId);
+            //Employee newEmployee = new Employee(id, name, salary,
+            // departmentId);
             getDatabase().putInEmployeesTable(employee);
            // return newEmployee;
         } else {

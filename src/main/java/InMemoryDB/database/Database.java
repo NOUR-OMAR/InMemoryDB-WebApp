@@ -1,13 +1,14 @@
 package InMemoryDB.database;
 
-import InMemoryDB.client.model.Department;
-import InMemoryDB.client.model.Employee;
-import InMemoryDB.client.model.User;
+import InMemoryDB.model.Department;
+import InMemoryDB.model.Employee;
+import InMemoryDB.model.User;
 import InMemoryDB.database.cache.LRUCache;
 import InMemoryDB.database.storage.CSVFile;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import static InMemoryDB.utils.Constant.Display.display;
 
 
 @Data
+@Service
 public class Database {
 
     /* @Getter
@@ -155,7 +157,7 @@ public class Database {
             for (Integer integer : getTableLRUCache().snapshot().keySet()) {
                 getAllDepartments().put(integer, (Department) Objects.requireNonNull(getTableLRUCache().get(integer)));
             }
-            // getAllDepartments().putAll((Map<? extends Integer, ? extends Department>) getTableLRUCache().values());
+            getAllDepartments().put(department.getId(),department);
             getTableLRUCache().put(department.getId(), department);
         }
 
@@ -191,10 +193,7 @@ public class Database {
     }
 
     public void closeUsersTB() {
-        //StringBuilder stringBuilder = new StringBuilder();
         csvFile.write(USERS_FILE_PATH);
-        // usersFile.tryWritingToFile(stringBuilder);
-
     }
 
     public User getUser(String username) {
@@ -202,6 +201,8 @@ public class Database {
         return getAllUsers().get(username);
 
     }
+
+
 
     public void putUser(User user) {
         synchronized (getAllUsers()) {

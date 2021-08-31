@@ -1,6 +1,6 @@
 package InMemoryDB.database.record;
 
-import InMemoryDB.client.model.Department;
+import InMemoryDB.model.Department;
 
 import static InMemoryDB.utils.Constant.DEPARTMENT_RECORD_LENGTH;
 import static InMemoryDB.utils.Constant.Display.display;

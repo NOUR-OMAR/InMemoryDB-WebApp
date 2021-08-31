@@ -1,6 +1,6 @@
 package InMemoryDB.database.departments_table;
 
-import InMemoryDB.client.model.Department;
+import InMemoryDB.model.Department;
 import InMemoryDB.database.Database;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -36,41 +36,40 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
 
     @Override
-    public Department createDepartment(int id, String name, String location) {
-        if (getDatabase().getDepartment(id) == null) {
-            Department newDepartment = new Department(id, name, location);
-            getDatabase().putInDepartmentsTable(newDepartment);
-            return newDepartment;
+    public void createDepartment(Department department) {
+        if (getDatabase().getDepartment(department.getId()) == null) {
+
+            getDatabase().putInDepartmentsTable(department);
+
         } else {
-            display("Can't create, department with id " + id + " already existed.");
-            return null;
+            display("Can't create, department with id " + department.getId() + " already existed.");
         }
     }
 
     @Override
-    public Department readDepartment(String id) {
-        return getDatabase().getDepartment(Integer.parseInt(id));
+    public Department readDepartment(int id) {
+        return getDatabase().getDepartment(id);
     }
 
     @Override
-    public Department updateDepartment(int id, String name, String location) {
-        if (getDatabase().getDepartment(id) != null) {
-            Department newDepartment = new Department(id, name, location);
-            getDatabase().putInDepartmentsTable(newDepartment);
-            return newDepartment;
+    public void updateDepartment(Department department) {
+        if (getDatabase().getDepartment(department.getId()) != null) {
+
+            getDatabase().putInDepartmentsTable(department);
+
         } else {
-            display("Can't update, department with id " + id + " doesn't exist.");
-            return null;
+            display("Can't create, department with id " + department.getId() + " already existed.");
         }
     }
+
 
     @Override //
-    public void deleteDepartment(String id) {
+    public void deleteDepartment(int id) {
         synchronized (getDatabase()) {
-            if (Database.getTableLRUCache().snapshot().containsKey(Integer.parseInt(id))) {
-                getDatabase().removeFromTableCache(Integer.parseInt(id));
-            } else if (Database.getAllDepartments().containsKey(Integer.parseInt(id))) {
-                getDatabase().removeFromDepartmentsTable(Integer.parseInt(id));
+            if (Database.getTableLRUCache().snapshot().containsKey(id)) {
+                getDatabase().removeFromTableCache(id);
+            } else if (Database.getAllDepartments().containsKey(id)) {
+                getDatabase().removeFromDepartmentsTable(id);
             } else {
                 display("Can't delete,department with id " + id + " doesn't exist");
             }
@@ -99,7 +98,7 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
         Map<Integer, Department> departmentHashtable = new Hashtable<>();
 
         for (Map.Entry<Integer, Department> department : Database.getAllDepartments().entrySet()) {
-            if (department.getValue().getName().toLowerCase().startsWith(location.toLowerCase())) {
+            if (department.getValue().getLocation().toLowerCase().startsWith(location.toLowerCase())) {
                 departmentHashtable.put(department.getKey(), department.getValue());
             }
         }

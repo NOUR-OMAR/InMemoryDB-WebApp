@@ -13,7 +13,7 @@ public final class Constant {
     public static final int MAX_SIZE = 1000;
     public static final int EMPLOYEES_RECORD_LENGTH = 4;
     public static final int DEPARTMENT_RECORD_LENGTH = 3;
-    public static final int ROW_LENGTH = 2;
+    public static final int USERS_RECORD_LENGTH = 4;
 
 
 

@@ -4,11 +4,17 @@
 
 <html>
 <head>
-<title>Student Grading System</title>
+<title>Admin View</title>
+<meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
+
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 	crossorigin="anonymous">
+
+
+	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css">
+
 </head>
 <body>
 	<header>
@@ -16,36 +22,39 @@
     			style="background-color: LightGray">
 
     			<ul class="navbar-nav">
-    				<li><a href="<%=request.getContextPath()%>/close"
+    				<li><a href="<%=request.getContextPath()%>/logout"
     					class="nav-link">Close and Log out</a></li>
+
+    		<li> <button onclick="document.getElementById('id04').style.display='block'" class="btn btn-success custom-width" >show employees with salaries less than a value</button>
+                   </li>
+<li>
+              <button onclick="document.getElementById('id03').style.display='block'" class="btn btn-success custom-width" >show employees with salaries greater than a value</button>
+
+</li>
+
+<li><button onclick="document.getElementById('id02').style.display='block'" class="btn btn-success custom-width" >show employees with salaries equals a value</button></li>
+
+    <li> <button onclick="document.getElementById('id05').style.display='block'" class="btn btn-success custom-width" >show employees with specific names</button></li>
     			</ul>
     		</nav>
     	</header>
-	 <div class="container text-left">
-
-                                        <button onclick="document.getElementById('id04').style.display='block'" class="btn btn-success custom-width" >show employees with salaries less than a value</button>
-                          </div>
-            <br>
-            <div class="container text-left">
-
-                                                    <button onclick="document.getElementById('id03').style.display='block'" class="btn btn-success custom-width" >show employees with salaries greater than a value</button>
-                                      </div>
-                        <br>
-                        <div class="container text-left">
-
-                                                                <button onclick="document.getElementById('id02').style.display='block'" class="btn btn-success custom-width" >show employees with salaries equals a value</button>
-                                                  </div>
-                                    <br>
-                                     <div class="container text-left">
-
-                                                                                                    <button onclick="document.getElementById('id05').style.display='block'" class="btn btn-success custom-width" >show employees with specific names</button>
-                                                                                      </div>
-                                                                        <br>
+<br>
 
 
-	<br>
+  <div class="container text-left">
 
-	<div class="row">
+                                     <a href="<%=request.getContextPath()%>/departmentView" class="btn btn-success">Show Departments</a>
+                      </div>
+        <br>
+
+         <div class="container text-left">
+
+                                             <a href="javascript:toggle('showEmployeeForm')" class="btn btn-success">Add Employee</a>
+                              </div>
+                <br>
+
+
+	<div id="wrap">
 
 		<div class="container">
 
@@ -54,7 +63,7 @@
 
 			<br>
 
-			<table class="table table-bordered">
+			<table class="datatable table table-striped table-bordered">
             				<thead>
             					<tr>
 
@@ -92,11 +101,7 @@
 
 
 		</div>
-		  <div class="container text-left">
 
-                                     <a href="javascript:toggle('showEmployeeForm')" class="btn btn-success">Add employee</a>
-                      </div>
-        <br>
 	</div>
 
 
@@ -145,7 +150,6 @@
     		</div>
 
 
-               <!-- <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Sign Up</button>-->
 
                 <div  id="id01" class="modal"  role="dialog">
                   <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
@@ -250,10 +254,27 @@
                                     </form>
                                 </div>
 
-</body>
-</html>
+
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.0/js/jquery.dataTables.js"></script>
+
 
 <script type="text/javascript">
+	$(document).ready(function() {
+    			$('#wrap').dataTable({
+    				"sPaginationType": "bs_full"
+    			});
+    			$('.datatable').each(function(){
+    				var datatable = $(this);
+    				// SEARCH - Add the placeholder for Search and Turn this into in-line form control
+    				var search_input = datatable.closest('.dataTables_wrapper').find('div[id$=_filter] input');
+    				search_input.attr('placeholder', 'Search');
+    				search_input.addClass('form-control input-sm');
+    				// LENGTH - Inline-Form control
+    				var length_sel = datatable.closest('.dataTables_wrapper').find('div[id$=_length] select');
+    				length_sel.addClass('form-control input-sm');
+    			});
+    		});
 function toggle(layer) {
     var d = document.getElementById(layer);
     d.style.display = (d.style.display == 'none') ? '' : 'none';
@@ -298,4 +319,9 @@ function toggle(layer) {
                                                         modal.style.display = "none";
                                                     }
                                                 }
-</script>
+
+
+		</script>
+
+</body>
+</html>
