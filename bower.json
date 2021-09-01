@@ -1,0 +1,19 @@
+{
+  "name": "datatables-bootstrap3",
+  "version": "1.0.0",
+  "main": [
+    "../src/webapp/css/datatables.css",
+
+    "../src/webapp/css/js/datatables.js"
+  ],
+  "description": "Plugin for Datatables Bootstrap3 UI Compatibility",
+  "license": "README.md",
+  "ignore": [
+    "BS3/examples/",
+    "BS3/Datatables.png",
+    "BS3/index.html"
+  ],
+  "dependencies": {
+    "datatables": ">= 1.9.4"
+  }
+}

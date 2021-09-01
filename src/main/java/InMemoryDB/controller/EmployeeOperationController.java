@@ -3,6 +3,7 @@ package InMemoryDB.controller;
 import InMemoryDB.database.Database;
 import InMemoryDB.database.departments_table.DepartmentsTableDAO;
 import InMemoryDB.database.employee_table.EmployeeTableDAO;
+import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -55,10 +56,14 @@ public class EmployeeOperationController {
 
 
     @GetMapping(value = "/adminView")
+
     public String showAdminView(ModelMap modelMap) {
 
         List<Employee> employees = employeeTableDAO.selectAll();
         modelMap.addAttribute("employees", employees);
+
+        List<Department> departments = departmentTableDAO.selectAll();
+        modelMap.addAttribute("departments", departments);
         return "adminView";
 
     }
@@ -140,7 +145,7 @@ public class EmployeeOperationController {
         employees.addAll(employeeTableDAO.filterByName(name).values());
         modelMap.addAttribute("employees", employees);
 
-        return "ListView";
+      return "ListView";
     }
 
     @GetMapping(value = "/employeeView")

@@ -17,10 +17,7 @@
 		<nav class="navbar navbar-expand-md navbar-dark"
 			style="background-color: LightGray">
 
-			<ul class="navbar-nav">
-				<li><a href="<%=request.getContextPath()%>/logout"
-					class="nav-link">Log out</a></li>
-			</ul>
+
 		</nav>
 	</header>
 	<br>

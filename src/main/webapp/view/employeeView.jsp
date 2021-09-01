@@ -13,9 +13,7 @@
 <body>
 
 	<security:authorize access="hasRole('ROLE_USER')">
-		This text is only visible to ${username}
-		<br/>
-	</security:authorize>
+
 	<header>
 		<nav class="navbar navbar-expand-md navbar-dark"
 			style="background-color: LightGray">
@@ -34,7 +32,7 @@
 
 
 			<hr>
-
+<h1>${employee.name} information</h1>
 			<br>
 
 			<table class="datatable table table-striped table-bordered">
@@ -71,6 +69,6 @@
 
 	</div>
 
-
+	</security:authorize>
 </body>
 </html>
