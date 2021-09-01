@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+
 <html>
 <head>
 <link rel="stylesheet"
@@ -9,6 +11,11 @@
 	crossorigin="anonymous">
 </head>
 <body>
+
+	<security:authorize access="hasRole('ROLE_USER')">
+		This text is only visible to ${username}
+		<br/>
+	</security:authorize>
 	<header>
 		<nav class="navbar navbar-expand-md navbar-dark"
 			style="background-color: LightGray">
@@ -21,49 +28,48 @@
 	</header>
 	<br>
 
-	<div id="wrap">
+<div id="wrap">
 
-    		<div class="container">
-
-
-    			<hr>
-
-    			<br>
-
-    			<table class="datatable table table-striped table-bordered">
-                				<thead>
-                					<tr>
-
-                						<th>Employee id</th>
-                						<th>Employee name</th>
-                                        <th>Employee salary</th>
-                						<th>Employee department id</th>
-                						<th>Employee department name</th>
-                						<th>Employee department location</th>
-
-                					</tr>
-                				</thead>
-                				<tbody>
-
-                					<c:forEach items="${employee}" var="emp"  >
-                						<tr>
-                							<td><c:out value="${emp.id}" /></td>
-                							<td><c:out value="${emp.name}" /></td>
-                							<td><c:out value="${emp.salary}" /></td>
-                							<td><c:out value="${emp.department.id}" /></td>
-                							<td><c:out value="${emp.department.name}" /></td>
-                							<td><c:out value="${emp.department.location}" /></td>
-
-                						</tr>
-                					</c:forEach>
-                				</tbody>
-
-                			</table>
+		<div class="container">
 
 
-    		</div>
+			<hr>
 
-    	</div>
+			<br>
+
+			<table class="datatable table table-striped table-bordered">
+            				<thead>
+            					<tr>
+
+            						<th>Employee id</th>
+            						<th>Employee name</th>
+                                    <th>Employee salary</th>
+            						<th>Employee department id</th>
+            						<th>Employee department name</th>
+            						<th>Employee department location</th>
+
+
+            					</tr>
+            				</thead>
+            				<tbody>
+
+            						<tr>
+            							<td><c:out value="${employee.id}" /></td>
+            							<td><c:out value="${employee.name}" /></td>
+            							<td><c:out value="${employee.salary}" /></td>
+            							<td><c:out value="${employee.department.id}" /></td>
+            							<td><c:out value="${employee.department.name}" /></td>
+            							<td><c:out value="${employee.department.location}" /></td>
+
+            						</tr>
+            				</tbody>
+
+            			</table>
+
+
+		</div>
+
+	</div>
 
 
 </body>

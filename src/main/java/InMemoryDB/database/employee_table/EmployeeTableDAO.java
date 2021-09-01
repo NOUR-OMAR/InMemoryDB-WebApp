@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 //DAO (Data Access Object) class
-//that provides CRUD (Create, Read, Update, Delete) operations as well as other operations for the table Employee in the server.database.
+//that provides CRUD (Create, Read,
+//
+//
+//
+// roUpdate, Delete) operations as well as other operations for the table Employee in the server.database.
 public interface EmployeeTableDAO {
     void createEmployee(Employee employee) throws IOException;
 

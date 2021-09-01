@@ -5,19 +5,25 @@ import InMemoryDB.database.departments_table.DepartmentsTableDAO;
 import InMemoryDB.database.employee_table.EmployeeTableDAO;
 import InMemoryDB.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Controller
+@SessionAttributes("username")
 public class EmployeeOperationController {
 
     @Autowired
@@ -26,26 +32,29 @@ public class EmployeeOperationController {
     DepartmentsTableDAO departmentTableDAO;
 
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String showLoginPage() {
+    @GetMapping(value = "/login")
+    public String showLoginPage( ) {
         return "LoginView";
     }
 
+    @Resource(name="authenticationManager")
+    private AuthenticationManager authManager;
+
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String showPage(@RequestParam String username,  ModelMap modelMap) throws IOException {
-
-      // String username= String.valueOf(modelMap.getAttribute("username"));
-        modelMap.addAttribute("username", username);
-        int userId = Database.getDatabase().getUser(username).getId();
-        if (Database.getDatabase().getUser(username).getRole().equals("ADMIN"))
-            return showAdminView(modelMap);
-        else if (Database.getDatabase().getUser(username).getRole().equals("EMPLOYEE"))
-            return showEmployeeInfo(userId, modelMap);
-
-    return showLoginPage();}
+    public void login(@RequestParam("username") final String username, @RequestParam("password") final String password, final HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authReq =
+                new UsernamePasswordAuthenticationToken(username, password);
+        Authentication auth = authManager.authenticate(authReq);
+        SecurityContext sc = SecurityContextHolder.getContext();
+        sc.setAuthentication(auth);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
+    }
 
 
-    @RequestMapping(value = "/adminView")
+
+    @GetMapping(value = "/adminView")
     public String showAdminView(ModelMap modelMap) {
 
         List<Employee> employees = employeeTableDAO.selectAll();
@@ -134,9 +143,11 @@ public class EmployeeOperationController {
         return "ListView";
     }
 
-    @RequestMapping(value = "/employeeView", method = RequestMethod.GET)
-    public String showEmployeeInfo(@RequestParam int id, ModelMap modelMap) throws IOException {
-        Employee employee = employeeTableDAO.readEmployee(id);
+    @GetMapping(value = "/employeeView")
+    public String showEmployeeInfo(final HttpServletRequest request, ModelMap modelMap) throws IOException {
+        HttpSession session = request.getSession(true);
+        String username= String.valueOf(session.getAttribute("username"));
+        Employee employee = employeeTableDAO.readEmployee(Database.getDatabase().getUser(username).getId());
         modelMap.addAttribute("employee", employee);
 
         return "employeeView";

@@ -5,9 +5,13 @@ import lombok.Data;
 @Data
 public class User {
 
+
     private int id;
+
     private String username;
+
     private String password;
+
     private String role;
 
     private boolean enabled;
@@ -16,15 +20,24 @@ public class User {
     }
 
 
-    public User(String userName, String password) {
-        this.username = userName;
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
     }
-    public User(String userName, String password,String role) {
+
+    public User(String userName, String password, String role) {
         this.username = userName;
         this.password = password;
-        this.role=role;
+        this.role = role;
     }
+
+    public User(int id, String userName, String password, String role) {
+        this.id = id;
+        this.username = userName;
+        this.password = password;
+        this.role = role;
+    }
+
 
   /*  @NotNull
     public static User registerUser(Scanner scanner) {

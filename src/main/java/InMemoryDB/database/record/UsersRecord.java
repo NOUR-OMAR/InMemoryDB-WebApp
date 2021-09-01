@@ -1,8 +1,8 @@
 package InMemoryDB.database.record;
 
 import InMemoryDB.model.User;
-import InMemoryDB.utils.Constant;
 
+import static InMemoryDB.utils.Constant.Display.display;
 import static InMemoryDB.utils.Constant.USERS_RECORD_LENGTH;
 
 
@@ -22,13 +22,9 @@ public class UsersRecord implements RecordHandler {
 
     private static void setUserInfo(String record, User user) {
         String[] userRecord = record.split(";");//
+        display("length"+userRecord.length);
         if (userRecord.length > USERS_RECORD_LENGTH) throw new IndexOutOfBoundsException();
-        try{user.setId(Integer.parseInt(userRecord[0]));}
-        catch (NumberFormatException numberFormatException)
-        {
-            Constant.Display.display(userRecord[0]);
-            numberFormatException.printStackTrace();
-        }
+        user.setId(Integer.parseInt(userRecord[0]));
         user.setUsername(userRecord[1]);
         user.setPassword(userRecord[2]);
         user.setRole(userRecord[3]);

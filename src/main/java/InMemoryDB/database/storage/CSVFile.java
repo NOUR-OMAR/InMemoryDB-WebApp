@@ -149,7 +149,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
         while ((row = bufferedReader.readLine()) != null) {
 
-            User user = (User) userRecordHandler.parseRecord(row);
+            User user = (User) userRecordHandler.parseRecord(row.replaceAll("\\s+", ""));
             if (user != null) {
 
                 Database.getAllUsers().put(user.getUsername(), user);
