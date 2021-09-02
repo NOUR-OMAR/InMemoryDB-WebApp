@@ -61,7 +61,7 @@ public class FileIOHandler {
     protected static void buildUsersRecordString(StringBuilder stringBuilder) {
         for (Map.Entry<String, User> entry : Database.getAllUsers().entrySet()) {
             User user = entry.getValue();
-            stringBuilder.append(user.getUsername()).append(";").append(user.getPassword()).append(";").append(user.getRole()).append("\n");
+            stringBuilder.append(user.getId()).append(";").append(user.getUsername()).append(";").append(user.getPassword()).append(";").append(user.getRole()).append("\n");
         }
     }
 

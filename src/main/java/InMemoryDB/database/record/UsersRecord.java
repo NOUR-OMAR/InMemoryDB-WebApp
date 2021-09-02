@@ -28,6 +28,7 @@ public class UsersRecord implements RecordHandler {
         user.setUsername(userRecord[1]);
         user.setPassword(userRecord[2]);
         user.setRole(userRecord[3]);
+
     }
 
     @Override

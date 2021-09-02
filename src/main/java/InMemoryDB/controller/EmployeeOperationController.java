@@ -3,8 +3,10 @@ package InMemoryDB.controller;
 import InMemoryDB.database.Database;
 import InMemoryDB.database.departments_table.DepartmentsTableDAO;
 import InMemoryDB.database.employee_table.EmployeeTableDAO;
+import InMemoryDB.database.users_table.UserTableDAO;
 import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
+import InMemoryDB.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,14 +33,15 @@ public class EmployeeOperationController {
     EmployeeTableDAO employeeTableDAO;
     @Autowired
     DepartmentsTableDAO departmentTableDAO;
-
+    @Autowired
+    UserTableDAO userTableDAO;
 
     @GetMapping(value = "/login")
-    public String showLoginPage( ) {
+    public String showLoginPage() {
         return "LoginView";
     }
 
-    @Resource(name="authenticationManager")
+    @Resource(name = "authenticationManager")
     private AuthenticationManager authManager;
 
 
@@ -46,14 +49,13 @@ public class EmployeeOperationController {
     public void login(@RequestParam("username") final String username, @RequestParam("password") final String password, final HttpServletRequest request) {
         UsernamePasswordAuthenticationToken authReq =
                 new UsernamePasswordAuthenticationToken(username, password);
+        HttpSession session = request.getSession(true);
+
         Authentication auth = authManager.authenticate(authReq);
         SecurityContext sc = SecurityContextHolder.getContext();
         sc.setAuthentication(auth);
-        HttpSession session = request.getSession(true);
         session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
     }
-
-
 
     @GetMapping(value = "/adminView")
 
@@ -65,6 +67,21 @@ public class EmployeeOperationController {
         List<Department> departments = departmentTableDAO.selectAll();
         modelMap.addAttribute("departments", departments);
         return "adminView";
+
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    public String register(@RequestParam("id") final int id,@RequestParam("username") final String username, @RequestParam("password") final String password, ModelMap modelMap) throws IOException {
+
+        modelMap.addAttribute("username", username);
+        modelMap.addAttribute("password", password);
+        modelMap.addAttribute("id", id);
+
+        User user = new User(id,username, password, "EMPLOYEE");
+        userTableDAO.createUser(user);
+        System.out.println( Database.getAllUsers().values());
+        modelMap.addAttribute("message", "registered successfully ,please login again");
+        return showLoginPage();
 
     }
 
@@ -81,6 +98,7 @@ public class EmployeeOperationController {
         return "redirect:/adminView";
 
     }
+
 
     @RequestMapping(value = "/updateEmployee", method = RequestMethod.GET)
     public String updateEmployee(@RequestParam int id, @RequestParam String name, @RequestParam int salary, @RequestParam int departmentId, ModelMap modelMap) throws IOException {
@@ -145,13 +163,13 @@ public class EmployeeOperationController {
         employees.addAll(employeeTableDAO.filterByName(name).values());
         modelMap.addAttribute("employees", employees);
 
-      return "ListView";
+        return "ListView";
     }
 
     @GetMapping(value = "/employeeView")
     public String showEmployeeInfo(final HttpServletRequest request, ModelMap modelMap) throws IOException {
         HttpSession session = request.getSession(true);
-        String username= String.valueOf(session.getAttribute("username"));
+        String username = String.valueOf(session.getAttribute("username"));
         Employee employee = employeeTableDAO.readEmployee(Database.getDatabase().getUser(username).getId());
         modelMap.addAttribute("employee", employee);
 

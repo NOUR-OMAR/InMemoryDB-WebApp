@@ -19,17 +19,11 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     private final Database database;
 
 
-    public EmployeeTableDAOImpl(Database database) {
-        this.database = database;
-    }
 
     private EmployeeTableDAOImpl() throws IOException {
         this.database = Database.getInitialisedDatabase();
     }
 
-    public static EmployeeTableDAO createEmployeeDAOTableImpl() throws IOException {
-        return new EmployeeTableDAOImpl();
-    }
 
 
     @Override

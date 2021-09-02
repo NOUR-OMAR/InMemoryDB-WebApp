@@ -23,6 +23,9 @@ public class TransactionLog extends FileIOHandler implements TransactionLogger {
         } else if (fileName.equalsIgnoreCase(DEPARTMENTS_LOGGER_FILE)) {
             buildDepartmentRecordString(stringBuilder);
         }
+     else if (fileName.equalsIgnoreCase(USERS_FILE_PATH)) {
+        buildUsersRecordString(stringBuilder);
+    }
         tryWritingToFile(stringBuilder, fileName);
 
     }

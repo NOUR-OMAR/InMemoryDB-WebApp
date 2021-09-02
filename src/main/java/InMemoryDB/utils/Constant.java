@@ -10,7 +10,9 @@ public final class Constant {
     public static final String USERS_FILE_PATH = "Users.csv";
     public static final String EMPLOYEES_LOGGER_FILE = "employees_logger.txt";
     public static final String DEPARTMENTS_LOGGER_FILE = "departments_logger.txt";
-    public static final int MAX_SIZE = 1000;
+    public static final String USERS_LOGGER_FILE = "users_logger.txt";
+
+    public static final int CACHE_MAX_SIZE = 1000;
     public static final int EMPLOYEES_RECORD_LENGTH = 4;
     public static final int DEPARTMENT_RECORD_LENGTH = 3;
     public static final int USERS_RECORD_LENGTH = 4;

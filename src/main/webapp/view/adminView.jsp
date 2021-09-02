@@ -62,7 +62,7 @@
 
          <div class="container text-left">
 
-                                             <a href="javascript:toggle('showEmployeeForm')" class="btn btn-success">Add Employee</a>
+           <a href="javascript:toggle('showEmployeeForm')" class="btn btn-success">Add Employee</a>
                               </div>
                 <br>
 
