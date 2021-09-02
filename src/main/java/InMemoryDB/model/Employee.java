@@ -15,6 +15,7 @@ public class Employee extends User {
     private int salary;
     private Department department;
     public static HashMap<Employee, Department> employeesDepartments = new HashMap<>();
+    public static HashMap<User,Employee> userEmployeeHashMap = new HashMap<>();
 
     public Employee(int id, String name, int salary) {
         this.id=id;
@@ -36,8 +37,8 @@ public class Employee extends User {
        department.setLocation(Department.departments.get(departmentId).getLocation());
     }
 
-    public Employee(String userName, String password,String role) {
-        super(userName, password,"EMPLOYEE");
+    public Employee(int id,String username, String password,String role) {
+        super(id,username, password,role);
     }
 
 

@@ -22,7 +22,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public void init() {
 		roles.put("ADMIN", new User(Database.getAllUsers().get("admin123").getUsername(), Database.getAllUsers().get("admin123").getPassword(), getAuthority("ROLE_ADMIN")));
 		for (InMemoryDB.model.User user : Database.getAllUsers().values()) {
-
 			if (user.getRole().equals("EMPLOYEE"))
 				roles.put("EMPLOYEE", new User(user.getUsername(), user.getPassword(), getAuthority("ROLE_USER")));
 		}

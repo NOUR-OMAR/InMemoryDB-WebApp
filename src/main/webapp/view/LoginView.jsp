@@ -45,6 +45,7 @@
 
 
         				</form>
+                            		</div>
 
 
         				<div class="container col-md-5" id="showRegistrationForm" style="display: none;" >
@@ -58,7 +59,11 @@
                                         			Register
                             					</h2>
                             				</caption>
-
+                                               <fieldset class="form-group">
+                            					<label>id</label> <input type="text"
+                            						value="<c:out value='${id}' />" class="form-control"
+                            						name="id" required="required">
+                            				</fieldset>
 
                             				<fieldset class="form-group">
                             					<label>username</label> <input type="text"
@@ -76,7 +81,6 @@
                             				<button type="submit" class="btn btn-success">Register</button>
                             				</form>
                             			</div>
-                            		</div>
                             		</div>
 
 </body>

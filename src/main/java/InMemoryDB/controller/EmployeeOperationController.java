@@ -3,6 +3,7 @@ package InMemoryDB.controller;
 import InMemoryDB.database.Database;
 import InMemoryDB.database.departments_table.DepartmentsTableDAO;
 import InMemoryDB.database.employee_table.EmployeeTableDAO;
+import InMemoryDB.database.users_table.UserTableDAO;
 import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 import InMemoryDB.model.User;
@@ -32,7 +33,8 @@ public class EmployeeOperationController {
     EmployeeTableDAO employeeTableDAO;
     @Autowired
     DepartmentsTableDAO departmentTableDAO;
-
+    @Autowired
+    UserTableDAO userTableDAO;
 
     @GetMapping(value = "/login")
     public String showLoginPage() {
@@ -69,13 +71,15 @@ public class EmployeeOperationController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public String register(@RequestParam("username") final String username, @RequestParam("password") final String password, ModelMap modelMap) throws IOException {
+    public String register(@RequestParam("id") final int id,@RequestParam("username") final String username, @RequestParam("password") final String password, ModelMap modelMap) throws IOException {
 
         modelMap.addAttribute("username", username);
-        modelMap.addAttribute("name", password);
+        modelMap.addAttribute("password", password);
+        modelMap.addAttribute("id", id);
 
-        User user = new User(username, password, "USER");
-        Database.getAllUsers().put(username, user);
+        User user = new User(id,username, password, "EMPLOYEE");
+        userTableDAO.createUser(user);
+        System.out.println( Database.getAllUsers().values());
         modelMap.addAttribute("message", "registered successfully ,please login again");
         return showLoginPage();
 

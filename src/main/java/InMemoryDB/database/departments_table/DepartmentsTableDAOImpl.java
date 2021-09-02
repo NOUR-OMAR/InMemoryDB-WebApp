@@ -22,17 +22,11 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
     private final Database database;
 
 
-    public DepartmentsTableDAOImpl(Database database) {
-        this.database = database;
-    }
 
     private DepartmentsTableDAOImpl() throws IOException {
         this.database = Database.getInitialisedDatabase();
     }
 
-    public static DepartmentsTableDAO createEmployeeDAOTableImpl() throws IOException {
-        return new DepartmentsTableDAOImpl();
-    }
 
 
     @Override

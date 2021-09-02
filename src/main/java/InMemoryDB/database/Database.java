@@ -1,17 +1,16 @@
 package InMemoryDB.database;
 
+import InMemoryDB.database.cache.LRUCache;
+import InMemoryDB.database.storage.CSVFile;
 import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 import InMemoryDB.model.User;
-import InMemoryDB.database.cache.LRUCache;
-import InMemoryDB.database.storage.CSVFile;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,9 +23,11 @@ import static InMemoryDB.utils.Constant.Display.display;
 public class Database {
 
     /* @Getter
-     private static final Map<Integer, Object> tableLRUCache = LRUHashMap.newInstance(MAX_SIZE);*/
+     private static final Map<Integer, Object> tableLRUCache = LRUHashMap.newInstance(CACHE_MAX_SIZE);*/
     @Getter
-    private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(MAX_SIZE);
+    private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
+    @Getter
+    private static final LRUCache<String, User> usersLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
 
 
     @Setter
@@ -36,8 +37,9 @@ public class Database {
     @Getter
     private static ConcurrentHashMap<Integer, Department> allDepartments;
 
-
-    private static final HashMap<String, User> allUsers = new HashMap<>();
+    @Setter
+    @Getter
+    private static ConcurrentHashMap<String, User> allUsers;
 
     @Setter
     private static Database database;
@@ -47,9 +49,10 @@ public class Database {
         setAllDepartments(new ConcurrentHashMap<>());
 
         setAllEmployees(new ConcurrentHashMap<>());
+        setAllUsers(new ConcurrentHashMap<>());
         csvFile.initialize();
         writeInLogger();
-         displayDepartmentsTable();
+        displayDepartmentsTable();
         displayEmployeeTable();
         displayCache();
     }
@@ -66,10 +69,6 @@ public class Database {
         return Database.getDatabase();
     }
 
-    public static HashMap<String, User> getAllUsers() {
-        return allUsers;
-
-    }
 
     public ConcurrentHashMap<Integer, Employee> getEmployeesTable() {
 
@@ -157,11 +156,26 @@ public class Database {
             for (Integer integer : getTableLRUCache().snapshot().keySet()) {
                 getAllDepartments().put(integer, (Department) Objects.requireNonNull(getTableLRUCache().get(integer)));
             }
-            getAllDepartments().put(department.getId(),department);
+            getAllDepartments().put(department.getId(), department);
             getTableLRUCache().put(department.getId(), department);
         }
 
         writeInLogger();
+    }
+
+    public void putInUsersTable(User user) {
+
+        synchronized (getUsersLRUCache()) {
+
+            for (String key : getUsersLRUCache().snapshot().keySet()) {
+                getAllUsers().put(key,  Objects.requireNonNull(getUsersLRUCache().get(key)));
+            }
+            getAllUsers().put(user.getUsername(), user);
+            getUsersLRUCache().put(user.getUsername(), user);
+        }
+
+        writeInLogger();
+        closeUsersTB();
     }
 
     public void removeFromTableCache(int id) {
@@ -203,18 +217,23 @@ public class Database {
     }
 
 
-
     public void putUser(User user) {
         synchronized (getAllUsers()) {
+
             getAllUsers().put(user.getUsername(), user);
 
         }
+
+
+        closeUsersTB();
+
     }
 
 
     private void writeInLogger() {
         csvFile.transactionLog.write(EMPLOYEES_LOGGER_FILE);
         csvFile.transactionLog.write(DEPARTMENTS_LOGGER_FILE);
+        csvFile.transactionLog.write(USERS_LOGGER_FILE);
     }
 
     private void setTableLRUCache(int key, Object object) {
