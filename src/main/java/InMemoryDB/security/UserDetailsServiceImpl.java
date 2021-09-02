@@ -26,6 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			if (user.getRole().equals("EMPLOYEE"))
 				roles.put("EMPLOYEE", new User(user.getUsername(), user.getPassword(), getAuthority("ROLE_USER")));
 		}
+
 	}
 
 
@@ -40,6 +41,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if(user==null) {
 			throw new UsernameNotFoundException("Could not find User");
 		}
+
 		return user;
 	}
 

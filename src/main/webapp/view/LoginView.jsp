@@ -26,9 +26,10 @@
 			<div class="card-body">
 			  <form action="${pageContext.request.contextPath}/login" method='POST'>
 			      <p><font color="red">${errorMessage}</font></p>
+			        <p><font color="green">${message}</font></p>
 
 		<fieldset class="form-group">
-    					<label>username </label> <input type="text"
+    					<label>Username </label> <input type="text"
     						name="username" required="required">
     				</fieldset>
 
@@ -40,7 +41,51 @@
 
 
         	<button type="submit" class="btn btn-success">Login</button>
+           <a href="javascript:toggle('showRegistrationForm')" class="btn btn-success">Register</a>
+
+
         				</form>
+
+
+        				<div class="container col-md-5" id="showRegistrationForm" style="display: none;" >
+                            		<div class="card">
+                            			<div class="card-body">
+
+                            					<form action="/register" >
+
+                            				<caption>
+                            					<h2>
+                                        			Register
+                            					</h2>
+                            				</caption>
+
+
+                            				<fieldset class="form-group">
+                            					<label>username</label> <input type="text"
+                            						value="<c:out value='${username}' />" class="form-control"
+                            						name="username" required="required">
+                            				</fieldset>
+
+                            				<fieldset class="form-group">
+                            					<label>password</label>
+                            					<input type="text"
+                            						value="<c:out value='${password}' />" class="form-control"
+                            						name="password">
+                            				</fieldset>
+
+                            				<button type="submit" class="btn btn-success">Register</button>
+                            				</form>
+                            			</div>
+                            		</div>
+                            		</div>
 
 </body>
 </html>
+
+
+<script type="text/javascript">
+function toggle(layer) {
+    var d = document.getElementById(layer);
+    d.style.display = (d.style.display == 'none') ? '' : 'none';
+    }
+</script>
