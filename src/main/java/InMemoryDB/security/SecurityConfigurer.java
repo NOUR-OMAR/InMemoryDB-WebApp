@@ -1,7 +1,8 @@
 package InMemoryDB.security;
 
-import InMemoryDB.database.Database;
+import InMemoryDB.database.users_table.UserTableDAO;
 import InMemoryDB.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,20 +21,22 @@ import static InMemoryDB.utils.Constant.Display.display;
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    UserTableDAO userTableDAO;
+
     public SecurityConfigurer() {
         super();
     }
 
 
-  @Override
+    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
                 .withUser("admin123")
-                .password(Database.getAllUsers().get("admin123").getPassword())
+                .password(userTableDAO.readUser("admin123").getPassword())
                 .roles("ADMIN");
-        for (User user : Database.getAllUsers().values()) {
-
-            if(user.getRole().equals("EMPLOYEE"))
+        for (User user : userTableDAO.selectAll()) {
+            if (user.getRole().equals("EMPLOYEE"))
                 display(user.getUsername());
             auth.inMemoryAuthentication()
                     .withUser(user.getUsername())
@@ -48,7 +51,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/login","/register").permitAll()
                 .antMatchers("/").hasAnyRole("ADMIN")
                 .antMatchers("/employee").hasAnyRole("USER","ADMIN")
-                .antMatchers("/","static/css","static/js").permitAll().anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login")
                 .successHandler(getAuthenticationSuccessHandler())

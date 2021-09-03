@@ -36,14 +36,13 @@ public class EmployeeOperationController {
     @Autowired
     UserTableDAO userTableDAO;
 
+    @Resource(name = "authenticationManager")
+    private AuthenticationManager authManager;
+
     @GetMapping(value = "/login")
     public String showLoginPage() {
         return "LoginView";
     }
-
-    @Resource(name = "authenticationManager")
-    private AuthenticationManager authManager;
-
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public void login(@RequestParam("username") final String username, @RequestParam("password") final String password, final HttpServletRequest request) {
@@ -73,15 +72,15 @@ public class EmployeeOperationController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public String register(@RequestParam("id") final int id,@RequestParam("username") final String username, @RequestParam("password") final String password, ModelMap modelMap) throws IOException {
+    public String register(@RequestParam("id") final int id, @RequestParam("username") final String username, @RequestParam("password") final String password, ModelMap modelMap) throws IOException {
 
         modelMap.addAttribute("username", username);
         modelMap.addAttribute("password", password);
         modelMap.addAttribute("id", id);
 
-        User user = new User(id,username, password, "EMPLOYEE");
+        User user = new User(id, username, password, "EMPLOYEE");
         userTableDAO.createUser(user);
-        System.out.println( Database.getAllUsers().values());
+        System.out.println(userTableDAO.selectAll());
         modelMap.addAttribute("message", "registered successfully ,please login again");
         return showLoginPage();
 
