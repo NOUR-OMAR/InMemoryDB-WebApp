@@ -46,6 +46,8 @@ public class EmployeeOperationController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public void login(@RequestParam("username") final String username, @RequestParam("password") final String password, final HttpServletRequest request) {
+
+
         UsernamePasswordAuthenticationToken authReq =
                 new UsernamePasswordAuthenticationToken(username, password);
         HttpSession session = request.getSession(true);
