@@ -30,7 +30,6 @@ public class MvcConfigure implements WebMvcConfigurer {
         registry.addViewController("/employee");
         registry.addViewController("/ListDepartmentsView");
         registry.addViewController("/ListView");
-        //registry.addViewController("/csrfHome.html");
     }
  @Bean
     public ViewResolver viewResolver() {
@@ -47,7 +46,7 @@ public class MvcConfigure implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
        // registry.addInterceptor(new LoggerInterceptor());
-        registry.addInterceptor(new UserInterceptor());
-     //   registry.addInterceptor(new SessionTimerInterceptor());
+        // registry.addInterceptor(new UserInterceptor());
+        //   registry.addInterceptor(new SessionTimerInterceptor());
     }
 }
