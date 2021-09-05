@@ -4,10 +4,7 @@ import InMemoryDB.database.departments_table.DepartmentsTableDAO;
 import InMemoryDB.model.Department;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -32,7 +29,7 @@ public class DepartmentOperationController {
 
     }
 
-    @RequestMapping(value = "/addDepartment", method = RequestMethod.GET)
+    @GetMapping(value = "/addDepartment")
     public ModelAndView addDepartment(Department department) throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
         modelAndView.addObject("department", department);
@@ -41,7 +38,7 @@ public class DepartmentOperationController {
 
     }
 
-    @RequestMapping(value = "/updateDepartment", method = RequestMethod.GET)
+    @GetMapping(value = "/updateDepartment")
     public ModelAndView updateDepartment(Department department) throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
         modelAndView.addObject("department", department);
@@ -51,7 +48,7 @@ public class DepartmentOperationController {
     }
 
 
-    @RequestMapping(value = "/deleteDepartment-{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/deleteDepartment-{id}")
     public ModelAndView deleteDepartment(@PathVariable int id) throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
 
@@ -60,7 +57,7 @@ public class DepartmentOperationController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/filterByName", method = RequestMethod.GET)
+    @GetMapping(value = "/filterByName")
     public ModelAndView filterDepartmentsByName(@RequestParam String name) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListDepartmentsView");
 
@@ -70,7 +67,7 @@ public class DepartmentOperationController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/filterByLocation", method = RequestMethod.GET)
+    @GetMapping(value = "/filterByLocation")
     public ModelAndView filterDepartmentsByLocation(@RequestParam String location) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListDepartmentsView");
 
@@ -81,7 +78,7 @@ public class DepartmentOperationController {
     }
 
 
-    @RequestMapping(value = "/back", method = RequestMethod.GET)
+    @GetMapping(value = "/back")
     public ModelAndView close() throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/adminView");
 

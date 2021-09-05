@@ -157,7 +157,7 @@
 
                     			<fieldset class="form-group">
                                                         	 <label><b>Employee department </b></label>
-                                                                  <select value="<c:out value='${newEmployee.department.id}' />" name="department.id"  >
+                                                                  <select value="<c:out value='${newEmployee.department.id}' />" name="departmentId"  >
 
                                                                                   <c:forEach items="${departments}" var="departmentId">
                                                                                 <option value="${departmentId.id}">
