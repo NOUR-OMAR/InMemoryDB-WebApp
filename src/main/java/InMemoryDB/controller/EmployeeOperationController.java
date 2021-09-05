@@ -1,25 +1,16 @@
 package InMemoryDB.controller;
 
-import InMemoryDB.database.Database;
-import InMemoryDB.database.departments_table.DepartmentsTableDAO;
 import InMemoryDB.database.employee_table.EmployeeTableDAO;
-import InMemoryDB.database.users_table.UserTableDAO;
-import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
-import InMemoryDB.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,63 +22,15 @@ public class EmployeeOperationController {
 
     @Autowired
     EmployeeTableDAO employeeTableDAO;
-    @Autowired
-    DepartmentsTableDAO departmentTableDAO;
-    @Autowired
-    UserTableDAO userTableDAO;
 
-    @Resource(name = "authenticationManager")
-    private AuthenticationManager authManager;
+    @GetMapping(value = "/addEmployee")//TODO  employee object
+    public ModelAndView addEmployee(@RequestParam int id,
+                              @RequestParam String name,
+                              @RequestParam int salary,
+                              @RequestParam int departmentId, ModelMap modelMap
+          ) throws IOException {
 
-    @GetMapping(value = "/login")
-    public String showLoginPage() {
-        return "LoginView";
-    }
-
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public void login(@RequestParam("username") final String username, @RequestParam("password") final String password, final HttpServletRequest request) {
-
-
-        UsernamePasswordAuthenticationToken authReq =
-                new UsernamePasswordAuthenticationToken(username, password);
-        HttpSession session = request.getSession(true);
-
-        Authentication auth = authManager.authenticate(authReq);
-        SecurityContext sc = SecurityContextHolder.getContext();
-        sc.setAuthentication(auth);
-        session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
-    }
-
-    @GetMapping(value = "/adminView")
-
-    public String showAdminView(ModelMap modelMap) {
-
-        List<Employee> employees = employeeTableDAO.selectAll();
-        modelMap.addAttribute("employees", employees);
-
-        List<Department> departments = departmentTableDAO.selectAll();
-        modelMap.addAttribute("departments", departments);
-        return "adminView";
-
-    }
-
-    @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public String register(@RequestParam("id") final int id, @RequestParam("username") final String username, @RequestParam("password") final String password, ModelMap modelMap) throws IOException {
-
-        modelMap.addAttribute("username", username);
-        modelMap.addAttribute("password", password);
-        modelMap.addAttribute("id", id);
-
-        User user = new User(id, username, password, "EMPLOYEE");
-        userTableDAO.createUser(user);
-        System.out.println(userTableDAO.selectAll());
-        modelMap.addAttribute("message", "registered successfully ,please login again");
-        return showLoginPage();
-
-    }
-
-    @RequestMapping(value = "/addEmployee", method = RequestMethod.GET)
-    public String addEmployee(@RequestParam int id, @RequestParam String name, @RequestParam int salary, @RequestParam int departmentId, ModelMap modelMap) throws IOException {
+        ModelAndView modelAndView = new ModelAndView();
 
         modelMap.addAttribute("id", id);
         modelMap.addAttribute("name", name);
@@ -96,14 +39,20 @@ public class EmployeeOperationController {
         Employee employee = new Employee(id, name, salary, departmentId);
         employeeTableDAO.createEmployee(employee);
 
-        return "redirect:/adminView";
+        modelAndView.setViewName("redirect:/adminView");
+        return modelAndView;
+
 
     }
 
 
-    @RequestMapping(value = "/updateEmployee", method = RequestMethod.GET)
-    public String updateEmployee(@RequestParam int id, @RequestParam String name, @RequestParam int salary, @RequestParam int departmentId, ModelMap modelMap) throws IOException {
-
+    @GetMapping(value = "/updateEmployee")
+    public ModelAndView updateEmployee(@RequestParam int id,
+                                 @RequestParam String name,
+                                 @RequestParam int salary,
+                                 @RequestParam int departmentId,
+                                 ModelMap modelMap) throws IOException {
+        ModelAndView modelAndView = new ModelAndView();
         modelMap.addAttribute("id", id);
         modelMap.addAttribute("name", name);
         modelMap.addAttribute("salary", salary);
@@ -111,71 +60,57 @@ public class EmployeeOperationController {
         Employee employee = new Employee(id, name, salary, departmentId);
         employeeTableDAO.updateEmployee(employee);
 
-        return "redirect:/adminView";
+        modelAndView.setViewName("redirect:/adminView");
+        return modelAndView;
+
     }
 
 
-    @RequestMapping(value = "/deleteEmployee-{id}", method = RequestMethod.GET)
-    public String deleteEmployee(@PathVariable int id) throws IOException {
+    @GetMapping(value = "/deleteEmployee-{id}")
+    public ModelAndView deleteEmployee(@PathVariable int id) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("redirect:/adminView");
         employeeTableDAO.deleteEmployee(id);
 
-        return "redirect:/adminView";
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/filterSalaryEQ", method = RequestMethod.GET)
-    public String filterSalaryEQ(@RequestParam int salary, ModelMap modelMap) throws IOException {
+    @GetMapping(value = "/filterSalaryEQ")
+    public ModelAndView filterSalaryEQ(@RequestParam int salary) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("ListView");
+        List<Employee> employees = new ArrayList<>(employeeTableDAO.filterBySalaryEQ(salary).values());
+        modelAndView.addObject("employees", employees);
 
-        List<Employee> employees = new ArrayList<>();
-        employees.addAll(employeeTableDAO.filterBySalaryEQ(salary).values());
-        modelMap.addAttribute("employees", employees);
-
-        return "ListView";
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/filterSalaryLT", method = RequestMethod.GET)
-    public String filterSalaryLT(@RequestParam int salary, ModelMap modelMap) throws IOException {
+    @GetMapping(value = "/filterSalaryLT")
+    public ModelAndView filterSalaryLT(@RequestParam int salary) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("ListView");
+        List<Employee> employees = new ArrayList<>(employeeTableDAO.filterBySalaryLT(salary).values());
+        modelAndView.addObject("employees", employees);
 
-        List<Employee> employees = new ArrayList<>();
-        employees.addAll(employeeTableDAO.filterBySalaryLT(salary).values());
-        modelMap.addAttribute("employees", employees);
-
-        return "ListView";
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/filterSalaryGT", method = RequestMethod.GET)
-    public String filterSalaryGT(@RequestParam int salary, ModelMap modelMap) throws IOException {
-
-        List<Employee> employees = new ArrayList<>();
-        employees.addAll(employeeTableDAO.filterBySalaryGT(salary).values());
-        modelMap.addAttribute("employees", employees);
-
-        return "ListView";
+    @GetMapping(value = "/filterSalaryGT")
+    public ModelAndView filterSalaryGT(@RequestParam int salary) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("ListView");
+        List<Employee> employees = new ArrayList<>(employeeTableDAO.filterBySalaryGT(salary).values());
+        modelAndView.addObject("employees", employees);
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String close() throws IOException {
-        employeeTableDAO.close();
-        return "logout";
+
+    @GetMapping(value = "/listNames")
+    public ModelAndView showNames(@RequestParam String name) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("ListView");
+        List<Employee> employees = new ArrayList<>(employeeTableDAO.filterByName(name).values());
+        modelAndView.addObject("employees", employees);
+
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/listNames", method = RequestMethod.GET)
-    public String showNames(@RequestParam String name, ModelMap modelMap) throws IOException {
-        List<Employee> employees = new ArrayList<>();
-        employees.addAll(employeeTableDAO.filterByName(name).values());
-        modelMap.addAttribute("employees", employees);
 
-        return "ListView";
-    }
-
-    @GetMapping(value = "/employeeView")
-    public String showEmployeeInfo(final HttpServletRequest request, ModelMap modelMap) throws IOException {
-        HttpSession session = request.getSession(true);
-        String username = String.valueOf(session.getAttribute("username"));
-        Employee employee = employeeTableDAO.readEmployee(Database.getDatabase().getUser(username).getId());
-        modelMap.addAttribute("employee", employee);
-
-        return "employeeView";
-    }
 
 
 }

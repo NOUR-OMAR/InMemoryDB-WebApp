@@ -1,14 +1,11 @@
 package InMemoryDB.controller;
 
-import InMemoryDB.model.Department;
 import InMemoryDB.database.departments_table.DepartmentsTableDAO;
+import InMemoryDB.model.Department;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,72 +19,71 @@ public class DepartmentOperationController {
     DepartmentsTableDAO departmentTableDAO;
 
     @RequestMapping(value = "/departmentView")
-    public String showDepartmentsView(ModelMap modelMap) {
+    public ModelAndView showDepartmentsView() throws IOException {
+        ModelAndView modelAndView = new ModelAndView("departmentView");
 
         List<Department> departments = departmentTableDAO.selectAll();
-        modelMap.addAttribute("departments", departments);
-        return "departmentView";
+        modelAndView.addObject("departments", departments);
+        return modelAndView;
 
 
     }
-    @RequestMapping(value = "/addDepartment", method = RequestMethod.GET)
-    public String addDepartment(@RequestParam int id, @RequestParam String name, @RequestParam String location, ModelMap modelMap) throws IOException {
 
-        modelMap.addAttribute("id", id);
-        modelMap.addAttribute("name", name);
-        modelMap.addAttribute("location", location);
-        Department department = new Department(id, name, location);
+    @GetMapping(value = "/addDepartment")
+    public ModelAndView addDepartment(Department department) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
+        modelAndView.addObject("department", department);
         departmentTableDAO.createDepartment(department);
-
-        return "redirect:/departmentView";
+        return modelAndView;
 
     }
 
-    @RequestMapping(value = "/updateDepartment", method = RequestMethod.GET)
-    public String updateDepartment(@RequestParam int id, @RequestParam String name, @RequestParam String location, ModelMap modelMap) throws IOException {
-
-        modelMap.addAttribute("id", id);
-        modelMap.addAttribute("name", name);
-        modelMap.addAttribute("location", location);
-        Department department = new Department(id, name, location);
+    @GetMapping(value = "/updateDepartment")
+    public ModelAndView updateDepartment(Department department) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
+        modelAndView.addObject("department", department);
         departmentTableDAO.updateDepartment(department);
 
-        return "redirect:/departmentView";
+        return modelAndView;
     }
 
 
-    @RequestMapping(value = "/deleteDepartment-{id}", method = RequestMethod.GET)
-    public String deleteDepartment(@PathVariable int id) throws IOException {
+    @GetMapping(value = "/deleteDepartment-{id}")
+    public ModelAndView deleteDepartment(@PathVariable int id) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
+
         departmentTableDAO.deleteDepartment(id);
 
-        return "redirect:/departmentView";
+        return modelAndView;
     }
 
-    @RequestMapping(value = "/filterByName", method = RequestMethod.GET)
-    public String filterDepartmentsByName(@RequestParam String name, ModelMap modelMap) throws IOException {
+    @GetMapping(value = "/filterByName")
+    public ModelAndView filterDepartmentsByName(@RequestParam String name) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("ListDepartmentsView");
 
-        List<Department> departments = new ArrayList<>();
-        departments.addAll(departmentTableDAO.filterByName(name).values());
-        modelMap.addAttribute("departments", departments);
+        List<Department> departments = new ArrayList<>(departmentTableDAO.filterByName(name).values());
+        modelAndView.addObject("departments", departments);
 
-        return "ListDepartmentsView";
-    }
-    @RequestMapping(value = "/filterByLocation", method = RequestMethod.GET)
-    public String filterDepartmentsByLocation(@RequestParam String location, ModelMap modelMap) throws IOException {
-
-        List<Department> departments = new ArrayList<>();
-        departments.addAll(departmentTableDAO.filterByLocation(location).values());
-        modelMap.addAttribute("departments", departments);
-
-        return "ListDepartmentsView";
+        return modelAndView;
     }
 
+    @GetMapping(value = "/filterByLocation")
+    public ModelAndView filterDepartmentsByLocation(@RequestParam String location) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("ListDepartmentsView");
+
+        List<Department> departments = new ArrayList<>(departmentTableDAO.filterByLocation(location).values());
+        modelAndView.addObject("departments", departments);
+
+        return modelAndView;
+    }
 
 
-    @RequestMapping(value = "/back", method = RequestMethod.GET)
-    public String close() throws IOException {
+    @GetMapping(value = "/back")
+    public ModelAndView close() throws IOException {
+        ModelAndView modelAndView = new ModelAndView("redirect:/adminView");
+
         departmentTableDAO.close();
-        return "redirect:/adminView";
+        return modelAndView;
     }
 
 

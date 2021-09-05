@@ -19,7 +19,7 @@
 </head>
 
 <body>
-	<security:authorize access="hasRole('ROLE_ADMIN')">
+	<security:authorize access="hasAuthority('ADMIN')">
 
 	<header>
     		<nav class="navbar navbar-expand-md navbar-dark"
@@ -138,30 +138,37 @@
 
     				<fieldset class="form-group">
     					<label>Employee Id</label> <input type="text"
-    						value="<c:out value='${employee.id}' />" class="form-control"
+    						value="<c:out value='${newEmployee.id}' />" class="form-control"
     						name="id" required="required">
     				</fieldset>
 
     				<fieldset class="form-group">
     					<label>Employee name</label>
     					<input type="text"
-    						value="<c:out value='${employee.name}' />" class="form-control"
+    						value="<c:out value='${newEmployee.name}' />" class="form-control"
     						name="name">
     				</fieldset>
 
     				<fieldset class="form-group">
                     					<label>Employee salary</label> <input type="text"
-                    						value="<c:out value='${employee.salary}' />" class="form-control"
+                    						value="<c:out value='${newEmployee.salary}' />" class="form-control"
                     						name="salary">
                     				</fieldset>
 
                     			<fieldset class="form-group">
                                                         	 <label><b>Employee department </b></label>
-                                                                                        <select name="departmentId">
-                                                                                                                    <c:forEach items="${departments}" var="dept">
-                                                                                                                        <option value="${dept.id}">${dept.name}</option>
-                                                                                                                    </c:forEach>
-                                                                                                                </select>
+                                                                  <select value="<c:out value='${newEmployee.department.id}' />" name="departmentId"  >
+
+                                                                                  <c:forEach items="${departments}" var="departmentId">
+                                                                                <option value="${departmentId.id}">
+
+                                                                                ${departmentId.name}
+
+                                                                                </option>
+                                                                                        </c:forEach>
+
+
+                                                                                       </select>
 
                                                             	</fieldset>
 

@@ -23,7 +23,6 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     @Setter
     @Getter
     private static long employeesCSVRowCount = 0;
-
     @Setter
     @Getter
     private static long departmentsCSVRowCount = 0;
@@ -31,6 +30,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     @Setter
     @Getter
     private static long usersCSVRowCount = 0;
+
     public TransactionLogger transactionLog = new TransactionLog();
     RecordHandler employeeRecordHandler = new EmployeeRecord();
     RecordHandler departmentRecordHandler = new DepartmentRecord();

@@ -1,9 +1,10 @@
 package InMemoryDB.database.employee_table;
 
-import InMemoryDB.model.Employee;
 import InMemoryDB.database.Database;
+import InMemoryDB.model.Employee;
 import lombok.Data;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.*;
@@ -12,26 +13,18 @@ import static InMemoryDB.utils.Constant.Display.display;
 
 
 @Data
-@Service
+@Component
 public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
-
+    @Autowired
     private final Database database;
-
-
-
-    private EmployeeTableDAOImpl() throws IOException {
-        this.database = Database.getInitialisedDatabase();
-    }
-
-
 
     @Override
     public void createEmployee(Employee employee) {
-        if (getDatabase().getEmployee(employee.getId()) == null) {
+        if (database.getEmployee(employee.getId()) == null) {
 
           //  Employee newEmployee = new Employee(employee.getId(), employee.getName(), employee.getSalary(),employee.getDepartment().getId());
-            getDatabase().putInEmployeesTable(employee);
+            database.putInEmployeesTable(employee);
            // return newEmployee;
         } else {
             display("Can't create, employee with id " + employee.getId() + " already existed.");
@@ -46,10 +39,10 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
     @Override
     public void updateEmployee(Employee employee) {
-        if (getDatabase().getEmployee(employee.getId()) != null) {
+        if (database.getEmployee(employee.getId()) != null) {
             //Employee newEmployee = new Employee(id, name, salary,
             // departmentId);
-            getDatabase().putInEmployeesTable(employee);
+            database.putInEmployeesTable(employee);
            // return newEmployee;
         } else {
             display("Can't update, employee with id " + employee.getId() + " doesn't exist.");
@@ -59,11 +52,11 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
     @Override
     public void deleteEmployee(int id) {
-        synchronized (getDatabase()) {
-            if (Database.getTableLRUCache().snapshot().containsKey(id)) {
-                getDatabase().removeFromTableCache(id);
-            } else if (Database.getAllEmployees().containsKey(id)) {
-                getDatabase().removeFromEmployeeTable(id);
+        synchronized (database) {
+            if (database.getTableLRUCache().snapshot().containsKey(id)) {
+                database.removeFromTableCache(id);
+            } else if (database.getEmployeesTable().containsKey(id)) {
+                database.removeFromEmployeeTable(id);
             } else {
                 display("Can't delete,employee with id " + id + " doesn't exist");
             }
@@ -77,7 +70,7 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
         Map<Integer, Employee> employeeHashtable = new Hashtable<>();
 
-        for (Map.Entry<Integer, Employee> employee : Database.getAllEmployees().entrySet()) {
+        for (Map.Entry<Integer, Employee> employee : database.getEmployeesTable().entrySet()) {
             if (employee.getValue().getName().toLowerCase().startsWith(name.toLowerCase())) {
                 employeeHashtable.put(employee.getKey(), employee.getValue());
             }
@@ -91,7 +84,7 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
         Map<Integer, Employee> employeeHashMap = new HashMap<>();
 
-        for (Map.Entry<Integer, Employee> employee : Database.getAllEmployees().entrySet()) {
+        for (Map.Entry<Integer, Employee> employee : database.getEmployeesTable().entrySet()) {
             if (employee.getValue().getSalary() == salary) {
                 employeeHashMap.put(employee.getKey(), employee.getValue());
             }
@@ -107,7 +100,7 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
         Map<Integer, Employee> employeeHashtable = new Hashtable<>();
 
-        for (Map.Entry<Integer, Employee> employee : Database.getAllEmployees().entrySet()) {
+        for (Map.Entry<Integer, Employee> employee : database.getEmployeesTable().entrySet()) {
             if (employee.getValue().getSalary() < salary) {
                 employeeHashtable.put(employee.getKey(), employee.getValue());
             }
@@ -121,7 +114,7 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
         Map<Integer, Employee> employeeHashtable = new Hashtable<>();
 
-        for (Map.Entry<Integer, Employee> employee : Database.getAllEmployees().entrySet()) {
+        for (Map.Entry<Integer, Employee> employee : database.getEmployeesTable().entrySet()) {
             if (employee.getValue().getSalary() > salary) {
                 employeeHashtable.put(employee.getKey(), employee.getValue());
             }
@@ -131,18 +124,12 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
 
     @Override
     public void close() throws IOException {
-        Database.getInitialisedDatabase().close();
+        database.close();
     }
 
     @Override
     public List<Employee> selectAll() {
-        List<Employee> employees = new ArrayList<>();
-       /* Map <Integer,Employee> employeeMap=getDatabase().getEmployeesTable();
-        List <Integer>ids=new ArrayList<>(employeeMap.keySet());
-        Collections.sort(ids, Comparator.comparingInt(a -> employeeMap.get(a).getId()));*/
-
-        employees.addAll(getDatabase().getEmployeesTable().values());
-        return employees;
+        return new ArrayList<>(database.getEmployeesTable().values());
     }
 
 }

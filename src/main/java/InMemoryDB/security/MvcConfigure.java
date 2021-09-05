@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages={"InMemoryDB.controller"})
+@ComponentScan(basePackages = {"InMemoryDB.controller"})
 public class MvcConfigure implements WebMvcConfigurer {
 
     public MvcConfigure() {
@@ -26,12 +26,14 @@ public class MvcConfigure implements WebMvcConfigurer {
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/adminView");
-        registry.addViewController("/loginView");
-        registry.addViewController("/employee");
+        registry.addViewController("/LoginView");
+        registry.addViewController("/employeeView");
+        registry.addViewController("/departmentView");
         registry.addViewController("/ListDepartmentsView");
         registry.addViewController("/ListView");
     }
- @Bean
+
+    @Bean
     public ViewResolver viewResolver() {
         final InternalResourceViewResolver bean = new InternalResourceViewResolver();
 
@@ -45,8 +47,8 @@ public class MvcConfigure implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-       // registry.addInterceptor(new LoggerInterceptor());
-        // registry.addInterceptor(new UserInterceptor());
+        // registry.addInterceptor(new LoggerInterceptor());
+        registry.addInterceptor(new UserInterceptor());
         //   registry.addInterceptor(new SessionTimerInterceptor());
     }
 }

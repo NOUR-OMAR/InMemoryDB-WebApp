@@ -11,18 +11,18 @@ import java.util.Map;
 public interface DepartmentsTableDAO {
     void createDepartment(Department department) throws IOException;
 
-    void updateDepartment(Department department);
+    void updateDepartment(Department department) throws IOException;
 
-    void deleteDepartment(int id);
+    void deleteDepartment(int id) throws IOException;
 
-    Department readDepartment(int id);
+    Department readDepartment(int id) throws IOException;
 
-    Map<Integer, Department> filterByName(String name);
+    Map<Integer, Department> filterByName(String name) throws IOException;
 
-    Map<Integer, Department> filterByLocation(String location);
+    Map<Integer, Department> filterByLocation(String location) throws IOException;
 
     void close() throws IOException;
 
-    List<Department> selectAll();
+    List<Department> selectAll() throws IOException;
 
 }

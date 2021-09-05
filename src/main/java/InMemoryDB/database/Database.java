@@ -21,18 +21,20 @@ import static InMemoryDB.utils.Constant.Display.display;
 @Data
 @Service
 public class Database {
+    @Setter
+    private static Database database;
+    CSVFile csvFile = new CSVFile();
 
-    /* @Getter
-     private static final Map<Integer, Object> tableLRUCache = LRUHashMap.newInstance(CACHE_MAX_SIZE);*/
     @Getter
     private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
+
     @Getter
     private static final LRUCache<String, User> usersLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
-
 
     @Setter
     @Getter
     private static ConcurrentHashMap<Integer, Employee> allEmployees;
+
     @Setter
     @Getter
     private static ConcurrentHashMap<Integer, Department> allDepartments;
@@ -41,19 +43,17 @@ public class Database {
     @Getter
     private static ConcurrentHashMap<String, User> allUsers;
 
-    @Setter
-    private static Database database;
-    CSVFile csvFile = new CSVFile();
+
 
     Database() throws IOException {
         setAllDepartments(new ConcurrentHashMap<>());
-
         setAllEmployees(new ConcurrentHashMap<>());
         setAllUsers(new ConcurrentHashMap<>());
         csvFile.initialize();
         writeInLogger();
         displayDepartmentsTable();
         displayEmployeeTable();
+        displayUsers();
         displayCache();
     }
 
@@ -79,6 +79,12 @@ public class Database {
     public ConcurrentHashMap<Integer, Department> getDepartmentsTable() {
 
         return getAllDepartments();
+    }
+    public void displayUsers() {
+        display("\n--- Users Table content: ---");
+        getAllUsers().forEach((k, v) -> display(v.toString()));
+        display("----------------------------------");
+        display("File has " + CSVFile.getUsersCSVRowCount() + " rows. Loaded " + getAllUsers().size() + " data records.");
     }
 
     public void displayEmployeeTable() {
@@ -110,9 +116,8 @@ public class Database {
             return (Employee) getTableLRUCache().get(id);
         } else if (getAllEmployees().containsKey(id)) {
             display("Cache miss");
-            // setEmployeeLRUCache(id, getAllEmployees().get(id));
             setTableLRUCache(id, getAllEmployees().get(id));
-            return Database.getAllEmployees().get(id);
+            return getAllEmployees().get(id);
 
         } else {
             display("Not found");
@@ -127,7 +132,7 @@ public class Database {
         } else if (getAllDepartments().containsKey(id)) {
             display("Cache miss");
             setTableLRUCache(id, getAllDepartments().get(id));
-            return Database.getAllDepartments().get(id);
+            return getAllDepartments().get(id);
 
         } else {
             display("Not found");
@@ -144,7 +149,7 @@ public class Database {
             }
 
             getAllEmployees().put(employee.getId(), employee);
-            getTableLRUCache().put(employee.getId(), employee);
+            setTableLRUCache(employee.getId(), employee);
 
         }
         writeInLogger();
@@ -157,7 +162,7 @@ public class Database {
                 getAllDepartments().put(integer, (Department) Objects.requireNonNull(getTableLRUCache().get(integer)));
             }
             getAllDepartments().put(department.getId(), department);
-            getTableLRUCache().put(department.getId(), department);
+            setTableLRUCache(department.getId(), department);
         }
 
         writeInLogger();
@@ -175,7 +180,6 @@ public class Database {
         }
 
         writeInLogger();
-        closeUsersTB();
     }
 
     public void removeFromTableCache(int id) {
