@@ -52,11 +52,7 @@
                             		<div class="card">
                             			<div class="card-body">
 
-                <div th:if="${param.success}">
-                    <div class="alert alert-info">You've successfully registered !</div>
-                </div>
-
-                            					<form action="/register" >
+                            					<form action="${pageContext.request.contextPath}/register" method='POST' >
 
                             				<caption>
                             					<h2>

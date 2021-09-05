@@ -12,7 +12,7 @@
 </head>
 <body>
 
-	<security:authorize access="hasRole('ROLE_USER')">
+	<security:authorize access="hasAuthority('EMPLOYEE')">
 
 	<header>
 		<nav class="navbar navbar-expand-md navbar-dark"

@@ -6,15 +6,12 @@ import InMemoryDB.database.users_table.UserTableDAO;
 import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 import InMemoryDB.model.User;
-import InMemoryDB.security.UserRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -32,22 +29,18 @@ public class EmployeeOperationController {
     DepartmentsTableDAO departmentTableDAO;
     @Autowired
     UserTableDAO userTableDAO;
-    @Autowired
-    UserRoles userRoles;
-
-
-    @Resource(name = "authenticationManager")
-    private AuthenticationManager authManager;
-
 
     @GetMapping(value = "/login")
-    public ModelAndView showLoginPage(String error, String logout) {
+    public ModelAndView showLoginPage(String error, String logout, String success) {
         ModelAndView modelAndView = new ModelAndView();
         if (error != null)
             modelAndView.addObject("errorMessage", "Bad Credentials!");
 
         if (logout != null)
             modelAndView.addObject("message", "You have been logged out successfully.");
+        if (success != null)
+            modelAndView.addObject("message", "registered successfully ,please login again");
+
 
         modelAndView.setViewName("LoginView");
         return modelAndView;
@@ -57,30 +50,13 @@ public class EmployeeOperationController {
     public ModelAndView login(
             @RequestParam("username") final String username,
             @RequestParam("password") final String password) {
+
         ModelAndView modelAndView = new ModelAndView();
 
 
         modelAndView.addObject("username", username);
         modelAndView.addObject("password", password);
         modelAndView.setViewName("/login");
-
-       /* System.out.println("nn");
-
-        UsernamePasswordAuthenticationToken authReq =
-                new UsernamePasswordAuthenticationToken(username, password);
-
-        HttpSession session = request.getSession(true);
-        boolean error = (boolean) session.getAttribute("error");
-
-        Authentication auth = authManager.authenticate(authReq);
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        securityContext.setAuthentication(auth);
-        System.out.println(auth);
-        session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
-        if (!securityContext.getAuthentication().isAuthenticated()) {
-            System.out.println("nn");
-            session.setAttribute("errorMessage", "bad credential");
-        }*/
 
         return modelAndView;
     }
@@ -104,31 +80,19 @@ public class EmployeeOperationController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ModelAndView register(@RequestParam("id") final int id,
-                           @RequestParam("username") final String username,
-                           @RequestParam("password") final String password
-                          ) throws IOException {
+                                 @RequestParam("username") final String username,
+                                 @RequestParam("password") final String password
+    ) throws IOException {
 
         ModelAndView modelAndView = new ModelAndView();
         User user = new User(id, username, password, "EMPLOYEE");
         userTableDAO.createUser(user);
-        userRoles.roles.put("EMPLOYEE", new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), userRoles.getAuthority("ROLE_USER")));
+        userTableDAO.close();
         System.out.println(userTableDAO.selectAll());
-        modelAndView.setViewName("redirect:/register");
+        modelAndView.setViewName("redirect:/login?success");
         return modelAndView;
 
     }
-    @RequestMapping(value = "/register", method = RequestMethod.GET)
-    public ModelAndView getRegister( ) throws IOException {
-        ModelAndView modelAndView = new ModelAndView();
-
-
-        modelAndView.addObject("message", "registered successfully ,please login again");
-        modelAndView.setViewName("redirect:/login");
-        return modelAndView;
-
-    }
-
-
 
 
     @RequestMapping(value = "/addEmployee", method = RequestMethod.GET)//employee employee object
@@ -177,10 +141,11 @@ public class EmployeeOperationController {
 
 
     @RequestMapping(value = "/deleteEmployee-{id}", method = RequestMethod.GET)
-    public String deleteEmployee(@PathVariable int id) throws IOException {
+    public ModelAndView deleteEmployee(@PathVariable int id) throws IOException {
+        ModelAndView modelAndView = new ModelAndView("redirect:/adminView");
         employeeTableDAO.deleteEmployee(id);
 
-        return "redirect:/adminView";
+        return modelAndView;
     }
 
     @RequestMapping(value = "/filterSalaryEQ", method = RequestMethod.GET)
@@ -210,9 +175,11 @@ public class EmployeeOperationController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String close() throws IOException {
+    public ModelAndView close() throws IOException {
+        ModelAndView modelAndView = new ModelAndView("logout");
+
         employeeTableDAO.close();
-        return "logout";
+        return modelAndView;
     }
 
     @RequestMapping(value = "/listNames", method = RequestMethod.GET)
@@ -225,13 +192,15 @@ public class EmployeeOperationController {
     }
 
     @GetMapping(value = "/employeeView")
-    public String showEmployeeInfo(final HttpServletRequest request, ModelMap modelMap) throws IOException {
+    public ModelAndView showEmployeeInfo(final HttpServletRequest request) throws IOException {
         HttpSession session = request.getSession(true);
         String username = String.valueOf(session.getAttribute("username"));
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("employeeView");
         Employee employee = employeeTableDAO.readEmployee(userTableDAO.readUser(username).getId());
-        modelMap.addAttribute("employee", employee);
+        modelAndView.addObject("employee", employee);
 
-        return "employeeView";
+        return modelAndView;
     }
 
 
