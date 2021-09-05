@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class DepartmentOperationController {
     DepartmentsTableDAO departmentTableDAO;
 
     @RequestMapping(value = "/departmentView")
-    public String showDepartmentsView(ModelMap modelMap) {
+    public String showDepartmentsView(ModelMap modelMap) throws IOException {
 
         List<Department> departments = departmentTableDAO.selectAll();
         modelMap.addAttribute("departments", departments);
@@ -30,29 +31,27 @@ public class DepartmentOperationController {
 
 
     }
+
     @RequestMapping(value = "/addDepartment", method = RequestMethod.GET)
-    public String addDepartment(@RequestParam int id, @RequestParam String name, @RequestParam String location, ModelMap modelMap) throws IOException {
+    public ModelAndView addDepartment(Department department) throws IOException {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("department",department);
+        modelAndView.setViewName( "redirect:/departmentView");
 
-        modelMap.addAttribute("id", id);
-        modelMap.addAttribute("name", name);
-        modelMap.addAttribute("location", location);
-        Department department = new Department(id, name, location);
         departmentTableDAO.createDepartment(department);
-
-        return "redirect:/departmentView";
+        return modelAndView;
 
     }
 
     @RequestMapping(value = "/updateDepartment", method = RequestMethod.GET)
-    public String updateDepartment(@RequestParam int id, @RequestParam String name, @RequestParam String location, ModelMap modelMap) throws IOException {
+    public ModelAndView updateDepartment(Department department) throws IOException {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("department",department);
+        modelAndView.setViewName( "redirect:/departmentView");
 
-        modelMap.addAttribute("id", id);
-        modelMap.addAttribute("name", name);
-        modelMap.addAttribute("location", location);
-        Department department = new Department(id, name, location);
         departmentTableDAO.updateDepartment(department);
 
-        return "redirect:/departmentView";
+        return modelAndView;
     }
 
 
@@ -72,6 +71,7 @@ public class DepartmentOperationController {
 
         return "ListDepartmentsView";
     }
+
     @RequestMapping(value = "/filterByLocation", method = RequestMethod.GET)
     public String filterDepartmentsByLocation(@RequestParam String location, ModelMap modelMap) throws IOException {
 
@@ -81,7 +81,6 @@ public class DepartmentOperationController {
 
         return "ListDepartmentsView";
     }
-
 
 
     @RequestMapping(value = "/back", method = RequestMethod.GET)

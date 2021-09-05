@@ -24,7 +24,7 @@
 <div class="container col-md-5" >
 		<div class="card">
 			<div class="card-body">
-			  <form action="${pageContext.request.contextPath}/login" method='POST'>
+			  <form name='f' action="${pageContext.request.contextPath}/login" method='POST' onsubmit="return validate();">
 			      <p><font color="red">${errorMessage}</font></p>
 			        <p><font color="green">${message}</font></p>
 
@@ -51,6 +51,10 @@
         				<div class="container col-md-5" id="showRegistrationForm" style="display: none;" >
                             		<div class="card">
                             			<div class="card-body">
+
+                <div th:if="${param.success}">
+                    <div class="alert alert-info">You've successfully registered !</div>
+                </div>
 
                             					<form action="/register" >
 
@@ -92,4 +96,22 @@ function toggle(layer) {
     var d = document.getElementById(layer);
     d.style.display = (d.style.display == 'none') ? '' : 'none';
     }
+
+function validate() {
+    if (document.f.username.value == "" && document.f.password.value == "") {
+        alert("Username and password are required");
+        document.f.username.focus();
+        return false;
+    }
+    if (document.f.username.value == "") {
+        alert("Username is required");
+        document.f.username.focus();
+        return false;
+    }
+    if (document.f.password.value == "") {
+	alert("Password is required");
+	document.f.password.focus();
+        return false;
+    }
+}
 </script>

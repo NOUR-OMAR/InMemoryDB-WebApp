@@ -2,6 +2,7 @@ package InMemoryDB.model;
 
 import lombok.Data;
 
+
 @Data
 public class Admin extends User {
 

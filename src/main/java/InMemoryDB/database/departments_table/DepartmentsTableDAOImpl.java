@@ -1,9 +1,10 @@
 package InMemoryDB.database.departments_table;
 
-import InMemoryDB.model.Department;
 import InMemoryDB.database.Database;
+import InMemoryDB.model.Department;
 import lombok.Data;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,25 +16,17 @@ import static InMemoryDB.utils.Constant.Display.display;
 
 
 @Data
-@Service
+@Component
 public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
-
+    @Autowired
     private final Database database;
 
-
-
-    private DepartmentsTableDAOImpl() throws IOException {
-        this.database = Database.getInitialisedDatabase();
-    }
-
-
-
     @Override
-    public void createDepartment(Department department) {
-        if (getDatabase().getDepartment(department.getId()) == null) {
+    public void createDepartment(Department department) throws IOException {
+        if (database.getDepartment(department.getId()) == null) {
 
-            getDatabase().putInDepartmentsTable(department);
+            database.putInDepartmentsTable(department);
 
         } else {
             display("Can't create, department with id " + department.getId() + " already existed.");
@@ -41,15 +34,15 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
     }
 
     @Override
-    public Department readDepartment(int id) {
-        return getDatabase().getDepartment(id);
+    public Department readDepartment(int id) throws IOException {
+        return database.getDepartment(id);
     }
 
     @Override
-    public void updateDepartment(Department department) {
-        if (getDatabase().getDepartment(department.getId()) != null) {
+    public void updateDepartment(Department department) throws IOException {
+        if (database.getDepartment(department.getId()) != null) {
 
-            getDatabase().putInDepartmentsTable(department);
+            database.putInDepartmentsTable(department);
 
         } else {
             display("Can't create, department with id " + department.getId() + " already existed.");
@@ -58,12 +51,12 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
 
     @Override //
-    public void deleteDepartment(int id) {
-        synchronized (getDatabase()) {
-            if (Database.getTableLRUCache().snapshot().containsKey(id)) {
-                getDatabase().removeFromTableCache(id);
+    public void deleteDepartment(int id) throws IOException {
+        synchronized (database) {
+            if (database.getTableLRUCache().snapshot().containsKey(id)) {
+                database.removeFromTableCache(id);
             } else if (Database.getAllDepartments().containsKey(id)) {
-                getDatabase().removeFromDepartmentsTable(id);
+                database.removeFromDepartmentsTable(id);
             } else {
                 display("Can't delete,department with id " + id + " doesn't exist");
             }
@@ -73,11 +66,11 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
 
     @Override
-    public Map<Integer, Department> filterByName(String name) {
+    public Map<Integer, Department> filterByName(String name) throws IOException {
 
         Map<Integer, Department> departmentHashtable = new Hashtable<>();
 
-        for (Map.Entry<Integer, Department> department : Database.getAllDepartments().entrySet()) {
+        for (Map.Entry<Integer, Department> department : database.getDepartmentsTable().entrySet()) {
             if (department.getValue().getName().toLowerCase().startsWith(name.toLowerCase())) {
                 departmentHashtable.put(department.getKey(), department.getValue());
             }
@@ -87,11 +80,11 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
     }
 
     @Override
-    public Map<Integer, Department> filterByLocation(String location) {
+    public Map<Integer, Department> filterByLocation(String location) throws IOException {
 
         Map<Integer, Department> departmentHashtable = new Hashtable<>();
 
-        for (Map.Entry<Integer, Department> department : Database.getAllDepartments().entrySet()) {
+        for (Map.Entry<Integer, Department> department : database.getDepartmentsTable().entrySet()) {
             if (department.getValue().getLocation().toLowerCase().startsWith(location.toLowerCase())) {
                 departmentHashtable.put(department.getKey(), department.getValue());
             }
@@ -103,16 +96,13 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
     @Override
     public void close() throws IOException {
-        Database.getInitialisedDatabase().close();
+        database.close();
     }
 
     @Override
-    public List<Department> selectAll() {
+    public List<Department> selectAll() throws IOException {
 
-        List<Department> departments = new ArrayList<>();
-        for (Department department : getDatabase().getDepartmentsTable().values())
-            departments.add(department);
-        return departments;
+        return new ArrayList<>(database.getDepartmentsTable().values());
     }
 
 }

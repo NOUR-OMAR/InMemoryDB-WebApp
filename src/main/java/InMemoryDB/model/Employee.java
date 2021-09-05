@@ -4,8 +4,6 @@ package InMemoryDB.model;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.HashMap;
-
 
 @ToString
 @Data
@@ -14,9 +12,6 @@ public class Employee extends User {
     private String name;
     private int salary;
     private Department department;
-    public static HashMap<Employee, Department> employeesDepartments = new HashMap<>();
-    public static HashMap<User,Employee> userEmployeeHashMap = new HashMap<>();
-
     public Employee(int id, String name, int salary) {
         this.id=id;
         this.salary=salary;

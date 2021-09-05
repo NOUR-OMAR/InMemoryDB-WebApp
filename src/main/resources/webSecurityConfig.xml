@@ -14,12 +14,12 @@
 
         <csrf disabled="true"/>
 
-        <form-login login-page='/login.jsp' authentication-success-handler-ref="myAuthenticationSuccessHandler"/>
+        <form-login login-page='/login.jsp' authentication-success-handler-ref="AuthenticationSuccessHandler"/>
 
 
     </http>
 
-    <beans:bean id="myAuthenticationSuccessHandler" class="com.baeldung.security.MySimpleUrlAuthenticationSuccessHandler"/>
+    <beans:bean id="AuthenticationSuccessHandler" class="UrlAuthenticationSuccessHandler"/>
 
     <authentication-manager id="authenticationManager">
         <authentication-provider>

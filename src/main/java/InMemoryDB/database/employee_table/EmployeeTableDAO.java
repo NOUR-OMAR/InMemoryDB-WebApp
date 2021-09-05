@@ -18,7 +18,7 @@ public interface EmployeeTableDAO {
     void updateEmployee(Employee employee);
 
     void deleteEmployee(int id);
-//TODO make filter table
+
     Employee readEmployee(int id);
 
     Map<Integer, Employee> filterByName(String name);
