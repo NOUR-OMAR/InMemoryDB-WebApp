@@ -15,8 +15,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     UserTableDAO userTableDAO;
-    @Autowired
-    UserRoles userRoles;
+    // @Autowired
+    // UserRoles userRoles;
 
  /*@PostConstruct
     public void init() throws IOException {

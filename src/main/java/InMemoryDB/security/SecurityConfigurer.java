@@ -27,21 +27,10 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-      /*  auth.inMemoryAuthentication()
-                .withUser("admin123")
-                .password(passwordEncoder().encode(userTableDAO.readUser("admin123").getPassword())).roles("ADMIN");
-        for (User user : userTableDAO.selectAll()) {
-            if (user.getRole().equals("EMPLOYEE"))
-                display(user.getUsername());
-            auth.inMemoryAuthentication()
-                    .withUser(user.getUsername())
-                    .password(passwordEncoder().encode(user.getPassword()))
-                    .roles("USER");
-        }*/
+    protected void configure(AuthenticationManagerBuilder auth) {
 
         auth.authenticationProvider(authenticationProvider());
-        System.out.println("noor ");
+
 
     }
 
