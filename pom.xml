@@ -16,6 +16,8 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 
+			<start-class>mypackage.InMemoryDbApplication</start-class>
+
 	</properties>
 	<dependencies>
 		<dependency>
