@@ -2,18 +2,12 @@ package InMemoryDB.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
 @Data
 public class User {
 
 
     private int id;
-    @Size(min = 3, max = 50)
     private String username;
-    @NotBlank
-    @Size(min = 8, max = 15)
     private String password;
 
     private String role;
