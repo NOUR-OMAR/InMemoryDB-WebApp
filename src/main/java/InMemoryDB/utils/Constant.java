@@ -2,15 +2,17 @@ package InMemoryDB.utils;
 
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
-import java.io.File;
-
-@ConfigurationProperties(prefix = "dir.local")
-@Configuration
+//@ConfigurationProperties(prefix = "dir.local")
+//@Configuration
+@Component
 public class Constant {
+    @Autowired
+    static
+    Environment environment;
 
    /* static File employeesCSVFile = new File("employees.csv");
     public static final String EMPLOYEES_CSV_PATH = employeesCSVFile.getAbsolutePath();
@@ -30,7 +32,7 @@ public class Constant {
    /* @Autowired
     Environment environment;*/
 
-    @Value("${dir.local.employeesCSV}")
+   /* @Value("${dir.local.employeesCSV}")
     public static final String EMPLOYEES_CSV_PATH = "employees.csv";
     //static File departmentsCSVFile = new File("departments.csv");
     @Value("${dir.local.departmentsCSV}")
@@ -45,10 +47,17 @@ public class Constant {
     public static final String DEPARTMENTS_LOGGER_FILE = "departments_logger.txt";
     @Value("${dir.local.usersLogger}")
 
-    public static final String USERS_LOGGER_FILE = "users_logger.txt";
-    static File employeesLoggerFile = new File("employees_logger.txt");
-    static File departmentsLoggerFile = new File("departments_logger.txt");
-    static File usersLoggerFile = new File("users_logger.txt");
+    public static final String USERS_LOGGER_FILE = "users_logger.txt";*/
+
+    static String folder = environment.getProperty("dir.local");
+
+    public static final String EMPLOYEES_CSV_PATH = folder + "\\employees.csv";
+    public static final String DEPARTMENTS_CSV_PATH = folder + "\\departments.csv";
+    public static final String USERS_FILE_PATH = folder + "\\Users.csv";
+    public static final String EMPLOYEES_LOGGER_FILE = folder + "\\employees_logger.txt";
+    public static final String DEPARTMENTS_LOGGER_FILE = folder + "\\departments_logger.txt";
+    public static final String USERS_LOGGER_FILE = folder + "\\users_logger.txt";
+
 
     public static final int CACHE_MAX_SIZE = 1000;
     public static final int EMPLOYEES_RECORD_LENGTH = 4;
