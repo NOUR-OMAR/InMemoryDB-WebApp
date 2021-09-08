@@ -15,8 +15,9 @@
 	<name>InMemoryDB</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
+		<java.version>1.8</java.version>
 
-			<start-class>mypackage.InMemoryDbApplication</start-class>
+		<start-class>mypackage.InMemoryDbApplication</start-class>
 
 	</properties>
 	<dependencies>
