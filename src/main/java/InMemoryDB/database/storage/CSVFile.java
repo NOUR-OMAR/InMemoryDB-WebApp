@@ -1,8 +1,5 @@
 package InMemoryDB.database.storage;
 
-import InMemoryDB.model.Department;
-import InMemoryDB.model.Employee;
-import InMemoryDB.model.User;
 import InMemoryDB.database.Database;
 import InMemoryDB.database.record.DepartmentRecord;
 import InMemoryDB.database.record.EmployeeRecord;
@@ -10,10 +7,14 @@ import InMemoryDB.database.record.RecordHandler;
 import InMemoryDB.database.record.UsersRecord;
 import InMemoryDB.database.storage.log.TransactionLog;
 import InMemoryDB.database.storage.log.TransactionLogger;
+import InMemoryDB.model.Department;
+import InMemoryDB.model.Employee;
+import InMemoryDB.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.*;
+import java.nio.file.Paths;
 
 import static InMemoryDB.utils.Constant.*;
 import static InMemoryDB.utils.Constant.Display.display;
@@ -54,7 +55,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     private void loadData(String filePath) throws IOException {
 
         if (filePath.equalsIgnoreCase(EMPLOYEES_CSV_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(String.valueOf(Paths.get(filePath))))) {
 
                 readEmployeeBuffer(bufferedReader);
             } catch (FileNotFoundException fileNotFoundException) {
@@ -67,7 +68,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
                 ioException.printStackTrace();
             }
         } else if (filePath.equalsIgnoreCase(DEPARTMENTS_CSV_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(String.valueOf(Paths.get(filePath))))) {
 
                 readDepartmentsBuffer(bufferedReader);
             } catch (FileNotFoundException fileNotFoundException) {
@@ -80,7 +81,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
                 ioException.printStackTrace();
             }
         } else if (filePath.equalsIgnoreCase(USERS_FILE_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(String.valueOf(Paths.get(filePath))))) {
                 readUsersBuffer(bufferedReader);
 
             } catch (FileNotFoundException fileNotFoundException) {
