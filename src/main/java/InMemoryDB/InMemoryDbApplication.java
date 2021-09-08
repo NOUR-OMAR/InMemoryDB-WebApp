@@ -6,7 +6,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-@SpringBootApplication(scanBasePackages = {"InMemoryDB"})
+//@SpringBootApplication(scanBasePackages = {"InMemoryDB"})
+@SpringBootApplication
 @EnableWebSecurity
 public class InMemoryDbApplication extends SpringBootServletInitializer {
 
