@@ -8,7 +8,9 @@ import java.io.File;
 public final class Constant {
 
     static File employeesCSVFile = new File("employees.csv");
-    public static final String EMPLOYEES_CSV_PATH = employeesCSVFile.getAbsolutePath();
+    public static final String EMPLOYEES_CSV_PATH = employeesCSVFile.toPath().toString();
+
+    //.getAbsolutePath();
     static File departmentsCSVFile = new File("departments.csv");
     public static final String DEPARTMENTS_CSV_PATH = departmentsCSVFile.getAbsolutePath();
     static File usersCSVFile = new File("Users.csv");
@@ -39,3 +41,5 @@ public final class Constant {
     }
 
 }
+
+
