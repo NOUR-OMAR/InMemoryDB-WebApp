@@ -8,7 +8,6 @@ import static InMemoryDB.utils.Constant.Display.display;
 public class DepartmentRecord implements RecordHandler {
     private static Department department;
 
-
     private static void tryParsingRecord(String record) {
         try {
             setDepartmentRecord(record, department);
