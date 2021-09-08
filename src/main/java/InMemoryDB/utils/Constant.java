@@ -34,7 +34,7 @@ public class Constant {
     public static final String EMPLOYEES_CSV_PATH = "employees.csv";
     //static File departmentsCSVFile = new File("departments.csv");
     @Value("${dir.local.departmentsCSV}")
-    public static final String DEPARTMENTS_CSV_PATH = "src/departments.csv";
+    public static final String DEPARTMENTS_CSV_PATH = "departments.csv";
     //static File usersCSVFile = new File("Users.csv");
     @Value("${dir.local.UsersCSV}")
     public static final String USERS_FILE_PATH = "Users.csv";
