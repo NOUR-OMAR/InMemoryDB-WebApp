@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.*;
-import java.nio.file.Paths;
 
 import static InMemoryDB.utils.Constant.*;
 import static InMemoryDB.utils.Constant.Display.display;
@@ -55,7 +54,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     private void loadData(String filePath) throws IOException {
 
         if (filePath.equalsIgnoreCase(EMPLOYEES_CSV_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(String.valueOf(Paths.get(filePath))))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
 
                 readEmployeeBuffer(bufferedReader);
             } catch (FileNotFoundException fileNotFoundException) {
@@ -68,7 +67,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
                 ioException.printStackTrace();
             }
         } else if (filePath.equalsIgnoreCase(DEPARTMENTS_CSV_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(String.valueOf(Paths.get(filePath))))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
 
                 readDepartmentsBuffer(bufferedReader);
             } catch (FileNotFoundException fileNotFoundException) {
@@ -81,7 +80,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
                 ioException.printStackTrace();
             }
         } else if (filePath.equalsIgnoreCase(USERS_FILE_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(String.valueOf(Paths.get(filePath))))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
                 readUsersBuffer(bufferedReader);
 
             } catch (FileNotFoundException fileNotFoundException) {

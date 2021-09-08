@@ -2,6 +2,7 @@ package InMemoryDB.utils;
 
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 
@@ -22,13 +23,22 @@ public final class Constant {
 
 
     //static File employeesCSVFile = new File("employees.csv");
+
+    @Value("${dir.local.employeesCSV}")
     public static final String EMPLOYEES_CSV_PATH = "employees.csv";
     //static File departmentsCSVFile = new File("departments.csv");
+    @Value("${dir.local.departmentsCSV}")
     public static final String DEPARTMENTS_CSV_PATH = "departments.csv";
     //static File usersCSVFile = new File("Users.csv");
+    @Value("${dir.local.UsersCSV}")
     public static final String USERS_FILE_PATH = "Users.csv";
+    @Value("${dir.local.employeesLogger}")
     public static final String EMPLOYEES_LOGGER_FILE = "employees_logger.txt";
+    @Value("${dir.local.departmentsLogger}")
+
     public static final String DEPARTMENTS_LOGGER_FILE = "departments_logger.txt";
+    @Value("${dir.local.usersLogger}")
+
     public static final String USERS_LOGGER_FILE = "users_logger.txt";
     static File employeesLoggerFile = new File("employees_logger.txt");
     static File departmentsLoggerFile = new File("departments_logger.txt");

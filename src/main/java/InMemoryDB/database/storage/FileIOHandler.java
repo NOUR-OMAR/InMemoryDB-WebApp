@@ -7,7 +7,6 @@ import InMemoryDB.model.User;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 
@@ -66,7 +65,7 @@ public class FileIOHandler {
     }
 
     public void tryWritingToFile(StringBuilder stringBuilder, String filePath) {
-        try (FileWriter fileWriter = new FileWriter(String.valueOf(Paths.get(filePath)), false)) {
+        try (FileWriter fileWriter = new FileWriter(filePath, false)) {
             fileWriter.write(stringBuilder.toString());
             fileWriter.flush();
             fileWriter.close();
