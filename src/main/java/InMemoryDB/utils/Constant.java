@@ -10,7 +10,7 @@ import java.io.File;
 
 @ConfigurationProperties(prefix = "dir.local")
 @Configuration
-public final class Constant {
+public class Constant {
 
    /* static File employeesCSVFile = new File("employees.csv");
     public static final String EMPLOYEES_CSV_PATH = employeesCSVFile.getAbsolutePath();
@@ -54,12 +54,8 @@ public final class Constant {
     public static final int USERS_RECORD_LENGTH = 4;
 
 
-
-
-
-
     @Data
-    public final static class Display {
+    public static class Display {
         public static void display(String message) {
             System.out.println(message);
         }
