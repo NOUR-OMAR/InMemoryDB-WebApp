@@ -190,6 +190,60 @@ Arrays differ from generic types in two important ways. First, arrays are covari
     }
 ```
  
+ ####  Methods :
+ 1. Item 51: Design method signatures carefully :
+    1- Choose method names carefully : names should always obey the standard naming conventions 
+    2- Don’t go overboard in providing convenience methods : Every method should “pull its weight.” Too many methods make a class difficult to learn, use, document, test, and maintain. 
+    3- Avoid long parameter lists. Aim for four parameters or fewer.
+ Some of the rules are discussed in clean code section in details.
+ 
+ 
+ #### General prgramming :
+ 
+ 1. Item 58: Prefer for-each loops to traditional for loops :
+   a. Definition :  The for-each loop (officially known as the “enhanced for statement”) solves all of these problems. It gets rid of the clutter and the opportunity for error by hiding the iterator or index variable. The resulting idiom applies equally to collections and arrays, easing the process of switching the implementation type of a container from one to the other.
+   b. Implementation : I used for-each when needed in my code , an example is shown below : 
+ 
+```Java
+  for (Map.Entry<Integer, Employee> employee : database.getEmployeesTable().entrySet()) {
+            if (employee.getValue().getSalary() < salary) {
+                employeeHashtable.put(employee.getKey(), employee.getValue());
+            }
+        }
+```                                                       
+2. Item 59: Know and use the libraries : 
+  a. Definition: By using a standard library, you take advantage of the knowledge of the experts who wrote it and the experience of those who used it before you.
+  b. Implemntation : I used libraries almost everywhere in my code .
+3. Item 64: Refer to objects by their interfaces
+   a. Definition:  If appropriate interface types exist, then parameters, return values, variables, and fields should all be declared using interface types. The only time you really need to refer to an object’s class is when you’re creating it with a constructor.
+   b. Implementation : for example :
+```Java
+  private static ConcurrentHashMap<Integer, Department> allDepartments;
+ ```
+ 
+ #### Exceptions : 
+1. Item 69: Use exceptions only for exceptional conditions :
+ a. Defintion : Exceptions are, as their name implies, to be used only for exceptional conditions; they should never be used for ordinary control flow. 
+ b. Implementation : I used I/O exceptions to handle reading and writing exceptions on files.
+ 
+ ```Java
+ public interface FileHandler {
+    void initialize() throws IOException;
+
+    void write(String fileName) throws IOException;
+}
+ ```
+2.  Item 75: Include failure-capture information in detail messages
+ a. Definition: To capture a failure, the detail message of an exception should contain the values of all parameters and fields that contributed to the exception. 
+ b. Implementation : I write specific messages for failure to be displayed on the console , but since it is a web app I need to update it to be displayed on the client side . for example :
+ 
+ ```Java
+display("Can't update, employee with id " + employee.getId() + " doesn't exist.");
+```
+                  
+                                         
+                                                         
+ 
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 # Authorization & Authentication:
