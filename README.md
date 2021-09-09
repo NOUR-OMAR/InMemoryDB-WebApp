@@ -79,7 +79,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 }
 ```
-In this class , the method  ```Java public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and put redirect it to NewUserDetails to make use from that are loaded and get the authorities of the users.
+In this class , the method  ```public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and put redirect it to NewUserDetails to make use from that are loaded and get the authorities of the users.
 
 
 ## Configure Spring Security Authentication & Authorization :
