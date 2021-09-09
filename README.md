@@ -1,5 +1,543 @@
 # InMemoryDB-WebApp
 
+# ***Introduction***
+## In-memory database
+An in-memory database (IMDB) is a computer system that stores and retrieves data records that reside in a computer’s main memory, e.g., random-access memory (RAM). With data in RAM, IMDBs have a speed advantage over traditional disk-based databases that incur access delays since storage media like hard disk drives and solid-state drives (SSD) have significantly slower access times than RAM. This means that IMDBs are useful for when fast reads and writes of data are crucial.
+
+## Project description:
+
+In this project I'm supposed to Convert the DB to be web-based , the database must handle CRUD (Create, Read (search) , Update, Delete) operations For an entity with a primary key (Student, Ticket, TODO item…etc). One or more records could be affected by any operation. The DB server should be multi-threaded, and gives access only to the authorized people. The In-memory DB size has a maximum number, so caching should be applied to give the maximum performance – the rest of the records are stored on HDD. In-memory DB supports persisting all the DB on HDD, in case DB is switched off. Efficient data structures (Non-blocking data structures) should be used to result in the best optimization for the In-memory DB speed and memory size used. the server side should be web services API or MVC using Servlets/JSP, and the client side should be a web application.
+
+## Requirements:
+
+1- Convert the DB to be web-based i.e. the server side should be web
+services API or MVC using Servlets/JSP, and the client side should be a
+web application.
+
+2- Implement proper security/ authorization for the DB access.
+
+3- Implement CI/CD in your project.
+
+4- In addition to the points defended in Project 1, extend your defense to include “Effective Java” points, and DevOps.
+
+5- Extend the DB design to include another entity (table), that has a relation with the first table. i.e. primary key/ foreign key. 
+
+------------------------------------------------------------------------------------
+
+# In-MemoryDB Implementation:
+
+## Database:
+
+We have 3 tables in the database :
+1- employees table with 4 columns : id(primary key), name, salary ,departmentId (foreign key)
+2- departments table with 2 columns: id(primary key), name, location.
+
+employees table and department tables are related to each other, they are often related by departmentId in employees table referencing the primary key id of the departments table .
+
+3-users table with 4 columns : username(primary key), id(foreign key),password,role.
+employees table and users tables are related to each other, they are often related by id in users table referencing the primary key id of the employees table .
+roles column in users table to define the role for each user to access the DB .
+
+
+I implemented the idea of in-memory Database using ConcurrentHashMap.
+
+```java
+ @Setter
+    @Getter
+    private static ConcurrentHashMap<Integer, Employee> allEmployees;
+
+    @Setter
+    @Getter
+    private static ConcurrentHashMap<Integer, Department> allDepartments;
+
+    @Setter
+    @Getter
+    private static ConcurrentHashMap<String, User> allUsers;
+    
+ ```
+I used ConcurrentHashMap for the implementation because:
+
+- ConcurrentHashMap class is thread-safe i.e. multiple threads can operate on a single object without any complications. It is a thread-safe without synchronizing the whole map.
+-	At a time any number of threads are applicable for a read operation without locking the ConcurrentHashMap object which is not there in HashMap.
+-	In ConcurrentHashMap, at a time any number of threads can perform retrieval operation but for updated in the object, the thread must lock the particular segment in which the thread wants to operate. This type of locking mechanism is known as Segment locking or bucket locking. Hence at a time, 16 update operations can be performed by threads.
+-	Inserting null objects is not possible in ConcurrentHashMap as a key or value.
+-	Reads can happen very fast while the write is done with a lock on segment level or bucket level.
+-	There is no locking at the object level.
+-	ConcurrentHashMap does not allow NULL values, so the key can not be null in ConcurrentHashMap which helps to implement the idea of primary key that must not be null.
+
+### Once the database is initialised the records which are saved in employees csv file departments csv file and users csv file, are all stored in allEmployees,allDepartments,allUsers ConcurrentHashMap which will present the idea of In-Memory DataBase.
+
+#### tables in disk:
+
+I saved the records in a csv file which represents the disk storge, The CSV stands for Comma-Separated Values. It is a simple file format which is used to store tabular data in simple text form, such as a spreadsheet or database. The files in the CSV format can be imported to and exported from programs (Microsoft Office and Excel) which store data in tables. The CSV file used a delimiter to identify and separate different data token in a file. The CSV file format is used when we move tabular data between programs that natively operate on incompatible formats. There are following ways to read CSV file in Java. The default separator of a CSV file is a comma (,) but I used semicolon, there is no reason for that.
+Employee table as saved in csv file , where the first column is the id which represents the primary key, the second column is the employee name and the third represents the salary.
+
+
+#### Synchronization 
+Synchronization in java is the capability to control the access of multiple threads to any shared resource.
+Java Synchronization is better option where we want to allow only one thread to access the shared resource. So only be executed by one thread at a time. 
+
+1) the synchronized keyword in Java provides locking, which ensures mutually exclusive access to the shared resource and prevents data race.
+
+2) synchronized keyword also prevents reordering of code statement by the compiler which can cause a subtle concurrent issue if we don't use synchronized or volatile keyword.
+
+3) synchronized keyword involves locking and unlocking.
+
+Because multithreading is used and the application can have many clients that can read/write to the database, synchronized keyword is used whenever there is an access to the database whether to initialize it or create records. [thread saftey in singlteon](#1-Singelton-design-pattern)
+All synchronized blocks synchronized on the same object can only have one thread executing inside them at a time. All other threads attempting to enter the synchronized block are blocked until the thread inside the synchronized block exits the block.
+for example:
+in adding and removing:
+
+```Java
+
+public void putInEmployeesTable(Employee employee) throws IOException {
+        synchronized (getTableLRUCache()) {
+
+
+            for (Integer integer : getTableLRUCache().snapshot().keySet()) {
+                getAllEmployees().put(integer, (Employee) Objects.requireNonNull(getTableLRUCache().get(integer)));
+            }
+
+            getAllEmployees().put(employee.getId(), employee);
+            setTableLRUCache(employee.getId(), employee);
+
+        }
+        writeInLogger();
+    }
+    
+    public void removeFromTableCache(int id) throws IOException {
+        synchronized (getTableLRUCache()) {
+            getTableLRUCache().remove(id);
+        }
+        writeInLogger();
+    }
+    
+```
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+# Clean Code
+>Even bad code can function. But if code isn't clean, it can bring a development organization to its knees.
+
+In this section I will discuss all the code smells that are mentioned in Robert Martin’s Clean Code book and how I tried to avoid them and satisfy clean code principles.
+## 1.	*COMMENTS*:
+
+•	Inappropriate comments: It is inappropriate for a comment to hold information better held in a different kind of system such as your source code control system, your issue tracking system, or any other record-keeping system. Comments should be reserved for technical notes about the code and design.
+
+•	Obsolete comment: A comment that has gotten old, irrelevant, and incorrect is obsolete. Comments get old quickly. It is best not to write a comment that will become obsolete. If you find an obsolete comment, it is best to update it or get rid of it as quickly as possible. Obsolete comments tend to migrate away from the code they once described. They become floating islands of irrelevance and misdirection in the code.
+
+•	Redundant Comment: A comment is redundant if it describes something that adequately describes itself.
+
+•	Poorly Written Comment: A comment worth writing is worth writing well. If you are going to write a comment, take the time to make sure it is the best comment you can write. Choose your words carefully. Use correct grammar and punctuation. Do not ramble. Do not state the obvious. Be brief.
+
+•	Commented-Out Code.
+These are the comment smell that Uncle bob listed, I tried to avoid writing comments, but when needed I made sure they are brief, well written, not redundant, related to the code, and describing code.
+>The Comments should say things that the code cannot say for itself.
+
+## 2.*ENVIRONMENT:*
+
+•	Build Requires more than one step. Building a project should be a single trivial operation. You should not have to check many little pieces out from source code control You should not have to search near and far for
+all the various little extra JARs, XML files, and other artifacts that the system requires.
+
+•	Tests Require more than one step. You should be able to run all the unit tests with just one command. In the best case you can run all the tests by clicking on one button in your IDE.
+
+How I avoid those smells: The project is a Maven Project, Maven is a popular open source build tool for enterprise Java projects, designed to take much of the hard work out of the build process. Maven uses a declarative approach, where the project structure and contents are described. This reduces the time needed to write and maintain build scripts. And helps to run all tests from the IDE in the test's directory.
+
+## 3.*FUNCTIONS:* _FUNCTIONS SHOULD DO ONE THING. THEY SHOULD DO IT WELL. THEY SHOULD DO IT ONLY_.
+
+•	Too many arguments: functions should have a small number of arguments. No argument is best, followed by one, two, and three. More than three is very questionable and should be avoided with prejudice.
+
+•	Output Arguments: Output arguments are counterintuitive. Readers expect arguments to be inputs, not outputs. If your function must change the state of something, have it change the state of the object it is called on.
+
+•	Flag Arguments: Boolean arguments loudly declare that the function does more than one thing. They are confusing and should be eliminated. 
+
+•	Dead Function: Methods that are never called should be discarded. Keeping dead code around is wasteful.
+
+  - How I avoid those smells: I tried to avoid them by making all the methods to take at most three arguments,
+      not using any output or flag arguments, and I made sure all the methods are used and there are no dead methods.
+      
+     - ***Some rules from clean code***:
+     
+        -	Function should be SMALL
+        
+                "The first rule of functions is that they should be small. "
+                  I tried to make the methods small as I could ,
+                  and if there is a common logic between two methods 
+                  I tried to extract it to a third method to avoid duplication and make the method smaller.
+         - Blocks and Indenting
+         
+                 "This implies that the blocks within if statements, else statements, while statements, and so on should be one line long. Probably that line should be a function call. Not only does this keep the enclosing function small, but it also adds documentary value because the function called within the block can have a nicely descriptive name."
+          -	SWITCH STATEMENTS
+          
+                 'It’s hard to make a small switch statement.
+                 Even a switch statement with only two cases is larger than I’d like a single block or function to be. It’s also hard to make a switch statement that does one thing.
+                 By their nature, switch statements always do N things.
+                 Unfortunately, we can’t always avoid switch statements, but we can make sure that each switch statement is buried in a low-level class and is never repeated. We do this, of course, with polymorphism.'
+                 I used the switch statement in the ``OperationFactory`` class and ``FilterSalaryOperation`` class and their logic is not repeated anywhere 
+
+
+## 4.*GENERAL*
+
+•	 _Multiple Languages in One Source File_: Today’s modern programming environments make it possible to put many different languages into a single source file. This is confusing at best and carelessly sloppy at worst. 
+The ideal is for a source file to contain one, and only one, language. 
+   -	How I avoid this smell: there is only one language in the source file which is java .
+   
+•	_Obvious Behavior Is Unimplemented_: any function or class should implement the behaviors that another programmer could reasonably expect.
+   - How I avoid this smell: I implemented the behaviors the programmer expected. 
+
+•	_Incorrect Behavior at the Boundaries_: Every boundary condition, every corner case, every quirk and exception represent something that can confound an elegant and intuitive algorithm. Don’t rely on your intuition. Look for every boundary condition and write a test for it.
+- How I avoid this smell: I tested every single condition and made sure it works as expected.
+
+•	 _Duplication_: Don’t Repeat Yourself. “Once, and only once.”
+  - How I avoid this smell: I didn't duplicate the logic and I implemented the design patterns to not DRY.
+
+•	_Code at Wrong Level of Abstraction_:
+It is important to create abstractions that separate higher level general concepts from lower level detailed concepts. All the lower level concepts must be in the derivatives and all the higher level concepts to be in the base class.
+  - How I avoid this smell: I made interfaces to make sure that constants, variables, or utility functions that pertain only to the detailed implementation should not be present in the base class. The base class should know nothing about them. And The design patterns I used are following this rule.
+  
+•	_Base Classes Depending on Their Derivatives_: The higher level base class concepts can be independent of the lower level derivative class concepts. Therefore, if  base classes mentioning the names of their derivatives, a problem is suspected . In general, base classes should know nothing about their derivatives.
+  - How I avoid this smell: base classes didn't dependent on their derivatives .
+  
+•	_Too Much Information_: Well-defined modules have very small interfaces that allow you to do a lot with a little. Poorly defined modules have wide and deep interfaces that force the programmer to use many different gestures to get simple things done. A well-defined interface does not offer very many functions to depend upon, so coupling is low. A poorly defined interface provides lots of functions that must be called, so coupling is high.
+  - How I avoid this smell: I tried to limit the number of methods in the interface to make it small .I tried to hide data, methods, constants  as much as possible and tried not to create classes with lots of methods or lots of instance variables. 
+  
+•	_Dead Code_: is the code that isn’t executed. The problem with dead code is that after a while it starts to smell. The older it is, the stronger and sourer the odor becomes. This is because dead code is not completely updated when designs change. It still compiles, but it does not follow newer conventions or rules. It was written at a time when the system was different. 
+  - How I avoid this smell: I deleted all the unexecuted bodies .
+  
+•	_Vertical Separation_ : Variables and function should be defined close to where they are used. Local variables should be declared just above their first usage and should have a small vertical scope. We don’t want local variables declared hundreds of lines distant from their usages.
+
+ - How I avoid this smell: since the classes are small , there is no much lines separates the methods from the variables.
+ 
+•	_Inconsistency_ :If you do something a certain way, do all similar things in the same way. Be careful with the conventions to choose, and once chosen, be careful to continue to follow them.
+ - How I avoid this smell: Consistent methods and names are used.
+ 
+•	_Clutter_:  Variables that aren’t used, functions that are never called, comments that add no information, and so forth. All these things are clutter and should be removed. Keep your source files clean, well organized, and free of clutter.
+ - How I avoid this smell: nothing that may make a clutter is left, I delete all of them.
+ 
+•	_Artificial Coupling_ :  artificial coupling is a coupling between two modules that serves no direct purpose. It is a result of putting a variable, constant, or function in a temporarily convenient, though inappropriate, location.
+ - How I avoid this smell: I tried to decouple the classes as much as I can.
+
+•	_Feature Envy_ : The methods of a class should be interested in the variables and functions of the class they belong to, and not the variables and functions of other classes. When a method uses accessors and mutators of some other object to manipulate the data within that object, then it envies the scope of the class of that other object. 
+ - How I avoid this smell: I tried to eliminate feature envy by applying single responsibility and open closed principles.
+
+•	_Selector Arguments_: Each selector argument combines many functions into one. Selector arguments are just a lazy way to avoid splitting a large function into several smaller functions. 
+ - How I avoid this smell: I didn't use any selector argument at all, in order to make the methods small as well as to avoid combining the methods in one method and making a multipurpose methods.
+ 
+•	_Function Names Should Say What They Do_ : If you have to look at the implementation (or documentation) of the function to know what it does, then you should work to find a better name or rearrange the functionality so that it can be placed in functions with better names.
+  - How I avoid this smell: I tried to well-name my methods as well as follow the naming conventions.
+
+•	_Follow Standard Conventions_:  follow a coding standard based on common industry norms. This coding standard should specify things like where to declare instance variables; how to name classes, methods, and variables; where to put braces; and so on. So there is no need for a document to describe these conventions because their code provides the examples.
+ - How I avoid this smell: I followed the Java language coding standards presented in the Java Language Specification , 
+ from Sun Microsystems, Inc. Major contributions are from Peter King, Patrick Naughton, Mike DeMoney, Jonni Kanerva, Kathy Walrath, and Scott Hommel.
+
+•	_Replace Magic Numbers with Named Constants_: In general it is a bad idea to have raw numbers in your code. You should hide them behind well-named constants.
+ - How I avoid this smell: I put all the fixed numbers and statements In a Constant class .
+ 
+•	_Be Precise_: When you decide in your code, make sure your decision is precise. Know why you have made it and how you will deal with any exceptions.
+ - How I avoid this smell:  One of the cases of this rule is calling a method that might return null I should check for the null value.
+
+•	_Encapsulate Conditionals_: Boolean logic is hard enough to understand without having to see it in the context of an if or while statement. 
+ - How I avoid this smell:  I tried to Extract methods that explain the intent of the conditional.
+
+•	_Avoid Negative Conditionals_: Negatives are just a bit harder to understand than positives. 
+ - How I avoid this smell:  when possible, conditionals should be expressed as positives.
+ 
+•	_Functions Should Do One Thing_ : It is often tempting to create functions that have multiple sections that perform a series of operations. Functions of this kind do more than one thing, and should be converted into many smaller functions, each of which does one thing.
+ - How I avoid this smell:  I tried to extract as much methods as possible in order to make every method do a single thing.
+ 
+•	_Encapsulate Boundary Conditions_ : Boundary conditions are hard to keep track of. 
+ - How I avoid this smell:  I tried to Put the processing for them in one place.
+
+•	_Keep Configurable Data at High Levels_: If you have a constant such as a default or configuration value that is known and expected at a high level of abstraction, do not bury it in a low-level function. 
+ - How I avoid this smell:  I put all the constant data in Constants class.
+ 
+  - ***Some rules from clean code***:
+  
+    - Formatting:
+    
+        'First of all, let’s be clear. Code formatting is important. It is too important to ignore and it is too important to treat religiously. 
+        Code formatting is about communication, and communication is the professional developer’s first order of business. 
+        I used the Reformat command to reformat the code after every single update.
+
+   - Error Handling:
+   
+       1.	USE EXCEPTIONS RATHER THAN RETURN CODES
+       2.	WRITE YOUR TRY-CATCH-FINALLY STATEMENT FIRST
+
+
+## 5. *JAVA*
+
+•	_Avoid Long Import Lists by Using Wildcards_: Long lists of imports are daunting to the reader. We don’t want to clutter up the tops of our modules with 80 lines of imports. Rather we want the imports to be a concise statement about which packages we collaborate with.
+ - How I avoid this smell: I used wildcards when needed.
+ 
+•	_Don't Inherit Constants_ :Writing constants in an interface and then gaining access to those constants by inheriting that interface.
+ - How I avoid this smell: I didn't put constants in interfaces to and inherit them.
+ 
+•	_Constants versus Enums_ : use enums instead of constants.
+  - How I avoid this smell: I used enums and constants when needed.
+  
+## 6. *NAMES*
+•	_Choose Descriptive Names_: Make sure the name is descriptive. Remember that meanings tend to drift as software evolves, so frequently reevaluate the appropriateness of the names you choose.This is not just a “feel-good” recommendation. Names in software are 90 percent of what make software readable. You need to take the time to choose them wisely and keep them relevant. Names are too important to treat carelessly.
+  -	How I avoid this smell: I tried to choose descriptive names as much as I can.
+  
+•	_Choose Names at the Appropriate Level of Abstraction_:
+Don’t pick names that communicate implementation; choose names the reflect the level of abstraction of the class or function you are working in.
+ - How I avoid this smell: I tried to choose general names in the interfaces.
+ 
+•	_Unambiguous Names_: Choose names that make the workings of a function or variable unambiguous.
+•	_Avoid Encodings_ :Names should not be encoded with type or scope information. Prefixes such as m_ or f are useless in today’s environments.
+ -How I avoid those smells: I didn't choose ambiguous and encoded names.
+
+### **Naming conventions in java**:
+
+#### Classes and Interfaces :
+
+•	Class names should be nouns, in mixed case with the first letter of each internal word capitalised. Interfaces name should also be capitalised just like class names.
+•	Use whole words and must avoid acronyms and abbreviations.
+
+for example:
+
+![image](https://user-images.githubusercontent.com/77013882/127117471-fd9b837f-a12e-461a-85ba-49ffd88954e2.png)
+
+
+#### Methods :
+Methods should be verbs, in mixed case with the first letter lowercase and with the first letter of each internal word capitalised.
+
+for example:
+
+![image](https://user-images.githubusercontent.com/77013882/127117644-90af990e-c0d5-4992-9c41-86a3fbedf20c.png)
+
+#### Variables : Variable names should be short yet meaningful.
+•	Variables can also start with either underscore(‘_’) or dollar sign ‘$’ characters.
+•	Should be mnemonic i.e, designed to indicate to the casual observer the intent of its use.
+•	One-character variable names should be avoided except for temporary variables; Common names for temporary variables are i, j, k, m, and n for integers; c, d, and e for characters.
+
+example of nammes
+
+```java
+
+    private String username;
+    private String password;
+    
+```
+#### Constant variables:
+•	Should be all uppercase with words separated by underscores (“_”).
+•	There are various constants used in predefined classes like Float, Long, String etc.
+
+
+
+#### Packages:
+The prefix of a unique package name is always written in all-lowercase ASCII letters .
+
+for example:
+
+![image](https://user-images.githubusercontent.com/77013882/127118233-022266af-47fd-46b4-bc97-e3d786902785.png)
+
+--------------------------------------------------
+
+
+## 6. *TESTS*
+
+I didn't write tests .
+
+-------------------------------------------------------------
+
+## Lombok:
+
+Project Lombok is a java library tool that is used to minimize/remove the boilerplate code and save the precious time of developers during development by just using some annotations. In addition to it, it also increases the readability of the source code and saves space. 
+
+I used lombok tool to increase the application of clean code and reduce code smells as much as possible.
+
+------------------------------------------------------------------------
+
+## Conclusion 
+>This list of heuristics and smells could hardly be said to be complete. Indeed, I’m not sure that such a list can ever be complete. But perhaps completeness should not be the goal, because what this list does do is imply a value system. Indeed, that value system has been the goal, and the topic, of this book. Clean code is not written by following a set of rules. You don’t become a software craftsman by learning a list of heuristics. Professionalism and craftsmanship come from values that drive disciplines. 
+
+-------------------------------------------------------------------------------
+# Design Patterns
+Design patterns are well-proved solution for solving the specific problem/task.
+By using the design patterns you can make your code more flexible, reusable and maintainable. It is the most important part because java internally follows design patterns.
+
+## My Implementation: 
+### 1-Singelton design pattern:
+![image](https://user-images.githubusercontent.com/77013882/127043848-bb495c09-a5f7-4ebd-b373-757436679dc7.png)
+
+Singleton is one of the most widely used creational design pattern to restrict the object created by applications.This ensures that a class has only one instance in the entire project, and the same instance of the object is returned every time the creation process is performed/run.
+If it is used in a multi-threaded environment, then the thread-safety of the singleton class is very important.
+In real-world applications, resources like Database connections or Enterprise Information Systems (EIS) are limited and should be used wisely to avoid any resource crunch.
+So , I implemented the Database class to be a singleton class.
+In general, we follow the below steps to create a singleton class:
+1.	Create the private constructor to avoid any new object creation with new operator.
+2.	Declare a private static instance of the same class.
+3.	Provide a public static method that will return the singleton class instance variable. If the variable is not initialized then initialize it or else simply return the instance variable.
+#### Using the above steps I have created a singleton class that looks like below:
+##### Singelton for Database Class:
+
+```java
+public static synchronized Database getDatabase() throws IOException {
+        if (database == null) {
+            database = new Database();
+        }
+        return database;
+    }
+```
+And I used synchronized key word to make it thread-safe , so that only one thread can execute this method at a time and access the Database.
+
+### DAO design pattern:
+DAO stands for Data Access Object. DAO Design Pattern is used to separate the data persistence logic in a separate layer. This way, the service remains completely in dark about how the low-level operations to access the database is done. This is known as the principle of Separation of Logic.
+#### Advantages of DAO pattern
+There are many advantages for using DAO pattern. Let’s state some of them here:
+
+-While changing a persistence mechanism, service layer doesn’t even have to know where the data comes from. For example, if you’re thinking of shifting from using MySQL to MongoDB, all changes are needed to be done in the DAO layer only.
+-DAO pattern emphasis on the low coupling between different components of an application. So, the View layer have no dependency on DAO layer and only Service layer depends on it, even that with the interfaces and not from concrete implementation.
+-As we work with interfaces in DAO pattern, it also emphasizes the style of “work with interfaces instead of implementation” which is an excellent OOPs style of programming.
+
+#### I tried to use DAO as much as i can in my code ;
+here is an example for using it for Employee Table
+#### ``EmployeeTableDAO`` interface :
+#####  provides CRUD (Create, Read, Update, Delete) operations as well as other operations for the table Employee in the database.
+
+```java
+public interface EmployeeTableDAO {
+    void createEmployee(Employee employee) throws IOException;
+
+    void updateEmployee(Employee employee) throws IOException;
+
+    void deleteEmployee(int id) throws IOException;
+
+    Employee readEmployee(int id);
+
+    Map<Integer, Employee> filterByName(String name);
+
+    Map<Integer, Employee> filterBySalaryGT(int salary);
+
+    Map<Integer, Employee> filterBySalaryLT(int salary);
+
+    Map<Integer, Employee> filterBySalaryEQ(int salary);
+
+    void close() throws IOException;
+
+    List<Employee> selectAll();
+
+}
+```
+
+### 3-dependency injection
+Since I used Spring boot framework to make web-based project , it implies using the dependecy injection:
+Dependency Injection (DI) is a design pattern that removes the dependency from the programming code so that it can be easy to manage and test the application. Dependency Injection makes our programming code loosely coupled.
+
+-----------------------------------------------------------------------------------------------
+# S.O.L.I.D
+![image](https://user-images.githubusercontent.com/77013882/127044895-a49f1e4d-15e2-46cf-8946-f5ac38f264e3.png)
+
+SOLID principles are object-oriented design concepts relevant to software development. SOLID is an acronym for five other class-design principles: Single Responsibility Principle, Open-Closed Principle, Liskov Substitution Principle, Interface Segregation Principle, and Dependency Inversion Principle.
+
+## S-Single Responsibility:
+The Single Responsibility Principle (SRP)2 states that a class or module should have one, and only one, reason to change. This principle gives us both a definition of responsibility, and a guideline for class size. Classes should have one responsibility—one reason to change.
+The single-responsibility principle says that these two aspects of the problem are really two separate responsibilities, and should, therefore, be in separate classes or modules. 
+I tried to make every class has a single job to do by making the classes as small as I could. And put all the related logic in the same class to make the classes smaller and follow the single responsibility priniciple.
+for example strategy pattern which I used ,and model classes implements single responsibility,
+class ``Employee ``:
+```java
+public class Employee extends User {
+    private int id;
+    private String name;
+    private int salary;
+
+    public Employee(String id, String name, String salary) {
+        setId(id);
+        setSalary(salary);
+        this.name = name;
+    }
+
+    public Employee() {
+    }
+
+    public Employee(String userName, String password) {
+        super(userName, password);
+    }
+
+
+    public void setId(String id) {
+        setId(Integer.parseInt(id));
+    }
+
+    public void setId(int id) {
+
+        this.id = id;
+    }
+
+    public void setSalary(String salary) {
+        setSalary(Integer.parseInt(salary));
+    }
+
+    public void setSalary(int salary) {
+
+        this.salary = salary;
+    }
+
+}
+```
+------------------------------------------
+## O-Open/Closed :
+The Martin definition of OCP:
+Robert C. Martin has defined the OCP in many different writings over the years. A more verbose version has been chosen here to contrast with the brief original:
+>Open for extension.” This means that the behavior of the module can be extended. As the requirements of the application change, we are able to extend the module with new behaviors that satisfy those changes. In other words, we are able to change what the module does.
+“Closed for modification.” Extending the behavior of a module does not result in changes to the source or binary code of the module. The binary executable version of the module, whether in a linkable library, a DLL, or a Java .jar, remains untouched.
+
+In my implementation , using the strategy pattern implements the idea of OCP ,because programming by interface and not by implementation is a best practice that we can use to design and implement code open to extension.and The context(Menu) is open for extensions and closed for modifications since it does not need to be changed to use new types of strategies.If I want to add new strategies afterwards ("open for extentions") I can do that without the need to change the internals of the context ("closed for modifications").
+Also, programming by interface is the key factor of the strategy pattern.
+also I tried to use implement interfaces as much as I can.
+
+## L-Liskov substitution :
+If S is a subtype of T, then objects of type T may be replaced with objects of type S, without breaking the program.
+in Strategy :All concrete strategies implement the same interface and should be substitutable without affecting the system’s correctness.
+
+## I-Interface segregation:
+>“Clients should not be forced to depend upon interfaces that they do not use.”
+
+in Strategy: is fulfilled when the strategy base class offers only a small, single-purpose interface .
+
+## D-Dependency inversion principle states:
+1- High-level modules should not depend on low-level modules. Both should depend on abstractions.
+2- Abstractions should not depend on details. Details should depend on abstractions.
+*In Dependency Inversion design pattern [dependency-injection](#3-dependency-injection)
+
+------------------------------------------------------------------------------------------------------
+# A.C.I.D
+![image](https://user-images.githubusercontent.com/77013882/127051353-5572bc1f-70b9-4ce0-8393-ea42eaa304fb.png)
+
+The ACID properties describe the transaction management well. ACID stands for Atomicity, Consistency, isolation and durability.
+Advantage of Transaction Management:
+fast performance It makes the performance fast because database is hit at the time of commit.
+
+## A.C.I.D:
+1. A-Atomicity means either all successful or none. Transactions are often composed of multiple statements. Atomicity guarantees that each transaction is treated as a single "unit", which either succeeds completely, or fails completely.
+ - How I implemented it: If the user enters wrong data type for any argument, the statement will not succeed.
+ 
+2. C-Consistency ensures bringing the database from one consistent state to another consistent state. This prevents database corruption by an illegal transaction, but does not guarantee that a transaction is correct.
+ -	How I implemented it: the user is not allowed to make illegal transactions.
+ 
+3. I-Isolation ensures that transaction is isolated from other transaction, A given transaction should appear as though it is running alone in the database. The work of other users must be coordinated with other transactions to maintain this isolated view. The work of other transactions is invisible to the user in a transaction.
+ -	How I implemented it: the multithreaded server handles client that access the database and synchronizes their commitments.
+ 
+4.	D-Durability means once a transaction has been committed, it will remain so, even in the event of errors, power loss etc.
+IMDBs can be said to lack support for the "durability" portion of the ACID (atomicity, consistency, isolation, durability) properties. Volatile memory-based IMDBs can, and often do, support the other three ACID properties of atomicity, consistency and isolation.
+ -	How I handled it: I tried to make a logger file to back up all the transactions and whenever the system crashes all the data in the logger file are saved in the database file(csv file).
+ 
+ ```java
+ public interface TransactionLogger {
+    void write();
+
+    void writeToCSV();
+}
+ ```
+
+---------------------------------------------------------------------------------------------------------
 # Effective Java Code Principles
  
 ## Effective Java Book : 
