@@ -1,6 +1,7 @@
 # InMemoryDB-WebApp
 
 # ***Introduction***
+
 ## In-memory database
 An in-memory database (IMDB) is a computer system that stores and retrieves data records that reside in a computer’s main memory, e.g., random-access memory (RAM). With data in RAM, IMDBs have a speed advantage over traditional disk-based databases that incur access delays since storage media like hard disk drives and solid-state drives (SSD) have significantly slower access times than RAM. This means that IMDBs are useful for when fast reads and writes of data are crucial.
 
@@ -23,10 +24,12 @@ web application.
 5- Extend the DB design to include another entity (table), that has a relation with the first table. i.e. primary key/ foreign key. 
 
 ------------------------------------------------------------------------------------
+# Back-End :
+Back end is implemented using Java.
 
-# In-MemoryDB Implementation:
+## In-MemoryDB Implementation:
 
-## Database:
+### Database:
 
 We have 3 tables in the database :
 1- employees table with 4 columns : id(primary key), name, salary ,departmentId (foreign key)
@@ -116,10 +119,498 @@ public void putInEmployeesTable(Employee employee) throws IOException {
 
 -----------------------------------------------------------------------------------------------------------
 
+## Front-End :
+In the front end I used Spring framework :
+Java Spring Framework (Spring Framework) is a popular, open source, enterprise-level framework for creating standalone, production-grade applications that run on the Java Virtual Machine (JVM).
+
+Java Spring Boot (Spring Boot) is a tool that makes developing web application and microservices with Spring Framework faster and easier through three core capabilities:
+
+1. Autoconfiguration
+2. An opinionated approach to configuration
+3. The ability to create standalone applications
+These features work together to provide the user with a tool that allows to set up a Spring-based application with minimal configuration and setup.
+
+### MVC in the code :
+
+####  M-Model :
+I have 3 models :user , admin and employee
+#### V-View : the views are in jsp 
+JavaServer Pages (JSP) is a Java standard technology that enables you to write dynamic, data-driven pages for your Java web applications. JSP is built on top of the Java Servlet specification. The two technologies typically work together, especially in older Java web applications. From a coding perspective, the most obvious difference between them is that with servlets you write Java code and then embed client-side markup (like HTML) into that code, whereas with JSP you start with the client-side script or markup, then embed JSP tags to connect your page to the Java backend.
+
+and I used JSTL library to make use of the data comes from the controller
+
+The JSP Standard Tag Library (JSTL) represents a set of tags to simplify the JSP development.
+
+#### Advantage of JSTL
+1. Fast Development JSTL provides many tags that simplify the JSP.
+2. Code Reusability We can use the JSTL tags on various pages.
+3. No need to use scriptlet tag It avoids the use of scriptlet tag.
 
 
 
+#### C-Controller :
+these are the following controller classes :
+![image](https://user-images.githubusercontent.com/77013882/132759547-f5cd65dc-2f98-4178-a066-4c0f64585b42.png)
 
+In Spring Boot, the controller class is responsible for processing incoming REST API requests, preparing a model, and returning the view to be rendered as a response.
+
+The controller classes in Spring are annotated either by the @Controller annotation. this mark controller classes as a request handler to allow Spring to recognize it as a RESTful service during runtime.
+
+#### The @Controller Annotation :
+The @Controller annotation is a specialization of the generic stereotype @Component annotation, which allows a class to be recognized as a Spring-managed component.
+
+The @Controller annotation extends the use-case of @Component and marks the annotated class as a business or presentation layer. When a request is made, this will inform the DispatcherServlet to include the controller class in scanning for methods mapped by the @RequestMapping , @GetMapping annotations.
+
+for example AdminController class :
+
+```Java
+@Controller
+public class AdminController {
+
+    @Autowired
+    EmployeeTableDAO employeeTableDAO;
+    @Autowired
+    DepartmentsTableDAO departmentTableDAO;
+
+    @GetMapping(value = "/adminView")
+    public ModelAndView showAdminView() throws IOException {
+
+        ModelAndView modelAndView = new ModelAndView();
+
+        List<Employee> employees = employeeTableDAO.selectAll();
+        modelAndView.addObject("employees", employees);
+
+        List<Department> departments = departmentTableDAO.selectAll();
+        modelAndView.addObject("departments", departments);
+        modelAndView.setViewName("adminView");
+
+        return modelAndView;
+
+    }
+}
+```
+---------------------------------------------------------------------------------------------------------------------------------------
+## Authorization & Authentication:
+
+### I used Spring Security to redirect to different types of pages after Login:
+1- The Spring Security Configuration
+Spring Security provides a component that has the direct responsibility of deciding what to do after a successful *authentication* – 
+_the AuthenticationSuccessHandler_.
+ 
+#### Firstly, users and their roles needs to be configured.
+In my code I implemented UserDetailService with 2 types of users, each having one single role.
+I have an admin , and employees 
+- admin has the role of ADMIN,
+- and every employee has the role of EMPLOYEE
+
+
+So to get the users roles from users table in the database I Implemented UserDetails and UserDetaisService:
+Spring Security requires an implementation of UserDetails interface to know about the authenticated user information, so I created the NewUserDetails class as follows:
+
+```Java
+public class NewUserDetails implements UserDetails {
+
+    private User user;
+
+    public NewUserDetails(User user) {
+        this.user = user;
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+      String role = user.getRole();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority(role));
+        
+        return authorities;    }
+
+    @Override
+    public String getPassword() {
+        System.out.println(user.getPassword());
+
+        return  new BCryptPasswordEncoder().encode(user.getPassword());
+
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getUsername();
+    }
+    ..
+    ..
+    
+ ```
+ ```Java
+ public Collection<? extends GrantedAuthority> getAuthorities()
+ ``` 
+ method ,returns the roles(authorities) of the user from the users table to be used by Spring Security in the authorization process.
+ after that we need to code an implementation of the UserDetailsService interface defined by Spring Security with the following code:
+ 
+ ```Java
+ @Component
+public class UserDetailsServiceImpl implements UserDetailsService {
+
+
+    @Autowired
+    UserTableDAO userTableDAO;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        InMemoryDB.model.User user = null;
+        try {
+            user = userTableDAO.readUser(username);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (user == null) {
+            throw new UsernameNotFoundException("Could not find User");
+        }
+        return new NewUserDetails(user);
+    }
+
+}
+```
+In this class , the method  ```public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and redirect it to NewUserDetails to make user from the information that are loaded and get the authorities of the users.
+
+
+## Configure Spring Security Authentication & Authorization :
+
+### And to connect all the pieces together, Spring Security configuration class is implemented as follows :
+
+I configure the basic @Configuration ``` SecurityConfigurer ``` class that extends ``` WebSecurityConfigurerAdapter ```  .
+```Java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    UserTableDAO userTableDAO;
+
+    public SecurityConfigurer() {
+        super();
+    }
+
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+
+        auth.authenticationProvider(authenticationProvider());
+
+
+    }
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/login**", "/register**").permitAll()
+                .antMatchers("/").hasAuthority("ADMIN")
+                .antMatchers("/employee").hasAnyAuthority("EMPLOYEE", "ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().loginPage("/login")
+                .successHandler(getAuthenticationSuccessHandler())
+                .and().logout().permitAll();
+
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler getAuthenticationSuccessHandler() {
+        return new UrlAuthenticationSuccessHandler();
+    }
+
+    @Bean("authenticationManager")
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+}
+```
+these methods are needed to configure an authentication provider :
+
+```Java 
+@Bean
+    public UserDetailsService userDetailsService() 
+    
+@Bean
+    public BCryptPasswordEncoder passwordEncoder()
+@Bean
+    public DaoAuthenticationProvider authenticationProvider()
+@Override
+    protected void configure(AuthenticationManagerBuilder auth)
+     
+``` 
+
+And in this method I configure HTTP Security for authentication and authorization then redirect the users based on their rolse . Where the ``` getAuthenticationSuccessHandler ```  is called inside ``` successHandler ``` .
+
+ ```Java
+ @Override
+    protected void configure(HttpSecurity http)
+```
+
+### So After a successful login, each will be redirected to their page:
+
+this custom SuccessHandler is defined as a bean :
+
+```Java
+
+ @Bean
+    public AuthenticationSuccessHandler getAuthenticationSuccessHandler(){
+        return new UrlAuthenticationSuccessHandler();
+    }
+    
+```    
+
+and it is put in the ``` successHandler ``` method that accepts it to redirect every user to their custom page.
+
+I give the Admin the access to every page ,and the user to only the employee page .
+
+ -------------
+ #### 3. The Custom Authentication Success Handler
+Besides the AuthenticationSuccessHandler interface, Spring also provides a sensible default for this strategy component – the ``` AbstractAuthenticationTargetUrlRequestHandler ``` and a simple implementation – the ``` UrlAuthenticationSuccessHandler ```.so this implementations will determine the URL after login and perform a redirect to that URL.
+
+So after the implementation of the interface ``` AuthenticationSuccessHandler ``` ,i needed to provide a custom implementation of the success handler.
+This implementation is going to determine the URL to redirect the user to after login based on the role of the user. 
+
+First of all, we need to override the ``` onAuthenticationSuccess ``` method:
+ ```Java  
+ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    protected final Log logger = LogFactory.getLog(this.getClass());
+
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    public UrlAuthenticationSuccessHandler() {
+        super();
+    }
+
+    
+
+    @Override
+    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
+        handle(request, response, authentication);
+        clearAuthenticationAttributes(request);
+    }
+    .
+    .
+    .
+```
+In the implementation of ``` onAuthenticationSuccess ``` we call these methods:
+
+``` Java 
+  protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, IOException {
+        final String targetUrl = determineTargetUrl(authentication);
+
+        if (response.isCommitted()) {
+            logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
+            return;
+        }
+
+        redirectStrategy.sendRedirect(request, response, targetUrl);
+    }
+    
+    
+     protected final void clearAuthenticationAttributes(final HttpServletRequest request) {
+        final HttpSession session = request.getSession(false);
+
+        if (session == null) {
+            return;
+        }
+
+        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+    }
+```
+
+
+``` clearAuthenticationAttributes ``` : Removes temporary authentication-related data which may have been stored in the session during the authentication process.
+     
+and the actaul mapping for role to its target URL is done in this method:
+
+``` Java 
+
+protected String determineTargetUrl(final Authentication authentication) {
+
+        Map<String, String> roleTargetUrlMap = new HashMap<>();
+        roleTargetUrlMap.put("ADMIN", "/adminView");
+        roleTargetUrlMap.put("EMPLOYEE", "/employeeView");
+
+        final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        for (final GrantedAuthority grantedAuthority : authorities) {
+            String authorityName = grantedAuthority.getAuthority();
+            if(roleTargetUrlMap.containsKey(authorityName)) {
+                return roleTargetUrlMap.get(authorityName);
+            }
+        }
+
+        throw new IllegalStateException();
+    }
+```
+as we can see admin will be redirected to "/adminView" url ,
+
+![Screenshot (185)](https://user-images.githubusercontent.com/77013882/132761827-cf977f39-87d8-4445-a9aa-16dcdef43dd3.png)
+
+
+
+and user to "/employeeView" url.
+
+![Screenshot (189)](https://user-images.githubusercontent.com/77013882/132761776-cefc44bd-2207-4278-b94d-130c47164857.png)
+
+
+
+## HandlerInterceptor:
+One of the use cases of HandlerInterceptor is adding common/user specific parameters to a model, which will be available on each generated view.
+
+In my app , I used custom interceptor implementation to add logged user's username to model parameters.
+
+I extended HandlerInterceptorAdapter, as I only want to implement preHandle() and postHandle() methods.
+
+``` Java
+public class UserInterceptor extends HandlerInterceptorAdapter {
+..
+..
+}
+```
+
+
+
+As I mentioned before, I want to add logged user's name to a model. First of all, I need to check if a user is logged in. We may obtain this information by checking SecurityContextHolder:
+
+```Java
+public static boolean isUserLogged() {
+        try {
+            return !SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+```
+When an HttpSession is established, but nobody is logged in, a username in Spring Security context equals to anonymousUser
+
+------
+
+##### Method preHandle()
+Before handling a request, we cannot access model parameters. In order to add username, we need to use HttpSession to set parameters:
+
+```Java
+@Override
+public boolean preHandle(HttpServletRequest request,
+  HttpServletResponse response, Object object) throws Exception {
+    if (isUserLogged()) {
+        addToModelUserDetails(request.getSession());
+    }
+    return true;
+}
+```
+This is crucial if we are using some of this information before handling a request. As we see, here we are checking if a user is logged in and then add parameters to the request by obtaining its session:
+
+```Java
+private void addToModelUserDetails(HttpSession session) {
+    log.info("=============== addToModelUserDetails =========================");
+    
+    String loggedUsername 
+      = SecurityContextHolder.getContext().getAuthentication().getName();
+    session.setAttribute("username", loggedUsername);
+    
+    log.info("user(" + loggedUsername + ") session : " + session);
+    log.info("=============== addToModelUserDetails =========================");
+}
+```
+I used SecurityContextHolder to obtain loggedUsername.
+
+##### Method postHandle()
+After handling a request, the model parameters are available, so we may access them to change values or add new ones. In order to do that, we use the overridden postHandle() method:
+
+```Java
+@Override
+public void postHandle(
+  HttpServletRequest req, 
+  HttpServletResponse res,
+  Object o, 
+  ModelAndView model) throws Exception {
+    
+    if (model != null && !isRedirectView(model)) {
+        if (isUserLogged()) {
+        addToModelUserDetails(model);
+    }
+    }
+}
+```
+
+First of all, it's better to check if the model is not null. It will prevent us from encountering a NullPointerException.
+
+Moreover, I checked if a View is not an instance of RedirectView.
+
+There is no need to add/change parameters after the request is handled and then redirected, as immediately, the new controller will perform handling again. To check if the view is redirected, I used the following method:
+
+```Java
+public static boolean isRedirectView(ModelAndView mv) {
+    String viewName = mv.getViewName();
+    if (viewName.startsWith("redirect:/")) {
+        return true;
+    }
+    View view = mv.getView();
+    return (view != null && view instanceof SmartView
+      && ((SmartView) view).isRedirectView());
+}
+```
+
+Finally, I checked again if a user is logged, and if yes, I added parameters to Spring model:
+
+```Java
+private void addToModelUserDetails(ModelAndView model) {
+    log.info("=============== addToModelUserDetails =========================");
+    
+    String loggedUsername = SecurityContextHolder.getContext()
+      .getAuthentication().getName();
+    model.addObject("loggedUsername", loggedUsername);
+    
+    log.trace("session : " + model.getModel());
+    log.info("=============== addToModelUserDetails =========================");
+}
+```
+
+And to add the created Interceptor into Spring configuration,I had to override addInterceptors() method inside MvcConfigure class that implements WebMvcConfigurer:
+
+```Java
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new UserInterceptor());
+}
+```
+-------------------------------------------------------------------------------------------------------------
+# DevOps :
+DevOps is a set of practices that works to automate and integrate the processes between software development and IT teams, so they can build, test, and release software faster and more reliably.I used Jenkins as DevOps engine.
+
+What is Jenkins?
+Jenkins is an open source automation server. It helps automate the parts of software development related to building, testing, and deploying, facilitating continuous integration and continuous delivery. It is a server-based system that runs in servlet containers such as Apache Tomcat.
+
+I worked with Jenkins and Tomcat as ec2 instances on AWS :
+
+![image](https://user-images.githubusercontent.com/77013882/132761370-3e11e927-990b-4872-aae8-9939c8f98c18.png)
+
+when I commit and push any change on the back end the jenkins server will build ,test and deploy it on the tomcat container
+
+----------------------------------------------------------------------------------------------------------------
 # Clean Code
 >Even bad code can function. But if code isn't clean, it can bring a development organization to its knees.
 
@@ -271,9 +762,6 @@ It is important to create abstractions that separate higher level general concep
 
 ## 5. *JAVA*
 
-•	_Avoid Long Import Lists by Using Wildcards_: Long lists of imports are daunting to the reader. We don’t want to clutter up the tops of our modules with 80 lines of imports. Rather we want the imports to be a concise statement about which packages we collaborate with.
- - How I avoid this smell: I used wildcards when needed.
- 
 •	_Don't Inherit Constants_ :Writing constants in an interface and then gaining access to those constants by inheriting that interface.
  - How I avoid this smell: I didn't put constants in interfaces to and inherit them.
  
@@ -780,409 +1268,25 @@ display("Can't update, employee with id " + employee.getId() + " doesn't exist."
 ```
                   
                                          
-                                                         
+----------------------------------------------
+ ## How I worked :
+ I tried to work in agile way with myself :
+ ![image](https://user-images.githubusercontent.com/77013882/132762043-0fd195c4-fb18-4d23-8ac4-d76bafb7a06e.png)
+1- I put the requirementes as issues on github :
+![image](https://user-images.githubusercontent.com/77013882/132762545-0188860f-ca2a-40e3-ad03-20f7ebd521aa.png)
+2- and I add some tags to give me some information about my progress :
+ ![image](https://user-images.githubusercontent.com/77013882/132762596-0703d101-d0f4-4d69-81c1-77ec2ffb794d.png)
+
+ development tag to know that the code is still under development.
+ deployed tag is set when I finished writing and testing the code and after the branch is merged to the master.
  
-
----------------------------------------------------------------------------------------------------------------------------------------
-# Authorization & Authentication:
-
-### I used Spring Security to redirect to different types of pages after Login:
-1- The Spring Security Configuration
-Spring Security provides a component that has the direct responsibility of deciding what to do after a successful *authentication* – 
-_the AuthenticationSuccessHandler_.
+3- I put milestones as well to mark my progress and to see wether I'm following the plan or not :
  
-#### Firstly, users and their roles needs to be configured.
-In my code I implemented UserDetailService with 2 types of users, each having one single role.
-I have an admin , and employees 
-- admin has the role of ADMIN,
-- and every employee has the role of EMPLOYEE
-
-
-So to get the users roles from users table in the database I Implemented UserDetails and UserDetaisService:
-Spring Security requires an implementation of UserDetails interface to know about the authenticated user information, so I created the NewUserDetails class as follows:
-
-```Java
-public class NewUserDetails implements UserDetails {
-
-    private User user;
-
-    public NewUserDetails(User user) {
-        this.user = user;
-    }
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-      String role = user.getRole();
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority(role));
-        
-        return authorities;    }
-
-    @Override
-    public String getPassword() {
-        System.out.println(user.getPassword());
-
-        return  new BCryptPasswordEncoder().encode(user.getPassword());
-
-    }
-
-    @Override
-    public String getUsername() {
-        return user.getUsername();
-    }
-    ..
-    ..
-    
- ```
- ```Java
- public Collection<? extends GrantedAuthority> getAuthorities()
- ``` 
- method ,returns the roles(authorities) of the user from the users table to be used by Spring Security in the authorization process.
- after that we need to code an implementation of the UserDetailsService interface defined by Spring Security with the following code:
+![image](https://user-images.githubusercontent.com/77013882/132762930-59e2911e-61a3-4adf-8be6-8ada5fc8b99b.png)
  
- ```Java
- @Component
-public class UserDetailsServiceImpl implements UserDetailsService {
-
-
-    @Autowired
-    UserTableDAO userTableDAO;
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        InMemoryDB.model.User user = null;
-        try {
-            user = userTableDAO.readUser(username);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (user == null) {
-            throw new UsernameNotFoundException("Could not find User");
-        }
-        return new NewUserDetails(user);
-    }
-
-}
-```
-In this class , the method  ```public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and redirect it to NewUserDetails to make user from the information that are loaded and get the authorities of the users.
-
-
-## Configure Spring Security Authentication & Authorization :
-
-### And to connect all the pieces together, Spring Security configuration class is implemented as follows :
-
-I configure the basic @Configuration ``` SecurityConfigurer ``` class that extends ``` WebSecurityConfigurerAdapter ```  .
-```Java
-@Configuration
-@EnableWebSecurity
-public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-    @Autowired
-    UserTableDAO userTableDAO;
-
-    public SecurityConfigurer() {
-        super();
-    }
-
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-
-        auth.authenticationProvider(authenticationProvider());
-
-
-    }
-
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/login**", "/register**").permitAll()
-                .antMatchers("/").hasAuthority("ADMIN")
-                .antMatchers("/employee").hasAnyAuthority("EMPLOYEE", "ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().loginPage("/login")
-                .successHandler(getAuthenticationSuccessHandler())
-                .and().logout().permitAll();
-
-        http.csrf().disable();
-        http.headers().frameOptions().disable();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return authProvider;
-    }
-
-    @Bean
-    public AuthenticationSuccessHandler getAuthenticationSuccessHandler() {
-        return new UrlAuthenticationSuccessHandler();
-    }
-
-    @Bean("authenticationManager")
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-}
-```
-these methods are needed to configure an authentication provider :
-
-```Java 
-@Bean
-    public UserDetailsService userDetailsService() 
-    
-@Bean
-    public BCryptPasswordEncoder passwordEncoder()
-@Bean
-    public DaoAuthenticationProvider authenticationProvider()
-@Override
-    protected void configure(AuthenticationManagerBuilder auth)
-     
-``` 
-
-And in this method I configure HTTP Security for authentication and authorization then redirect the users based on their rolse . Where the ``` getAuthenticationSuccessHandler ```  is called inside ``` successHandler ``` .
-
- ```Java
- @Override
-    protected void configure(HttpSecurity http)
-```
-
-### So After a successful login, each will be redirected to their page:
-
-this custom SuccessHandler is defined as a bean :
-
-```Java
-
- @Bean
-    public AuthenticationSuccessHandler getAuthenticationSuccessHandler(){
-        return new UrlAuthenticationSuccessHandler();
-    }
-    
-```    
-
-and it is put in the ``` successHandler ``` method that accepts it to redirect every user to their custom page.
-
-I give the Admin the access to every page ,and the user to only the employee page .
-
- -------------
- #### 3. The Custom Authentication Success Handler
-Besides the AuthenticationSuccessHandler interface, Spring also provides a sensible default for this strategy component – the ``` AbstractAuthenticationTargetUrlRequestHandler ``` and a simple implementation – the ``` UrlAuthenticationSuccessHandler ```.so this implementations will determine the URL after login and perform a redirect to that URL.
-
-So after the implementation of the interface ``` AuthenticationSuccessHandler ``` ,i needed to provide a custom implementation of the success handler.
-This implementation is going to determine the URL to redirect the user to after login based on the role of the user. 
-
-First of all, we need to override the ``` onAuthenticationSuccess ``` method:
- ```Java  
- public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-    protected final Log logger = LogFactory.getLog(this.getClass());
-
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-
-    public UrlAuthenticationSuccessHandler() {
-        super();
-    }
-
-    
-
-    @Override
-    public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
-        handle(request, response, authentication);
-        clearAuthenticationAttributes(request);
-    }
-    .
-    .
-    .
-```
-In the implementation of ``` onAuthenticationSuccess ``` we call these methods:
-
-``` Java 
-  protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, IOException {
-        final String targetUrl = determineTargetUrl(authentication);
-
-        if (response.isCommitted()) {
-            logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
-            return;
-        }
-
-        redirectStrategy.sendRedirect(request, response, targetUrl);
-    }
-    
-    
-     protected final void clearAuthenticationAttributes(final HttpServletRequest request) {
-        final HttpSession session = request.getSession(false);
-
-        if (session == null) {
-            return;
-        }
-
-        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-    }
-```
-
-
-``` clearAuthenticationAttributes ``` : Removes temporary authentication-related data which may have been stored in the session during the authentication process.
-     
-and the actaul mapping for role to its target URL is done in this method:
-
-``` Java 
-
-protected String determineTargetUrl(final Authentication authentication) {
-
-        Map<String, String> roleTargetUrlMap = new HashMap<>();
-        roleTargetUrlMap.put("ADMIN", "/adminView");
-        roleTargetUrlMap.put("EMPLOYEE", "/employeeView");
-
-        final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        for (final GrantedAuthority grantedAuthority : authorities) {
-            String authorityName = grantedAuthority.getAuthority();
-            if(roleTargetUrlMap.containsKey(authorityName)) {
-                return roleTargetUrlMap.get(authorityName);
-            }
-        }
-
-        throw new IllegalStateException();
-    }
-```
-as we can see admin will be redirected to "/adminView" url ,and user to "/employeeView" url.
-
-
-
-## HandlerInterceptor:
-One of the use cases of HandlerInterceptor is adding common/user specific parameters to a model, which will be available on each generated view.
-
-In my app , I used custom interceptor implementation to add logged user's username to model parameters.
-
-I extended HandlerInterceptorAdapter, as I only want to implement preHandle() and postHandle() methods.
-
-``` Java
-public class UserInterceptor extends HandlerInterceptorAdapter {
-..
-..
-}
-```
-
-
-
-As I mentioned before, I want to add logged user's name to a model. First of all, I need to check if a user is logged in. We may obtain this information by checking SecurityContextHolder:
-
-```Java
-public static boolean isUserLogged() {
-        try {
-            return !SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser");
-        } catch (Exception e) {
-            return false;
-        }
-    }
-```
-When an HttpSession is established, but nobody is logged in, a username in Spring Security context equals to anonymousUser
-
-------
-
-##### Method preHandle()
-Before handling a request, we cannot access model parameters. In order to add username, we need to use HttpSession to set parameters:
-
-```Java
-@Override
-public boolean preHandle(HttpServletRequest request,
-  HttpServletResponse response, Object object) throws Exception {
-    if (isUserLogged()) {
-        addToModelUserDetails(request.getSession());
-    }
-    return true;
-}
-```
-This is crucial if we are using some of this information before handling a request. As we see, here we are checking if a user is logged in and then add parameters to the request by obtaining its session:
-
-```Java
-private void addToModelUserDetails(HttpSession session) {
-    log.info("=============== addToModelUserDetails =========================");
-    
-    String loggedUsername 
-      = SecurityContextHolder.getContext().getAuthentication().getName();
-    session.setAttribute("username", loggedUsername);
-    
-    log.info("user(" + loggedUsername + ") session : " + session);
-    log.info("=============== addToModelUserDetails =========================");
-}
-```
-I used SecurityContextHolder to obtain loggedUsername.
-
-##### Method postHandle()
-After handling a request, the model parameters are available, so we may access them to change values or add new ones. In order to do that, we use the overridden postHandle() method:
-
-```Java
-@Override
-public void postHandle(
-  HttpServletRequest req, 
-  HttpServletResponse res,
-  Object o, 
-  ModelAndView model) throws Exception {
-    
-    if (model != null && !isRedirectView(model)) {
-        if (isUserLogged()) {
-        addToModelUserDetails(model);
-    }
-    }
-}
-```
-
-First of all, it's better to check if the model is not null. It will prevent us from encountering a NullPointerException.
-
-Moreover, I checked if a View is not an instance of RedirectView.
-
-There is no need to add/change parameters after the request is handled and then redirected, as immediately, the new controller will perform handling again. To check if the view is redirected, I used the following method:
-
-```Java
-public static boolean isRedirectView(ModelAndView mv) {
-    String viewName = mv.getViewName();
-    if (viewName.startsWith("redirect:/")) {
-        return true;
-    }
-    View view = mv.getView();
-    return (view != null && view instanceof SmartView
-      && ((SmartView) view).isRedirectView());
-}
-```
-
-Finally, I checked again if a user is logged, and if yes, I added parameters to Spring model:
-
-```Java
-private void addToModelUserDetails(ModelAndView model) {
-    log.info("=============== addToModelUserDetails =========================");
-    
-    String loggedUsername = SecurityContextHolder.getContext()
-      .getAuthentication().getName();
-    model.addObject("loggedUsername", loggedUsername);
-    
-    log.trace("session : " + model.getModel());
-    log.info("=============== addToModelUserDetails =========================");
-}
-```
-
-And to add the created Interceptor into Spring configuration,I had to override addInterceptors() method inside MvcConfigure class that implements WebMvcConfigurer:
-
-```Java
-@Override
-public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(new UserInterceptor());
-}
-```
-
-
-
+ 
+ -------------------------------------
+ 
+ ## Future Work :
+ 
+ My code still needs more enhancements and as I put them as issues to work on them in the future , such as UI design and some developments and updates on the backend.
