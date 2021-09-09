@@ -11,31 +11,171 @@ _the AuthenticationSuccessHandler_.
 In my code I implemented UserDetailService with 2 types of users, each having one single role.
 I have an admin , and employees 
 - admin has the role of ADMIN,
-- and every employee has the role of USER
+- and every employee has the role of EMPLOYEE
 
-as we can see in the code below:
-I give the admin the ROLE_ADMIN,
-and the employees with role EMPLOYEE in the users table will have the ROLE_USER
+
+So to get the users roles from users table in the database I Implemented UserDetails and UserDetaisService:
+Spring Security requires an implementation of UserDetails interface to know about the authenticated user information, so I created the NewUserDetails class as follows:
+
 ```Java
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class NewUserDetails implements UserDetails {
 
-  @Autowired
-	UserTableDAO userTableDAO;
-  private Map<String, User> roles = new HashMap<>();
+    private User user;
 
-    @PostConstruct
-    public void init() throws IOException {
-        roles.put("ADMIN", new User(userTableDAO.readUser("admin123").getUsername(), userTableDAO.readUser("admin123").getPassword(), getAuthority("ROLE_ADMIN")));
-        for (InMemoryDB.model.User user : userTableDAO.selectAll()) {
-            if (user.getRole().equals("EMPLOYEE"))
-                roles.put("EMPLOYEE", new User(user.getUsername(), user.getPassword(), getAuthority("ROLE_USER")));
-        }
+    public NewUserDetails(User user) {
+        this.user = user;
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+      String role = user.getRole();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority(role));
+        
+        return authorities;    }
+
+    @Override
+    public String getPassword() {
+        System.out.println(user.getPassword());
+
+        return  new BCryptPasswordEncoder().encode(user.getPassword());
 
     }
-    .
-    .
-    .
 
+    @Override
+    public String getUsername() {
+        return user.getUsername();
+    }
+    ..
+    ..
+    
+ ```
+ ```Java
+ public Collection<? extends GrantedAuthority> getAuthorities()
+ ``` 
+ method ,returns the roles(authorities) of the user from the users table to be used by Spring Security in the authorization process.
+ after that we need to code an implementation of the UserDetailsService interface defined by Spring Security with the following code:
+ 
+ ```Java
+ @Component
+public class UserDetailsServiceImpl implements UserDetailsService {
+
+
+    @Autowired
+    UserTableDAO userTableDAO;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        InMemoryDB.model.User user = null;
+        try {
+            user = userTableDAO.readUser(username);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (user == null) {
+            throw new UsernameNotFoundException("Could not find User");
+        }
+        return new NewUserDetails(user);
+    }
+
+}
+```
+In this class , the method  ```Java public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and put redirect it to NewUserDetails to make use from that are loaded and get the authorities of the users.
+
+
+## Configure Spring Security Authentication & Authorization :
+
+### And to connect all the pieces together, Spring Security configuration class is implemented as follows :
+
+I configure the basic @Configuration ``` SecurityConfigurer ``` class that extends ``` WebSecurityConfigurerAdapter ```  .
+```Java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    UserTableDAO userTableDAO;
+
+    public SecurityConfigurer() {
+        super();
+    }
+
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+
+        auth.authenticationProvider(authenticationProvider());
+
+
+    }
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/login**", "/register**").permitAll()
+                .antMatchers("/").hasAuthority("ADMIN")
+                .antMatchers("/employee").hasAnyAuthority("EMPLOYEE", "ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().loginPage("/login")
+                .successHandler(getAuthenticationSuccessHandler())
+                .and().logout().permitAll();
+
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler getAuthenticationSuccessHandler() {
+        return new UrlAuthenticationSuccessHandler();
+    }
+
+    @Bean("authenticationManager")
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+}
+```
+these methods are needed to configure an authentication provider :
+
+```Java 
+@Bean
+    public UserDetailsService userDetailsService() 
+    
+@Bean
+    public BCryptPasswordEncoder passwordEncoder()
+@Bean
+    public DaoAuthenticationProvider authenticationProvider()
+@Override
+    protected void configure(AuthenticationManagerBuilder auth)
+     
+``` 
+
+And in this method I configure HTTP Security for authentication and authorization then redirect the users based on their rolse . Where the ``` getAuthenticationSuccessHandler ```  is called inside ``` successHandler ``` .
+
+ ```Java
+ @Override
+    protected void configure(HttpSecurity http)
 ```
 
 ### So After a successful login, each will be redirected to their page:
@@ -51,37 +191,10 @@ this custom SuccessHandler is defined as a bean :
     
 ```    
 
-and put it in the ``` successHandler ``` method that accepts it to redirect every user to their custom page.
+and it is put in the ``` successHandler ``` method that accepts it to redirect every user to their custom page.
 
-I configure the basic @Configuration ``` SecurityConfigurer ``` class that extends ``` WebSecurityConfigurerAdapter ``` , where the ``` getAuthenticationSuccessHandler ```  is called inside ``` successHandler ``` and the ``` configure ``` method is overriden to configure the redirection of users based on their roles:
+I give the Admin the access to every page ,and the user to only the employee page .
 
-```Java
-@Configuration
-@EnableWebSecurity
-public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
-
-    public SecurityConfigurer() {
-        super();
-    }
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/login","/register").permitAll()
-                .antMatchers("/").hasAnyRole("ADMIN")
-                .antMatchers("/employee").hasAnyRole("USER","ADMIN")
-                .and()
-                .formLogin().loginPage("/login")
-                .successHandler(getAuthenticationSuccessHandler())
-                .and().logout().permitAll();
-
-        http.csrf().disable();
-        http.headers().frameOptions().disable();
-    }
-..
-..
-..
-}
-```
-So here I give the Admin the access to every page ,and the user to only the employee page .
  -------------
  #### 3. The Custom Authentication Success Handler
 Besides the AuthenticationSuccessHandler interface, Spring also provides a sensible default for this strategy component – the ``` AbstractAuthenticationTargetUrlRequestHandler ``` and a simple implementation – the ``` UrlAuthenticationSuccessHandler ```.so this implementations will determine the URL after login and perform a redirect to that URL.
@@ -148,8 +261,8 @@ and the actaul mapping for role to its target URL is done in this method:
 protected String determineTargetUrl(final Authentication authentication) {
 
         Map<String, String> roleTargetUrlMap = new HashMap<>();
-        roleTargetUrlMap.put("ROLE_ADMIN", "/adminView");
-        roleTargetUrlMap.put("ROLE_USER", "/employeeView");
+        roleTargetUrlMap.put("ADMIN", "/adminView");
+        roleTargetUrlMap.put("EMPLOYEE", "/employeeView");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {
@@ -163,5 +276,7 @@ protected String determineTargetUrl(final Authentication authentication) {
     }
 ```
 as we can see admin will be redirected to "/adminView" url ,and user to "/employeeView" url.
+
+
 
 
