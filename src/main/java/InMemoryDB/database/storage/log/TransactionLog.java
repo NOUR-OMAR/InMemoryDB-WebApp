@@ -15,17 +15,16 @@ public class TransactionLog extends FileIOHandler implements TransactionLogger {
     }
 
     @Override
-    public void write(String fileName) {
+    public void write(String fileName) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (fileName.equalsIgnoreCase(EMPLOYEES_LOGGER_FILE)) {
             buildEmployeeRecordString(stringBuilder);
         } else if (fileName.equalsIgnoreCase(DEPARTMENTS_LOGGER_FILE)) {
             buildDepartmentRecordString(stringBuilder);
+        } else if (fileName.equalsIgnoreCase(USERS_LOGGER_FILE)) {
+            buildUsersRecordString(stringBuilder);
         }
-     else if (fileName.equalsIgnoreCase(USERS_LOGGER_FILE)) {
-        buildUsersRecordString(stringBuilder);
-    }
         tryWritingToFile(stringBuilder, fileName);
 
     }

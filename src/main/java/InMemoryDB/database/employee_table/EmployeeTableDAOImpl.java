@@ -20,15 +20,15 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     private final Database database;
 
     @Override
-    public void createEmployee(Employee employee) {
+    public void createEmployee(Employee employee) throws IOException {
         if (database.getEmployee(employee.getId()) == null) {
 
-          //  Employee newEmployee = new Employee(employee.getId(), employee.getName(), employee.getSalary(),employee.getDepartment().getId());
+            //  Employee newEmployee = new Employee(employee.getId(), employee.getName(), employee.getSalary(),employee.getDepartment().getId());
             database.putInEmployeesTable(employee);
-           // return newEmployee;
+            // return newEmployee;
         } else {
             display("Can't create, employee with id " + employee.getId() + " already existed.");
-         //   return null;
+            //   return null;
         }
     }
 
@@ -38,22 +38,22 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     }
 
     @Override
-    public void updateEmployee(Employee employee) {
+    public void updateEmployee(Employee employee) throws IOException {
         if (database.getEmployee(employee.getId()) != null) {
             //Employee newEmployee = new Employee(id, name, salary,
             // departmentId);
             database.putInEmployeesTable(employee);
-           // return newEmployee;
+            // return newEmployee;
         } else {
             display("Can't update, employee with id " + employee.getId() + " doesn't exist.");
-           // return null;
+            // return null;
         }
     }
 
     @Override
-    public void deleteEmployee(int id) {
+    public void deleteEmployee(int id) throws IOException {
         synchronized (database) {
-            if (database.getTableLRUCache().snapshot().containsKey(id)) {
+            if (Database.getTableLRUCache().snapshot().containsKey(id)) {
                 database.removeFromTableCache(id);
             } else if (database.getEmployeesTable().containsKey(id)) {
                 database.removeFromEmployeeTable(id);

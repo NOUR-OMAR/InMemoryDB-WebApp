@@ -140,7 +140,7 @@ public class Database {
         }
     }
 
-    public void putInEmployeesTable(Employee employee) {
+    public void putInEmployeesTable(Employee employee) throws IOException {
         synchronized (getTableLRUCache()) {
 
 
@@ -155,7 +155,7 @@ public class Database {
         writeInLogger();
     }
 
-    public void putInDepartmentsTable(Department department) {
+    public void putInDepartmentsTable(Department department) throws IOException {
         synchronized (getTableLRUCache()) {
 
             for (Integer integer : getTableLRUCache().snapshot().keySet()) {
@@ -168,12 +168,12 @@ public class Database {
         writeInLogger();
     }
 
-    public void putInUsersTable(User user) {
+    public void putInUsersTable(User user) throws IOException {
 
         synchronized (getUsersLRUCache()) {
 
             for (String key : getUsersLRUCache().snapshot().keySet()) {
-                getAllUsers().put(key,  Objects.requireNonNull(getUsersLRUCache().get(key)));
+                getAllUsers().put(key, Objects.requireNonNull(getUsersLRUCache().get(key)));
             }
             getAllUsers().put(user.getUsername(), user);
             getUsersLRUCache().put(user.getUsername(), user);
@@ -182,35 +182,35 @@ public class Database {
         writeInLogger();
     }
 
-    public void removeFromTableCache(int id) {
+    public void removeFromTableCache(int id) throws IOException {
         synchronized (getTableLRUCache()) {
             getTableLRUCache().remove(id);
         }
         writeInLogger();
     }
 
-    public void removeFromEmployeeTable(int id) {
+    public void removeFromEmployeeTable(int id) throws IOException {
         synchronized (getAllEmployees()) {
             getAllEmployees().remove(id);
         }
         writeInLogger();
     }
 
-    public void removeFromDepartmentsTable(int id) {
+    public void removeFromDepartmentsTable(int id) throws IOException {
         synchronized (getAllDepartments()) {
             getAllDepartments().remove(id);
         }
         writeInLogger();
     }
 
-    public void close() {
+    public void close() throws IOException {
 
         csvFile.write(EMPLOYEES_CSV_PATH);
         csvFile.write(DEPARTMENTS_CSV_PATH);
 
     }
 
-    public void closeUsersTB() {
+    public void closeUsersTB() throws IOException {
         csvFile.write(USERS_FILE_PATH);
     }
 
@@ -221,7 +221,7 @@ public class Database {
     }
 
 
-    public void putUser(User user) {
+    public void putUser(User user) throws IOException {
         synchronized (getAllUsers()) {
 
             getAllUsers().put(user.getUsername(), user);
@@ -234,7 +234,7 @@ public class Database {
     }
 
 
-    private void writeInLogger() {
+    private void writeInLogger() throws IOException {
         csvFile.transactionLog.write(EMPLOYEES_LOGGER_FILE);
         csvFile.transactionLog.write(DEPARTMENTS_LOGGER_FILE);
         csvFile.transactionLog.write(USERS_LOGGER_FILE);

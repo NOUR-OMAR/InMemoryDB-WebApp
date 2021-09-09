@@ -12,6 +12,7 @@ import InMemoryDB.model.Employee;
 import InMemoryDB.model.User;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 
@@ -39,6 +40,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     public CSVFile() throws IOException {
     }
 
+
     @Override
     public void initialize() throws IOException {
         display("Loading data from file " + USERS_FILE_PATH);
@@ -52,14 +54,16 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
 
     private void loadData(String filePath) throws IOException {
+        File file = new ClassPathResource(filePath).getFile();
 
         if (filePath.equalsIgnoreCase(EMPLOYEES_CSV_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
 
                 readEmployeeBuffer(bufferedReader);
             } catch (FileNotFoundException fileNotFoundException) {
                 display("The provided csv file was not found.A new empty server.database file will be created");
-                try (FileWriter fileWriter = new FileWriter(filePath, true)) {
+                try (FileWriter fileWriter = new FileWriter(file, true)) {
                     display("A new empty server.database file will be created" + fileWriter.toString());
                 }
 
@@ -67,12 +71,12 @@ public class CSVFile extends FileIOHandler implements FileHandler {
                 ioException.printStackTrace();
             }
         } else if (filePath.equalsIgnoreCase(DEPARTMENTS_CSV_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
 
                 readDepartmentsBuffer(bufferedReader);
             } catch (FileNotFoundException fileNotFoundException) {
                 display("The provided csv file was not found.A new empty server.database file will be created");
-                try (FileWriter fileWriter = new FileWriter(filePath, true)) {
+                try (FileWriter fileWriter = new FileWriter(file, true)) {
                     display("A new empty server.database file will be created" + fileWriter.toString());
                 }
 
@@ -80,7 +84,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
                 ioException.printStackTrace();
             }
         } else if (filePath.equalsIgnoreCase(USERS_FILE_PATH)) {
-            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
                 readUsersBuffer(bufferedReader);
 
             } catch (FileNotFoundException fileNotFoundException) {
@@ -95,7 +99,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
 
     @Override
-    public void write(String fileName) {
+    public void write(String fileName) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
         if (fileName.equalsIgnoreCase(EMPLOYEES_CSV_PATH)) {

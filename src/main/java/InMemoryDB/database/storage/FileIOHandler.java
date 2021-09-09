@@ -4,7 +4,9 @@ import InMemoryDB.database.Database;
 import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 import InMemoryDB.model.User;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
@@ -64,8 +66,10 @@ public class FileIOHandler {
         }
     }
 
-    public void tryWritingToFile(StringBuilder stringBuilder, String filePath) {
-        try (FileWriter fileWriter = new FileWriter(filePath, false)) {
+    public void tryWritingToFile(StringBuilder stringBuilder, String filePath) throws IOException {
+        File file = new ClassPathResource(filePath).getFile();
+
+        try (FileWriter fileWriter = new FileWriter(file, false)) {
             fileWriter.write(stringBuilder.toString());
             fileWriter.flush();
             fileWriter.close();

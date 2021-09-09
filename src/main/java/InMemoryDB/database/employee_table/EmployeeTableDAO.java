@@ -15,9 +15,9 @@ import java.util.Map;
 public interface EmployeeTableDAO {
     void createEmployee(Employee employee) throws IOException;
 
-    void updateEmployee(Employee employee);
+    void updateEmployee(Employee employee) throws IOException;
 
-    void deleteEmployee(int id);
+    void deleteEmployee(int id) throws IOException;
 
     Employee readEmployee(int id);
 
