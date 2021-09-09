@@ -44,8 +44,7 @@ public class Database {
     private static ConcurrentHashMap<String, User> allUsers;
 
 
-
-    Database() throws IOException {
+    private Database() throws IOException {
         setAllDepartments(new ConcurrentHashMap<>());
         setAllEmployees(new ConcurrentHashMap<>());
         setAllUsers(new ConcurrentHashMap<>());
