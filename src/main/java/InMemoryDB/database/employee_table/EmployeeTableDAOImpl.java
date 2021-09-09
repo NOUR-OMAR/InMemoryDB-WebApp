@@ -23,12 +23,9 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     public void createEmployee(Employee employee) throws IOException {
         if (database.getEmployee(employee.getId()) == null) {
 
-            //  Employee newEmployee = new Employee(employee.getId(), employee.getName(), employee.getSalary(),employee.getDepartment().getId());
             database.putInEmployeesTable(employee);
-            // return newEmployee;
         } else {
             display("Can't create, employee with id " + employee.getId() + " already existed.");
-            //   return null;
         }
     }
 
@@ -40,13 +37,10 @@ public class EmployeeTableDAOImpl implements EmployeeTableDAO {
     @Override
     public void updateEmployee(Employee employee) throws IOException {
         if (database.getEmployee(employee.getId()) != null) {
-            //Employee newEmployee = new Employee(id, name, salary,
-            // departmentId);
+
             database.putInEmployeesTable(employee);
-            // return newEmployee;
         } else {
             display("Can't update, employee with id " + employee.getId() + " doesn't exist.");
-            // return null;
         }
     }
 

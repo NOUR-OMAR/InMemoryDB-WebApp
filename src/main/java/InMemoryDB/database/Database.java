@@ -65,11 +65,6 @@ public class Database {
     }
 
 
-    public static synchronized Database getInitialisedDatabase() throws IOException {
-        return Database.getDatabase();
-    }
-
-
     public ConcurrentHashMap<Integer, Employee> getEmployeesTable() {
 
 
@@ -217,19 +212,6 @@ public class Database {
     public User getUser(String username) {
 
         return getAllUsers().get(username);
-
-    }
-
-
-    public void putUser(User user) throws IOException {
-        synchronized (getAllUsers()) {
-
-            getAllUsers().put(user.getUsername(), user);
-
-        }
-
-
-        closeUsersTB();
 
     }
 

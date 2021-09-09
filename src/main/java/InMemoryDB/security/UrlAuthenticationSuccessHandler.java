@@ -21,13 +21,11 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
     protected final Log logger = LogFactory.getLog(this.getClass());
 
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     public UrlAuthenticationSuccessHandler() {
         super();
     }
-
-    // API
 
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
@@ -35,9 +33,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
         clearAuthenticationAttributes(request);
     }
 
-    // IMPL
-
-    protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, IOException {
+    protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
         final String targetUrl = determineTargetUrl(authentication);
 
         if (response.isCommitted()) {

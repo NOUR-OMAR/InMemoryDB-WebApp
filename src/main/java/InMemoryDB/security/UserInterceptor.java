@@ -14,11 +14,8 @@ import javax.servlet.http.HttpSession;
 
 public class UserInterceptor extends HandlerInterceptorAdapter {
 
-    private static Logger log = LoggerFactory.getLogger(UserInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(UserInterceptor.class);
 
-    /**
-     * Executed before actual handler is executed
-     **/
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object object) throws Exception {
         if (isUserLogged()) {
@@ -27,9 +24,7 @@ public class UserInterceptor extends HandlerInterceptorAdapter {
         return true;
     }
 
-    /**
-     * Executed before after handler is executed. If view is a redirect view, we don't need to execute postHandle
-     **/
+
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object object, ModelAndView model) throws Exception {
         if (model != null && !isRedirectView(model)) {
@@ -39,9 +34,7 @@ public class UserInterceptor extends HandlerInterceptorAdapter {
         }
     }
 
-    /**
-     * Used before model is generated, based on session
-     */
+
     private void addToModelUserDetails(HttpSession session) {
         log.info("================= addToModelUserDetails ============================");
         String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -51,9 +44,7 @@ public class UserInterceptor extends HandlerInterceptorAdapter {
 
     }
 
-    /**
-     * Used when model is available
-     */
+
     private void addToModelUserDetails(ModelAndView model) {
         log.info("================= addToModelUserDetails ============================");
         String loggedUsername = SecurityContextHolder.getContext().getAuthentication().getName();

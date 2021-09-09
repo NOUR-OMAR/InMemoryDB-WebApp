@@ -50,10 +50,10 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
     }
 
 
-    @Override //
+    @Override
     public void deleteDepartment(int id) throws IOException {
         synchronized (database) {
-            if (database.getTableLRUCache().snapshot().containsKey(id)) {
+            if (Database.getTableLRUCache().snapshot().containsKey(id)) {
                 database.removeFromTableCache(id);
             } else if (Database.getAllDepartments().containsKey(id)) {
                 database.removeFromDepartmentsTable(id);

@@ -21,8 +21,6 @@ public class MvcConfigure implements WebMvcConfigurer {
         super();
     }
 
-    // API
-
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/adminView");
@@ -47,8 +45,6 @@ public class MvcConfigure implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        // registry.addInterceptor(new LoggerInterceptor());
         registry.addInterceptor(new UserInterceptor());
-        //   registry.addInterceptor(new SessionTimerInterceptor());
     }
 }
