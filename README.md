@@ -79,7 +79,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 }
 ```
-In this class , the method  ```public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and put redirect it to NewUserDetails to make use from that are loaded and get the authorities of the users.
+In this class , the method  ```public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and redirect it to NewUserDetails to make user from the information that are loaded and get the authorities of the users.
 
 
 ## Configure Spring Security Authentication & Authorization :
@@ -277,6 +277,128 @@ protected String determineTargetUrl(final Authentication authentication) {
 ```
 as we can see admin will be redirected to "/adminView" url ,and user to "/employeeView" url.
 
+
+
+## HandlerInterceptor:
+One of the use cases of HandlerInterceptor is adding common/user specific parameters to a model, which will be available on each generated view.
+
+In my app , I used custom interceptor implementation to add logged user's username to model parameters.
+
+I extended HandlerInterceptorAdapter, as I only want to implement preHandle() and postHandle() methods.
+
+``` Java
+public class UserInterceptor extends HandlerInterceptorAdapter {
+..
+..
+}
+```
+
+
+
+As I mentioned before, I want to add logged user's name to a model. First of all, I need to check if a user is logged in. We may obtain this information by checking SecurityContextHolder:
+
+```Java
+public static boolean isUserLogged() {
+        try {
+            return !SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+```
+When an HttpSession is established, but nobody is logged in, a username in Spring Security context equals to anonymousUser
+
+------
+
+##### Method preHandle()
+Before handling a request, we cannot access model parameters. In order to add username, we need to use HttpSession to set parameters:
+
+```Java
+@Override
+public boolean preHandle(HttpServletRequest request,
+  HttpServletResponse response, Object object) throws Exception {
+    if (isUserLogged()) {
+        addToModelUserDetails(request.getSession());
+    }
+    return true;
+}
+```
+This is crucial if we are using some of this information before handling a request. As we see, here we are checking if a user is logged in and then add parameters to the request by obtaining its session:
+
+```Java
+private void addToModelUserDetails(HttpSession session) {
+    log.info("=============== addToModelUserDetails =========================");
+    
+    String loggedUsername 
+      = SecurityContextHolder.getContext().getAuthentication().getName();
+    session.setAttribute("username", loggedUsername);
+    
+    log.info("user(" + loggedUsername + ") session : " + session);
+    log.info("=============== addToModelUserDetails =========================");
+}
+```
+I used SecurityContextHolder to obtain loggedUsername.
+
+##### Method postHandle()
+After handling a request, the model parameters are available, so we may access them to change values or add new ones. In order to do that, we use the overridden postHandle() method:
+
+```Java
+@Override
+public void postHandle(
+  HttpServletRequest req, 
+  HttpServletResponse res,
+  Object o, 
+  ModelAndView model) throws Exception {
+    
+    if (model != null && !isRedirectView(model)) {
+        if (isUserLogged()) {
+        addToModelUserDetails(model);
+    }
+    }
+}
+```
+
+First of all, it's better to check if the model is not null. It will prevent us from encountering a NullPointerException.
+
+Moreover, I checked if a View is not an instance of RedirectView.
+
+There is no need to add/change parameters after the request is handled and then redirected, as immediately, the new controller will perform handling again. To check if the view is redirected, I used the following method:
+
+```Java
+public static boolean isRedirectView(ModelAndView mv) {
+    String viewName = mv.getViewName();
+    if (viewName.startsWith("redirect:/")) {
+        return true;
+    }
+    View view = mv.getView();
+    return (view != null && view instanceof SmartView
+      && ((SmartView) view).isRedirectView());
+}
+```
+
+Finally, I checked again if a user is logged, and if yes, I added parameters to Spring model:
+
+```Java
+private void addToModelUserDetails(ModelAndView model) {
+    log.info("=============== addToModelUserDetails =========================");
+    
+    String loggedUsername = SecurityContextHolder.getContext()
+      .getAuthentication().getName();
+    model.addObject("loggedUsername", loggedUsername);
+    
+    log.trace("session : " + model.getModel());
+    log.info("=============== addToModelUserDetails =========================");
+}
+```
+
+And to add the created Interceptor into Spring configuration,I had to override addInterceptors() method inside MvcConfigure class that implements WebMvcConfigurer:
+
+```Java
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new UserInterceptor());
+}
+```
 
 
 
