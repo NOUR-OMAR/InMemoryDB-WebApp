@@ -12,7 +12,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 
 @Data

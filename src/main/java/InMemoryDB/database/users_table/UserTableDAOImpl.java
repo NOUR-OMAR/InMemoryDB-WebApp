@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 @Data
 @Component

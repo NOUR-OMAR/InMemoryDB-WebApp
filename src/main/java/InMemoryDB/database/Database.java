@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 
 @Data
@@ -76,6 +76,7 @@ public class Database {
 
         return getAllDepartments();
     }
+
     public void displayUsers() {
         display("\n--- Users Table content: ---");
         getAllUsers().forEach((k, v) -> display(v.toString()));
@@ -148,7 +149,12 @@ public class Database {
             setTableLRUCache(employee.getId(), employee);
 
         }
-        writeInLogger();
+        try {
+            writeInLogger();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            writeToCSV();
+        }
     }
 
     public void putInDepartmentsTable(Department department) throws IOException {
@@ -161,7 +167,12 @@ public class Database {
             setTableLRUCache(department.getId(), department);
         }
 
-        writeInLogger();
+        try {
+            writeInLogger();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            writeToCSV();
+        }
     }
 
     public void putInUsersTable(User user) throws IOException {
@@ -175,28 +186,48 @@ public class Database {
             getUsersLRUCache().put(user.getUsername(), user);
         }
 
-        writeInLogger();
+        try {
+            writeInLogger();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            writeToCSV();
+        }
     }
 
     public void removeFromTableCache(int id) throws IOException {
         synchronized (getTableLRUCache()) {
             getTableLRUCache().remove(id);
         }
-        writeInLogger();
+        try {
+            writeInLogger();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            writeToCSV();
+        }
     }
 
     public void removeFromEmployeeTable(int id) throws IOException {
         synchronized (getAllEmployees()) {
             getAllEmployees().remove(id);
         }
-        writeInLogger();
+        try {
+            writeInLogger();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            writeToCSV();
+        }
     }
 
     public void removeFromDepartmentsTable(int id) throws IOException {
         synchronized (getAllDepartments()) {
             getAllDepartments().remove(id);
         }
-        writeInLogger();
+        try {
+            writeInLogger();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+            writeToCSV();
+        }
     }
 
     public void close() throws IOException {
@@ -221,6 +252,11 @@ public class Database {
         csvFile.transactionLog.write(FilesPaths.EMPLOYEES_LOGGER_FILE.getPath());
         csvFile.transactionLog.write(FilesPaths.DEPARTMENTS_LOGGER_FILE.getPath());
         csvFile.transactionLog.write(FilesPaths.USERS_LOGGER_FILE.getPath());
+    }
+
+    private void writeToCSV() throws IOException {
+        csvFile.transactionLog.writeToCSV();
+
     }
 
     private void setTableLRUCache(int key, Object object) {

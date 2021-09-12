@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 public class FileIOHandler {
 

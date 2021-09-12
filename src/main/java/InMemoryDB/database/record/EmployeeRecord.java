@@ -4,7 +4,7 @@ package InMemoryDB.database.record;
 import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 
 public class EmployeeRecord implements RecordHandler {

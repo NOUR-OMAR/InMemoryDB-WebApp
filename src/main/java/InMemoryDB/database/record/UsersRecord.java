@@ -2,7 +2,7 @@ package InMemoryDB.database.record;
 
 import InMemoryDB.model.User;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 
 public class UsersRecord implements RecordHandler {

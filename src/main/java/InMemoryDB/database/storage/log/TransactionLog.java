@@ -5,7 +5,7 @@ import InMemoryDB.database.storage.FileIOHandler;
 
 import java.io.*;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 
 public class TransactionLog extends FileIOHandler implements TransactionLogger {

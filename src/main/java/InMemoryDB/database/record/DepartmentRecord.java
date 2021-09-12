@@ -2,7 +2,7 @@ package InMemoryDB.database.record;
 
 import InMemoryDB.model.Department;
 
-import static InMemoryDB.utils.Constant.Display.display;
+import static InMemoryDB.utils.Display.display;
 
 public class DepartmentRecord implements RecordHandler {
     private static Department department;
