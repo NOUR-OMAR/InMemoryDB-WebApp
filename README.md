@@ -299,12 +299,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
 
-    @Override
+  @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login**", "/register**").permitAll()
-                .antMatchers("/").hasAuthority("ADMIN")
-                .antMatchers("/employee").hasAnyAuthority("EMPLOYEE", "ADMIN")
+                .antMatchers("/").hasAuthority(Roles.ADMIN.getRole())
+                .antMatchers("/employee").hasAnyAuthority(Roles.EMPLOYEE.getRole(), Roles.ADMIN.getRole())
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login")
@@ -314,7 +314,6 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.headers().frameOptions().disable();
     }
-
     @Bean
     public UserDetailsService userDetailsService() {
         return new UserDetailsServiceImpl();
@@ -451,8 +450,8 @@ and the actaul mapping for role to its target URL is done in this method:
 protected String determineTargetUrl(final Authentication authentication) {
 
         Map<String, String> roleTargetUrlMap = new HashMap<>();
-        roleTargetUrlMap.put("ADMIN", "/adminView");
-        roleTargetUrlMap.put("EMPLOYEE", "/employeeView");
+        roleTargetUrlMap.put(Roles.ADMIN.getRole(), "/adminView");
+        roleTargetUrlMap.put(Roles.EMPLOYEE.getRole(), "/employeeView");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {
@@ -1164,11 +1163,11 @@ public class Employee extends User {
   
   ```Java
   
-   @Getter
-    private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
+    @Getter
+    private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(CacheMaxSize.CACHE_MAX_SIZE.getSize());
 
     @Getter
-    private static final LRUCache<String, User> usersLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
+    private static final LRUCache<String, User> usersLRUCache = new LRUCache<>(CacheMaxSize.CACHE_MAX_SIZE.getSize());
 
     @Setter
     @Getter
