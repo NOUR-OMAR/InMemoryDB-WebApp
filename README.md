@@ -1155,7 +1155,7 @@ public class Employee extends User {
 }
 ```
 
-### Classes and Interfaces :
+#### Classes and Interfaces :
 
 1. Item 15: Minimize the accessibility of classes and members : 
   a. Definition : The single most important factor that distinguishes a well-designed component from a poorly designed one is the degree to which the component hides its internal data and other implementation details from other components. A well-designed component hides all its implementation details, cleanly separating its API from its implementation. Components then communicate only through their APIs and are oblivious to each others’ inner workings. This concept, known as information hiding or encapsulation, is a fundamental tenet of software design.
@@ -1201,7 +1201,7 @@ class resides in the class hierarchy.
    ![image](https://user-images.githubusercontent.com/77013882/132748879-cdf9411c-f130-4781-9f4c-3d23b8812a28.png)
  
  
- #### Generics :
+#### Generics :
  
 1. Item 28: Prefer lists to arrays
   a. Definition:
@@ -1215,7 +1215,7 @@ Arrays differ from generic types in two important ways. First, arrays are covari
     }
 ```
  
- ####  Methods :
+####  Methods :
  1. Item 51: Design method signatures carefully :
     1- Choose method names carefully : names should always obey the standard naming conventions 
     2- Don’t go overboard in providing convenience methods : Every method should “pull its weight.” Too many methods make a class difficult to learn, use, document, test, and maintain. 
@@ -1223,7 +1223,7 @@ Arrays differ from generic types in two important ways. First, arrays are covari
  Some of the rules are discussed in clean code section in details.
  
  
- #### General prgramming :
+#### General prgramming :
  
  1. Item 58: Prefer for-each loops to traditional for loops :
    a. Definition :  The for-each loop (officially known as the “enhanced for statement”) solves all of these problems. It gets rid of the clutter and the opportunity for error by hiding the iterator or index variable. The resulting idiom applies equally to collections and arrays, easing the process of switching the implementation type of a container from one to the other.
@@ -1268,7 +1268,7 @@ display("Can't update, employee with id " + employee.getId() + " doesn't exist."
                   
                                          
 ----------------------------------------------
- ## How I worked :
+## How I worked :
  I tried to work in agile way with myself :
  ![image](https://user-images.githubusercontent.com/77013882/132762043-0fd195c4-fb18-4d23-8ac4-d76bafb7a06e.png)
 1- I put the requirementes as issues on github :
@@ -1285,7 +1285,6 @@ display("Can't update, employee with id " + employee.getId() + " doesn't exist."
  
  
  -------------------------------------
- 
- ## Future Work :
+## Future Work :
  
  My code still needs more enhancements and as I put them as issues to work on them in the future , such as UI design and some developments and updates on the backend.
