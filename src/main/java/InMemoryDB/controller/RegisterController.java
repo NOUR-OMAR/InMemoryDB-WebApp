@@ -1,6 +1,7 @@
 package InMemoryDB.controller;
 
 import InMemoryDB.database.users_table.UserTableDAO;
+import InMemoryDB.model.Roles;
 import InMemoryDB.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ public class RegisterController {
     ) throws IOException {
 
         ModelAndView modelAndView = new ModelAndView();
-        User user = new User(id, username, password, "EMPLOYEE");
+        User user = new User(id, username, password, Roles.EMPLOYEE.getRole());
         userTableDAO.createUser(user);
         userTableDAO.close();
         System.out.println(userTableDAO.selectAll());

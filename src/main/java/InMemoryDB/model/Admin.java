@@ -7,7 +7,7 @@ import lombok.Data;
 public class Admin extends User {
 
     public Admin(String userName, String password,String role) {
-        super(userName, password,"ADMIN");
+        super(userName, password,Roles.ADMIN.getRole());
     }
 
 

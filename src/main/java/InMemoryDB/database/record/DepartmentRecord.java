@@ -2,7 +2,6 @@ package InMemoryDB.database.record;
 
 import InMemoryDB.model.Department;
 
-import static InMemoryDB.utils.Constant.DEPARTMENT_RECORD_LENGTH;
 import static InMemoryDB.utils.Constant.Display.display;
 
 public class DepartmentRecord implements RecordHandler {
@@ -22,7 +21,7 @@ public class DepartmentRecord implements RecordHandler {
 
     private static void setDepartmentRecord(String record, Department department) {
         String[] departmentRecord = record.split(";");//
-        if (departmentRecord.length > DEPARTMENT_RECORD_LENGTH) throw new IndexOutOfBoundsException();
+        if (departmentRecord.length > RecordLength.DEPARTMENT_RECORD_LENGTH.getRecordLength()) throw new IndexOutOfBoundsException();
         department.setId(Integer.parseInt(departmentRecord[0]));
         department.setName(departmentRecord[1]);
         department.setLocation(departmentRecord[2]);

@@ -5,7 +5,6 @@ import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 
 import static InMemoryDB.utils.Constant.Display.display;
-import static InMemoryDB.utils.Constant.EMPLOYEES_RECORD_LENGTH;
 
 
 public class EmployeeRecord implements RecordHandler {
@@ -27,7 +26,7 @@ public class EmployeeRecord implements RecordHandler {
 
     private static void setEmployeeRecord(String record, Employee employee) {
         String[] employeeRecord = record.split(";");//
-        if (employeeRecord.length > EMPLOYEES_RECORD_LENGTH) throw new IndexOutOfBoundsException();
+        if (employeeRecord.length > RecordLength.EMPLOYEES_RECORD_LENGTH.getRecordLength()) throw new IndexOutOfBoundsException();
         employee.setId(Integer.parseInt(employeeRecord[0]));
         employee.setName(employeeRecord[1]);
         employee.setSalary(Integer.parseInt(employeeRecord[2]));

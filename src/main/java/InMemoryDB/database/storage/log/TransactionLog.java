@@ -1,10 +1,10 @@
 package InMemoryDB.database.storage.log;
 
+import InMemoryDB.database.storage.FilesPaths;
 import InMemoryDB.database.storage.FileIOHandler;
 
 import java.io.*;
 
-import static InMemoryDB.utils.Constant.*;
 import static InMemoryDB.utils.Constant.Display.display;
 
 
@@ -18,11 +18,11 @@ public class TransactionLog extends FileIOHandler implements TransactionLogger {
     public void write(String fileName) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (fileName.equalsIgnoreCase(EMPLOYEES_LOGGER_FILE)) {
+        if (fileName.equalsIgnoreCase(FilesPaths.EMPLOYEES_LOGGER_FILE.getPath())) {
             buildEmployeeRecordString(stringBuilder);
-        } else if (fileName.equalsIgnoreCase(DEPARTMENTS_LOGGER_FILE)) {
+        } else if (fileName.equalsIgnoreCase(FilesPaths.DEPARTMENTS_LOGGER_FILE.getPath())) {
             buildDepartmentRecordString(stringBuilder);
-        } else if (fileName.equalsIgnoreCase(USERS_LOGGER_FILE)) {
+        } else if (fileName.equalsIgnoreCase(FilesPaths.USERS_LOGGER_FILE.getPath())) {
             buildUsersRecordString(stringBuilder);
         }
         tryWritingToFile(stringBuilder, fileName);
@@ -31,8 +31,8 @@ public class TransactionLog extends FileIOHandler implements TransactionLogger {
 
     @Override
     public void writeToCSV() {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(EMPLOYEES_LOGGER_FILE))) {
-            readBuffer(bufferedReader, EMPLOYEES_CSV_PATH);
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FilesPaths.EMPLOYEES_LOGGER_FILE.getPath()))) {
+            readBuffer(bufferedReader, FilesPaths.EMPLOYEES_CSV_PATH.getPath());
 
         } catch (FileNotFoundException fileNotFoundException) {
             display("The provided file was not found.A new empty file will be created");
@@ -40,8 +40,8 @@ public class TransactionLog extends FileIOHandler implements TransactionLogger {
             ioException.printStackTrace();
         }
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(DEPARTMENTS_LOGGER_FILE))) {
-            readBuffer(bufferedReader, DEPARTMENTS_CSV_PATH);
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(FilesPaths.DEPARTMENTS_LOGGER_FILE.getPath()))) {
+            readBuffer(bufferedReader, FilesPaths.DEPARTMENTS_CSV_PATH.getPath());
 
         } catch (FileNotFoundException fileNotFoundException) {
             display("The provided file was not found.A new empty file will be created");

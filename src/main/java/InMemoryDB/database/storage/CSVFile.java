@@ -16,7 +16,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 
-import static InMemoryDB.utils.Constant.*;
 import static InMemoryDB.utils.Constant.Display.display;
 
 public class CSVFile extends FileIOHandler implements FileHandler {
@@ -43,12 +42,12 @@ public class CSVFile extends FileIOHandler implements FileHandler {
 
     @Override
     public void initialize() throws IOException {
-        display("Loading data from file " + USERS_FILE_PATH);
-        loadData(USERS_FILE_PATH);
-        display("Loading data from file " + DEPARTMENTS_CSV_PATH);
-        loadData(DEPARTMENTS_CSV_PATH);
-        display("Loading data from file " + EMPLOYEES_CSV_PATH);
-        loadData(EMPLOYEES_CSV_PATH);
+        display("Loading data from file " + FilesPaths.USERS_FILE_PATH.getPath());
+        loadData(FilesPaths.USERS_FILE_PATH.getPath());
+        display("Loading data from file " + FilesPaths.DEPARTMENTS_CSV_PATH.getPath());
+        loadData(FilesPaths.DEPARTMENTS_CSV_PATH.getPath());
+        display("Loading data from file " + FilesPaths.EMPLOYEES_CSV_PATH.getPath());
+        loadData(FilesPaths.EMPLOYEES_CSV_PATH.getPath());
 
     }
 
@@ -56,7 +55,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     private void loadData(String filePath) throws IOException {
         File file = new ClassPathResource(filePath).getFile();
 
-        if (filePath.equalsIgnoreCase(EMPLOYEES_CSV_PATH)) {
+        if (filePath.equalsIgnoreCase(FilesPaths.EMPLOYEES_CSV_PATH.getPath())) {
 
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
 
@@ -70,7 +69,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-        } else if (filePath.equalsIgnoreCase(DEPARTMENTS_CSV_PATH)) {
+        } else if (filePath.equalsIgnoreCase(FilesPaths.DEPARTMENTS_CSV_PATH.getPath())) {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
 
                 readDepartmentsBuffer(bufferedReader);
@@ -83,7 +82,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-        } else if (filePath.equalsIgnoreCase(USERS_FILE_PATH)) {
+        } else if (filePath.equalsIgnoreCase(FilesPaths.USERS_FILE_PATH.getPath())) {
             try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
                 readUsersBuffer(bufferedReader);
 
@@ -102,11 +101,11 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     public void write(String fileName) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (fileName.equalsIgnoreCase(EMPLOYEES_CSV_PATH)) {
+        if (fileName.equalsIgnoreCase(FilesPaths.EMPLOYEES_CSV_PATH.getPath())) {
             buildEmployeeRecordString(stringBuilder);
-        } else if (fileName.equalsIgnoreCase(DEPARTMENTS_CSV_PATH)) {
+        } else if (fileName.equalsIgnoreCase(FilesPaths.DEPARTMENTS_CSV_PATH.getPath())) {
             buildDepartmentRecordString(stringBuilder);
-        } else if (fileName.equalsIgnoreCase(USERS_FILE_PATH)) {
+        } else if (fileName.equalsIgnoreCase(FilesPaths.USERS_FILE_PATH.getPath())) {
             buildUsersRecordString(stringBuilder);
         }
         tryWritingToFile(stringBuilder, fileName);

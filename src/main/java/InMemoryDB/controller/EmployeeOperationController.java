@@ -23,7 +23,7 @@ public class EmployeeOperationController {
     @Autowired
     EmployeeTableDAO employeeTableDAO;
 
-    @GetMapping(value = "/addEmployee")//TODO  employee object
+    @GetMapping(value = "/addEmployee")
     public ModelAndView addEmployee(@RequestParam int id,
                               @RequestParam String name,
                               @RequestParam int salary,

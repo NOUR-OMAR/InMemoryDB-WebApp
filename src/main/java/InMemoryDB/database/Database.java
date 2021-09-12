@@ -1,7 +1,9 @@
 package InMemoryDB.database;
 
+import InMemoryDB.database.cache.CacheMaxSize;
 import InMemoryDB.database.cache.LRUCache;
 import InMemoryDB.database.storage.CSVFile;
+import InMemoryDB.database.storage.FilesPaths;
 import InMemoryDB.model.Department;
 import InMemoryDB.model.Employee;
 import InMemoryDB.model.User;
@@ -14,7 +16,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static InMemoryDB.utils.Constant.*;
 import static InMemoryDB.utils.Constant.Display.display;
 
 
@@ -23,13 +24,14 @@ import static InMemoryDB.utils.Constant.Display.display;
 public class Database {
     @Setter
     private static Database database;
+
     CSVFile csvFile = new CSVFile();
 
     @Getter
-    private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
+    private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(CacheMaxSize.CACHE_MAX_SIZE.getSize());
 
     @Getter
-    private static final LRUCache<String, User> usersLRUCache = new LRUCache<>(CACHE_MAX_SIZE);
+    private static final LRUCache<String, User> usersLRUCache = new LRUCache<>(CacheMaxSize.CACHE_MAX_SIZE.getSize());
 
     @Setter
     @Getter
@@ -199,13 +201,13 @@ public class Database {
 
     public void close() throws IOException {
 
-        csvFile.write(EMPLOYEES_CSV_PATH);
-        csvFile.write(DEPARTMENTS_CSV_PATH);
+        csvFile.write(FilesPaths.EMPLOYEES_CSV_PATH.getPath());
+        csvFile.write(FilesPaths.DEPARTMENTS_CSV_PATH.getPath());
 
     }
 
     public void closeUsersTB() throws IOException {
-        csvFile.write(USERS_FILE_PATH);
+        csvFile.write(FilesPaths.USERS_FILE_PATH.getPath());
     }
 
     public User getUser(String username) {
@@ -216,9 +218,9 @@ public class Database {
 
 
     private void writeInLogger() throws IOException {
-        csvFile.transactionLog.write(EMPLOYEES_LOGGER_FILE);
-        csvFile.transactionLog.write(DEPARTMENTS_LOGGER_FILE);
-        csvFile.transactionLog.write(USERS_LOGGER_FILE);
+        csvFile.transactionLog.write(FilesPaths.EMPLOYEES_LOGGER_FILE.getPath());
+        csvFile.transactionLog.write(FilesPaths.DEPARTMENTS_LOGGER_FILE.getPath());
+        csvFile.transactionLog.write(FilesPaths.USERS_LOGGER_FILE.getPath());
     }
 
     private void setTableLRUCache(int key, Object object) {

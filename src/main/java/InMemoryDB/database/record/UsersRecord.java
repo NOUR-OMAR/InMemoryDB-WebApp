@@ -3,7 +3,6 @@ package InMemoryDB.database.record;
 import InMemoryDB.model.User;
 
 import static InMemoryDB.utils.Constant.Display.display;
-import static InMemoryDB.utils.Constant.USERS_RECORD_LENGTH;
 
 
 public class UsersRecord implements RecordHandler {
@@ -23,7 +22,7 @@ public class UsersRecord implements RecordHandler {
     private static void setUserInfo(String record, User user) {
         String[] userRecord = record.split(";");//
         display("length"+userRecord.length);
-        if (userRecord.length > USERS_RECORD_LENGTH) throw new IndexOutOfBoundsException();
+        if (userRecord.length > RecordLength.USERS_RECORD_LENGTH.getRecordLength()) throw new IndexOutOfBoundsException();
         user.setId(Integer.parseInt(userRecord[0]));
         user.setUsername(userRecord[1]);
         user.setPassword(userRecord[2]);

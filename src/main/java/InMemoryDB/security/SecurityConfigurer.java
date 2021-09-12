@@ -1,6 +1,7 @@
 package InMemoryDB.security;
 
 import InMemoryDB.database.users_table.UserTableDAO;
+import InMemoryDB.model.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,8 +40,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login**", "/register**").permitAll()
-                .antMatchers("/").hasAuthority("ADMIN")
-                .antMatchers("/employee").hasAnyAuthority("EMPLOYEE", "ADMIN")
+                .antMatchers("/").hasAuthority(Roles.ADMIN.getRole())
+                .antMatchers("/employee").hasAnyAuthority(Roles.EMPLOYEE.getRole(), Roles.ADMIN.getRole())
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login")

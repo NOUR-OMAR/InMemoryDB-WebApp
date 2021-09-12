@@ -1,5 +1,6 @@
 package InMemoryDB.security;
 
+import InMemoryDB.model.Roles;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.Authentication;
@@ -47,8 +48,8 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
     protected String determineTargetUrl(final Authentication authentication) {
 
         Map<String, String> roleTargetUrlMap = new HashMap<>();
-        roleTargetUrlMap.put("ADMIN", "/adminView");
-        roleTargetUrlMap.put("EMPLOYEE", "/employeeView");
+        roleTargetUrlMap.put(Roles.ADMIN.getRole(), "/adminView");
+        roleTargetUrlMap.put(Roles.EMPLOYEE.getRole(), "/employeeView");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {
