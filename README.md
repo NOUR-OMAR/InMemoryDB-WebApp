@@ -607,7 +607,7 @@ I worked with Jenkins and Tomcat as ec2 instances on AWS :
 
 ![image](https://user-images.githubusercontent.com/77013882/132761370-3e11e927-990b-4872-aae8-9939c8f98c18.png)
 
-when I commit and push any change on the back end the jenkins server will build ,test and deploy it on the tomcat container
+when I commit and push any change on the back end to the GitHub, the jenkins server will build ,test and deploy it on the tomcat container.
 
 ---------------------------------------------------------------------------------------------------------
 # Effective Java Code Principles
@@ -790,7 +790,7 @@ class resides in the class hierarchy.
  
 1. Item 28: Prefer lists to arrays
   a. Definition:
-Arrays differ from generic types in two important ways. First, arrays are covariant. This scary-sounding word means simply that if Sub is a subtype of Super, then the array type Sub[] is a subtype of the array type Super[]. Generics, by contrast, are invariant: for any two distinct types Type1 and Type2, List<Type1> is neither a subtype nor a supertype of List<Type2> [JLS, 4.10; Naftalin07, 2.5]. You might think this means that generics are deficient, but arguably it is arrays that are deficient. 
+Arrays differ from generic types in two important ways. First, arrays are covariant. This scary-sounding word means simply that if Sub is a subtype of Super, then the array type Sub[] is a subtype of the array type Super[]. Generics, by contrast, are invariant: for any two distinct types Type1 and Type2, List<Type1> is neither a subtype nor a supertype of List<Type2> . You might think this means that generics are deficient, but arguably it is arrays that are deficient. 
   b. Implementation: I didn't use arrays in the code , and I used Lists when needed :
  
  ```Java
@@ -798,6 +798,29 @@ Arrays differ from generic types in two important ways. First, arrays are covari
     public List<Employee> selectAll() {
         return new ArrayList<>(database.getEmployeesTable().values());
     }
+```
+ 
+#### Enums and Annotations:
+ 1. Item 34: Use enums instead of int constants :
+  a. Definition : An enumerated type is a type whose legal values consist of a fixed set of constants.Enums provide compile-time type safety. 
+  b. Implementation : I replaced the usage of (int constant) with enums as shown below :
+ 
+ ```Java
+ public enum RecordLength {
+
+
+    EMPLOYEES_RECORD_LENGTH(4),
+    DEPARTMENT_RECORD_LENGTH(3),
+    USERS_RECORD_LENGTH(4);
+    private int length;
+
+    RecordLength(int length) {
+        this.length = length;
+    }
+    public int getRecordLength() {
+        return length;
+    }
+}
 ```
  
 ####  Methods :
@@ -850,7 +873,28 @@ Arrays differ from generic types in two important ways. First, arrays are covari
  ```Java
 display("Can't update, employee with id " + employee.getId() + " doesn't exist.");
 ```
-                        
+ 
+ #### Concurrency: 
+ 1. Item 78: Synchronize access to shared mutable data :
+  a. Definetion : The synchronized keyword ensures that only a single thread can execute a method or block at one time. Synchronization is required for reliable communication between threads as well as for mutual exclusion. This is due to a part of the language specification known as the memory model, which specifies when and how changes made by one thread become visible to others.
+  b. Implementation : To achieve thread saftey I used synchronized keyword whenever I have to access the database as shown below :
+``` Java
+  public void putInDepartmentsTable(Department department) throws IOException {
+        synchronized (getTableLRUCache()) {
+
+         ..
+        }
+
+     
+    }
+ 
+ public void removeFromDepartmentsTable(int id) throws IOException {
+        synchronized (getAllDepartments()) {
+ ..
+        }
+        
+    }
+ ```                       
 
 ----------------------------------------------------------------------------------------------------------------
 
