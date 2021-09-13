@@ -644,10 +644,12 @@ public class Database {
     }
 ```
 2. Item 5: Prefer dependency injection to hardwiring resources:
-  a. Defention:Many classes depend on one or more underlying resources. When a class might have many variants, you should pass the resource into the
+
+ a. Defention:Many classes depend on one or more underlying resources. When a class might have many variants, you should pass the resource into the
 constructor when creating a new instance, this allows for an easier code scalability when new
 requirements are needed in the project.
-  b. Implementation : since I used spring boot framework ,Dependency Injection is a fundamental aspect of the Spring framework, through which the Spring container “injects” objects into other objects or “dependencies”. Simply put, this allows for loose coupling of components and moves the responsibility of managing components onto the container. 
+ 
+ b. Implementation : since I used spring boot framework ,Dependency Injection is a fundamental aspect of the Spring framework, through which the Spring container “injects” objects into other objects or “dependencies”. Simply put, this allows for loose coupling of components and moves the responsibility of managing components onto the container. 
   for example : 
   1- Constructor-Based Dependency Injection: In the case of constructor-based dependency injection, the container will invoke a constructor with arguments each representing a dependency we want to set. Spring resolves each argument primarily by type, followed by name of the attribute, and index for disambiguation. Let's see the configuration of a bean and its dependencies using annotations:
   
@@ -699,18 +701,25 @@ public class AdminController {
  While constructing the AdminController object, if there's no constructor or setter method to inject the EmployeeTableDAO bean or DepartmentsTableDAO, the container will use reflection to inject them into AdminController.
 
 3. Item 6: Avoid creating unnecessary objects
-  a. Definition: It is often appropriate to reuse a single object instead of creating a new functionally
+
+ a. Definition: It is often appropriate to reuse a single object instead of creating a new functionally
 equivalent object each time it is needed. Reuse can be both faster and more stylish. An object can
 always be reused if it is immutable.
-  b. Implementation:In spring boot framwork Autowiring using @Autowired annotation creates the objects for the user when needed.
+
+ b. Implementation:In spring boot framwork Autowiring using @Autowired annotation creates the objects for the user when needed.
+ 
 4. Item 8: Avoid finalizers and cleaners
+
   a. Finalizers are unpredictable, often dangerous, and generally unnecessary. Their use can cause erratic behavior, poor performance, and portability problems. 
+  
   b. Implementation: I didn't use Finalizers in my project
+  
 5. Item 9: Prefer try-with-resources to try-finally :
-  a. Definition: The Java libraries include many resources that must be closed manually by invoking a close method.o be usable with this construct, a resource must implement the AutoCloseable interface, which consists of a single void-returning close method. Many classes and interfaces in the Java libraries and in third-party libraries now implement or extend AutoCloseable. If you write a class that represents a resource that must be closed, your class should implement AutoCloseable too.
+
+ a. Definition: The Java libraries include many resources that must be closed manually by invoking a close method.o be usable with this construct, a resource must implement the AutoCloseable interface, which consists of a single void-returning close method. Many classes and interfaces in the Java libraries and in third-party libraries now implement or extend AutoCloseable. If you write a class that represents a resource that must be closed, your class should implement AutoCloseable too.
   
   
-  b. Implementation : I used try with resourses in my code in multiple methods and for example in tryWritingToFile method as shown below :
+ b. Implementation : I used try with resourses in my code in multiple methods and for example in tryWritingToFile method as shown below :
   
   ```Java
   
@@ -728,8 +737,10 @@ always be reused if it is immutable.
 #### Methods Common to All Objects :
 
 1. Item 12: Always override toString :
+
  a. Definition: Always provide programmatic access to all of the information contained in the value
-returned by toString so the users of the object don't need to parse the output of the toString
+returned by toString so the users of the object don't need to parse the output of the toString.
+
  b. Implementation : Any class definition may be annotated with @ToString to let lombok generate an implementation of the toString() method. By default, it'll print your class name, along with each field, in order, separated by commas. for example in Employee class :
  
  ```Java
@@ -770,30 +781,40 @@ public class Employee extends User {
 ```
 
 2. Item 16: In public classes, use accessor methods, not public fields :
+
   a.  Definition: Degenerate classes should not be public and should be replaced by accessor methods
 (getters) and mutators (setters). 
-   b. Implementation : as the previous point
+
+   b. Implementation : as the previous point.
+   
 3. Item 17: Minimize mutability :
-  a. Definition : An immutable class is simply a class whose instances cannot be modified. All the
+
+ a. Definition : An immutable class is simply a class whose instances cannot be modified. All the
 information contained in each instance is fixed for the lifetime of the object, so no changes can
 ever be observed.
+
   b. Implementation : I didn't make immutable classes.
+  
 4. Item 20: Prefer interfaces to abstract classes :
+
   a. Definition: Because Java permits only single inheritance, this restriction on abstract classes
 severely constrains their use as type definitions. Any class that defines all the required methods
 and obeys the general contract is permitted to implement an interface, regardless of where the
 class resides in the class hierarchy.
-   b. Implementation : I didn't use abstarct classes , and I used alot of interface classes : 
+
+  b. Implementation : I didn't use abstarct classes , and I used alot of interface classes : 
    
    ![image](https://user-images.githubusercontent.com/77013882/132748879-cdf9411c-f130-4781-9f4c-3d23b8812a28.png)
  
  
 #### Generics :
  
-1. Item 28: Prefer lists to arrays
-  a. Definition:
+1. Item 28: Prefer lists to arrays :
+
+ a. Definition:
 Arrays differ from generic types in two important ways. First, arrays are covariant. This scary-sounding word means simply that if Sub is a subtype of Super, then the array type Sub[] is a subtype of the array type Super[]. Generics, by contrast, are invariant: for any two distinct types Type1 and Type2, List<Type1> is neither a subtype nor a supertype of List<Type2> . You might think this means that generics are deficient, but arguably it is arrays that are deficient. 
-  b. Implementation: I didn't use arrays in the code , and I used Lists when needed :
+ 
+ b. Implementation: I didn't use arrays in the code , and I used Lists when needed :
  
  ```Java
   @Override
@@ -826,17 +847,23 @@ Arrays differ from generic types in two important ways. First, arrays are covari
 ```
  
 ####  Methods :
+ 
  1. Item 51: Design method signatures carefully :
+ 
     1- Choose method names carefully : names should always obey the standard naming conventions 
+ 
     2- Don’t go overboard in providing convenience methods : Every method should “pull its weight.” Too many methods make a class difficult to learn, use, document, test, and maintain. 
+ 
     3- Avoid long parameter lists. Aim for four parameters or fewer.
  Some of the rules are discussed in clean code section in details.
  
  
 #### General prgramming :
+
+1. Item 58: Prefer for-each loops to traditional for loops :
  
- 1. Item 58: Prefer for-each loops to traditional for loops :
    a. Definition :  The for-each loop (officially known as the “enhanced for statement”) solves all of these problems. It gets rid of the clutter and the opportunity for error by hiding the iterator or index variable. The resulting idiom applies equally to collections and arrays, easing the process of switching the implementation type of a container from one to the other.
+ 
    b. Implementation : I used for-each when needed in my code , an example is shown below : 
  
 ```Java
@@ -847,18 +874,26 @@ Arrays differ from generic types in two important ways. First, arrays are covari
         }
 ```                                                       
 2. Item 59: Know and use the libraries : 
+                                                         
   a. Definition: By using a standard library, you take advantage of the knowledge of the experts who wrote it and the experience of those who used it before you.
+                                                         
   b. Implemntation : I used libraries almost everywhere in my code .
-3. Item 64: Refer to objects by their interfaces
+                                                         
+3. Item 64: Refer to objects by their interfaces :
+                                                         
    a. Definition:  If appropriate interface types exist, then parameters, return values, variables, and fields should all be declared using interface types. The only time you really need to refer to an object’s class is when you’re creating it with a constructor.
+                                                         
    b. Implementation : for example :
+                                                         
 ```Java
   private static ConcurrentHashMap<Integer, Department> allDepartments;
  ```
  
  #### Exceptions : 
 1. Item 69: Use exceptions only for exceptional conditions :
+ 
  a. Defintion : Exceptions are, as their name implies, to be used only for exceptional conditions; they should never be used for ordinary control flow. 
+ 
  b. Implementation : I used I/O exceptions to handle reading and writing exceptions on files.
  
  ```Java
@@ -868,8 +903,10 @@ Arrays differ from generic types in two important ways. First, arrays are covari
     void write(String fileName) throws IOException;
 }
  ```
-2.  Item 75: Include failure-capture information in detail messages
- a. Definition: To capture a failure, the detail message of an exception should contain the values of all parameters and fields that contributed to the exception. 
+2.  Item 75: Include failure-capture information in detail messages :
+ 
+ a. Definition: To capture a failure, the detail message of an exception should contain the values of all parameters and fields that contributed to the exception.  
+ 
  b. Implementation : I write specific messages for failure to be displayed on the console , but since it is a web app I need to update it to be displayed on the client side . for example :
  
  ```Java
@@ -877,9 +914,13 @@ display("Can't update, employee with id " + employee.getId() + " doesn't exist."
 ```
  
  #### Concurrency: 
+ 
  1. Item 78: Synchronize access to shared mutable data :
+ 
   a. Definetion : The synchronized keyword ensures that only a single thread can execute a method or block at one time. Synchronization is required for reliable communication between threads as well as for mutual exclusion. This is due to a part of the language specification known as the memory model, which specifies when and how changes made by one thread become visible to others.
+ 
   b. Implementation : To achieve thread saftey I used synchronized keyword whenever I have to access the database as shown below :
+ 
 ``` Java
   public void putInDepartmentsTable(Department department) throws IOException {
         synchronized (getTableLRUCache()) {
