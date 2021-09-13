@@ -32,13 +32,15 @@ Back end is implemented using Java.
 ### Database:
 
 We have 3 tables in the database :
-1- employees table with 4 columns : id(primary key), name, salary ,departmentId (foreign key)
-2- departments table with 2 columns: id(primary key), name, location.
 
-employees table and department tables are related to each other, they are often related by departmentId in employees table referencing the primary key id of the departments table .
+1- Employees table with 4 columns : id(primary key), name, salary ,departmentId (foreign key)
 
-3-users table with 4 columns : username(primary key), id(foreign key),password,role.
-employees table and users tables are related to each other, they are often related by id in users table referencing the primary key id of the employees table .
+2- Departments table with 3 columns: id(primary key), name, location.
+
+employees table and department tables are related to each other, they are related by departmentId in employees table referencing the primary key id of the departments table .
+
+3-Users table with 4 columns : username(primary key), id(foreign key),password,role.
+employees table and users tables are related to each other, they are related by id in users table referencing the primary key id of the employees table .
 roles column in users table to define the role for each user to access the DB .
 
 
@@ -68,27 +70,29 @@ I used ConcurrentHashMap for the implementation because:
 -	There is no locking at the object level.
 -	ConcurrentHashMap does not allow NULL values, so the key can not be null in ConcurrentHashMap which helps to implement the idea of primary key that must not be null.
 
-### Once the database is initialised the records which are saved in employees csv file departments csv file and users csv file, are all stored in allEmployees,allDepartments,allUsers ConcurrentHashMap which will present the idea of In-Memory DataBase.
+### Once the database is initialised the records which are saved in employees csv file ,departments csv file and users csv file, are all stored in allEmployees,allDepartments,allUsers ConcurrentHashMap which will present the idea of In-Memory DataBase.
 
-#### tables in disk:
+#### Tables in the disk:
 
 I saved the records in a csv file which represents the disk storge, The CSV stands for Comma-Separated Values. It is a simple file format which is used to store tabular data in simple text form, such as a spreadsheet or database. The files in the CSV format can be imported to and exported from programs (Microsoft Office and Excel) which store data in tables. The CSV file used a delimiter to identify and separate different data token in a file. The CSV file format is used when we move tabular data between programs that natively operate on incompatible formats. There are following ways to read CSV file in Java. The default separator of a CSV file is a comma (,) but I used semicolon, there is no reason for that.
-Employee table as saved in csv file , where the first column is the id which represents the primary key, the second column is the employee name and the third represents the salary.
+Employees table as saved in csv file , where the first column is the id which represents the primary key, the second column is the employee name , the third represents the salary, and the fourth represents the departmentId which is a foreign key in employees table referencing the primary key id in departments table ,which is saved in a csv file and has 3 columns which are id as a primary key, name of the department and the location .
 
 
 #### Synchronization 
+
 Synchronization in java is the capability to control the access of multiple threads to any shared resource.
 Java Synchronization is better option where we want to allow only one thread to access the shared resource. So only be executed by one thread at a time. 
 
 1) the synchronized keyword in Java provides locking, which ensures mutually exclusive access to the shared resource and prevents data race.
 
-2) synchronized keyword also prevents reordering of code statement by the compiler which can cause a subtle concurrent issue if we don't use synchronized or volatile keyword.
+2) synchronized keyword also prevents reordering of code statement by the compiler which can cause a subtle concurrent issue if we don't use synchronized keyword.
 
 3) synchronized keyword involves locking and unlocking.
 
 Because multithreading is used and the application can have many clients that can read/write to the database, synchronized keyword is used whenever there is an access to the database whether to initialize it or create records. [thread saftey in singlteon](#1-Singelton-design-pattern)
 All synchronized blocks synchronized on the same object can only have one thread executing inside them at a time. All other threads attempting to enter the synchronized block are blocked until the thread inside the synchronized block exits the block.
 for example:
+
 in adding and removing:
 
 ```Java
@@ -96,13 +100,10 @@ in adding and removing:
 public void putInEmployeesTable(Employee employee) throws IOException {
         synchronized (getTableLRUCache()) {
 
-
-            for (Integer integer : getTableLRUCache().snapshot().keySet()) {
-                getAllEmployees().put(integer, (Employee) Objects.requireNonNull(getTableLRUCache().get(integer)));
+..
             }
 
-            getAllEmployees().put(employee.getId(), employee);
-            setTableLRUCache(employee.getId(), employee);
+            ..
 
         }
         writeInLogger();
@@ -110,31 +111,34 @@ public void putInEmployeesTable(Employee employee) throws IOException {
     
     public void removeFromTableCache(int id) throws IOException {
         synchronized (getTableLRUCache()) {
-            getTableLRUCache().remove(id);
-        }
-        writeInLogger();
-    }
+..
+}
+..
+}
     
 ```
 
 -----------------------------------------------------------------------------------------------------------
 
-## Front-End :
-In the front end I used Spring framework :
-Java Spring Framework (Spring Framework) is a popular, open source, enterprise-level framework for creating standalone, production-grade applications that run on the Java Virtual Machine (JVM).
+# Spring Framework
 
-Java Spring Boot (Spring Boot) is a tool that makes developing web application and microservices with Spring Framework faster and easier through three core capabilities:
+Spring: Spring Framework is the most popular application development framework of Java. The main feature of the Spring Framework is dependency Injection or Inversion of Control (IoC). With the help of Spring Framework, we can develop a loosely coupled application.
 
-1. Autoconfiguration
-2. An opinionated approach to configuration
-3. The ability to create standalone applications
-These features work together to provide the user with a tool that allows to set up a Spring-based application with minimal configuration and setup.
+Spring Boot: Spring Boot is a module of Spring Framework. It allows us to build a stand-alone application with minimal or zero configurations. 
+It aims to shorten the code length and provide the easiest way to develop Web Applications.
+The primary feature of Spring Boot is Autoconfiguration. It automatically configures the classes based on the requirement.
+It helps to create a stand-alone application with less configuration.
+Spring Boot offers embedded server such as Jetty and Tomcat, etc.
+Spring Boot comes with the concept of starter in pom.xml file that internally takes care of downloading the dependencies JARs based on Spring Boot Requirement.
 
 ### MVC in the code :
 
-####  M-Model :
-I have 3 models :user , admin and employee
+#### M-Model :
+
+I have 4 models :Department, User , Admin and Employee
+
 #### V-View : the views are in jsp 
+
 JavaServer Pages (JSP) is a Java standard technology that enables you to write dynamic, data-driven pages for your Java web applications. JSP is built on top of the Java Servlet specification. The two technologies typically work together, especially in older Java web applications. From a coding perspective, the most obvious difference between them is that with servlets you write Java code and then embed client-side markup (like HTML) into that code, whereas with JSP you start with the client-side script or markup, then embed JSP tags to connect your page to the Java backend.
 
 and I used JSTL library to make use of the data comes from the controller
@@ -142,21 +146,22 @@ and I used JSTL library to make use of the data comes from the controller
 The JSP Standard Tag Library (JSTL) represents a set of tags to simplify the JSP development.
 
 #### Advantage of JSTL
+
 1. Fast Development JSTL provides many tags that simplify the JSP.
 2. Code Reusability We can use the JSTL tags on various pages.
-3. No need to use scriptlet tag It avoids the use of scriptlet tag.
-
+3. No need to use scriptlet tag It avoids the use of scriptlet tag. <%  java source code %>  
 
 
 #### C-Controller :
-these are the following controller classes :
+These are the following controller classes :
 ![image](https://user-images.githubusercontent.com/77013882/132759547-f5cd65dc-2f98-4178-a066-4c0f64585b42.png)
 
-In Spring Boot, the controller class is responsible for processing incoming REST API requests, preparing a model, and returning the view to be rendered as a response.
+In Spring Boot, the controller class is responsible for processing incoming requests, preparing a model, and returning the view to be rendered as a response.
 
-The controller classes in Spring are annotated either by the @Controller annotation. this mark controller classes as a request handler to allow Spring to recognize it as a RESTful service during runtime.
+The controller classes in Spring are annotated by the @Controller annotation. this mark controller classes as a request handler to allow Spring to recognize it as a RESTful service during runtime.
 
 #### The @Controller Annotation :
+
 The @Controller annotation is a specialization of the generic stereotype @Component annotation, which allows a class to be recognized as a Spring-managed component.
 
 The @Controller annotation extends the use-case of @Component and marks the annotated class as a business or presentation layer. When a request is made, this will inform the DispatcherServlet to include the controller class in scanning for methods mapped by the @RequestMapping , @GetMapping annotations.
@@ -190,21 +195,25 @@ public class AdminController {
 }
 ```
 ---------------------------------------------------------------------------------------------------------------------------------------
+
 ## Authorization & Authentication:
 
 ### I used Spring Security to redirect to different types of pages after Login:
+
 1- The Spring Security Configuration
+
 Spring Security provides a component that has the direct responsibility of deciding what to do after a successful *authentication* – 
 _the AuthenticationSuccessHandler_.
  
 #### Firstly, users and their roles needs to be configured.
+
 In my code I implemented UserDetailService with 2 types of users, each having one single role.
 I have an admin , and employees 
 - admin has the role of ADMIN,
 - and every employee has the role of EMPLOYEE
 
 
-So to get the users roles from users table in the database I Implemented UserDetails and UserDetaisService:
+So to get the users roles from users table in the database I Implemented UserDetails and UserDetailsService:
 Spring Security requires an implementation of UserDetails interface to know about the authenticated user information, so I created the NewUserDetails class as follows:
 
 ```Java
@@ -225,8 +234,7 @@ public class NewUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        System.out.println(user.getPassword());
-
+   
         return  new BCryptPasswordEncoder().encode(user.getPassword());
 
     }
@@ -269,7 +277,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 }
 ```
-In this class , the method  ```public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and redirect it to NewUserDetails to make user from the information that are loaded and get the authorities of the users.
+In this class , the method  ```public UserDetails loadUserByUsername(String username)``` will be invoked by Spring Security when authenticating the users. It will use the readUser(username) method that comes from UserTableDAO to get the user with its information using its username from the users table in the database ,and redirect it to NewUserDetails to make use of the information that are loaded and get the authorities of the users.
 
 
 ## Configure Spring Security Authentication & Authorization :
@@ -277,13 +285,12 @@ In this class , the method  ```public UserDetails loadUserByUsername(String user
 ### And to connect all the pieces together, Spring Security configuration class is implemented as follows :
 
 I configure the basic @Configuration ``` SecurityConfigurer ``` class that extends ``` WebSecurityConfigurerAdapter ```  .
+
 ```Java
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    UserTableDAO userTableDAO;
 
     public SecurityConfigurer() {
         super();
@@ -293,13 +300,11 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
 
-        auth.authenticationProvider(authenticationProvider());
-
-
+        auth.authenticationProvider(getAuthenticationProvider());
     }
 
 
-  @Override
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/login**", "/register**").permitAll()
@@ -314,21 +319,22 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.headers().frameOptions().disable();
     }
+
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService getUserDetails() {
         return new UserDetailsServiceImpl();
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider getAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(getUserDetails());
+        authProvider.setPasswordEncoder(getPasswordEncoder());
 
         return authProvider;
     }
@@ -338,29 +344,26 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         return new UrlAuthenticationSuccessHandler();
     }
 
-    @Bean("authenticationManager")
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+
 }
+
 ```
 these methods are needed to configure an authentication provider :
 
 ```Java 
 @Bean
-    public UserDetailsService userDetailsService() 
+    public UserDetailsService getUserDetails() 
     
 @Bean
-    public BCryptPasswordEncoder passwordEncoder()
+    public BCryptPasswordEncoder getPasswordEncoder()
 @Bean
-    public DaoAuthenticationProvider authenticationProvider()
+    public DaoAuthenticationProvider getAuthenticationProvider()
 @Override
     protected void configure(AuthenticationManagerBuilder auth)
      
 ``` 
 
-And in this method I configure HTTP Security for authentication and authorization then redirect the users based on their rolse . Where the ``` getAuthenticationSuccessHandler ```  is called inside ``` successHandler ``` .
+And in this method I configure HTTP Security for authentication and authorization then redirect the users based on their roles . Where the ``` getAuthenticationSuccessHandler ```  is called inside ``` successHandler ``` .
 
  ```Java
  @Override
@@ -382,16 +385,18 @@ this custom SuccessHandler is defined as a bean :
 
 and it is put in the ``` successHandler ``` method that accepts it to redirect every user to their custom page.
 
-I give the Admin the access to every page ,and the user to only the employee page .
+I give the Admin the access to every page ,and the employee to only the employee page .
 
  -------------
  #### 3. The Custom Authentication Success Handler
+ 
 Besides the AuthenticationSuccessHandler interface, Spring also provides a sensible default for this strategy component – the ``` AbstractAuthenticationTargetUrlRequestHandler ``` and a simple implementation – the ``` UrlAuthenticationSuccessHandler ```.so this implementations will determine the URL after login and perform a redirect to that URL.
 
 So after the implementation of the interface ``` AuthenticationSuccessHandler ``` ,i needed to provide a custom implementation of the success handler.
 This implementation is going to determine the URL to redirect the user to after login based on the role of the user. 
 
 First of all, we need to override the ``` onAuthenticationSuccess ``` method:
+
  ```Java  
  public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -417,7 +422,7 @@ First of all, we need to override the ``` onAuthenticationSuccess ``` method:
 In the implementation of ``` onAuthenticationSuccess ``` we call these methods:
 
 ``` Java 
-  protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException, IOException {
+  protected void handle(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) throws IOException {
         final String targetUrl = determineTargetUrl(authentication);
 
         if (response.isCommitted()) {
@@ -427,7 +432,7 @@ In the implementation of ``` onAuthenticationSuccess ``` we call these methods:
 
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
-    
+
     
      protected final void clearAuthenticationAttributes(final HttpServletRequest request) {
         final HttpSession session = request.getSession(false);
@@ -477,6 +482,7 @@ and user to "/employeeView" url.
 
 
 ## HandlerInterceptor:
+
 One of the use cases of HandlerInterceptor is adding common/user specific parameters to a model, which will be available on each generated view.
 
 In my app , I used custom interceptor implementation to add logged user's username to model parameters.
@@ -507,7 +513,8 @@ When an HttpSession is established, but nobody is logged in, a username in Sprin
 
 ------
 
-##### Method preHandle()
+##### Method preHandle() 
+
 Before handling a request, we cannot access model parameters. In order to add username, we need to use HttpSession to set parameters:
 
 ```Java
@@ -597,7 +604,9 @@ public void addInterceptors(InterceptorRegistry registry) {
 }
 ```
 -------------------------------------------------------------------------------------------------------------
+
 # DevOps :
+
 DevOps is a set of practices that works to automate and integrate the processes between software development and IT teams, so they can build, test, and release software faster and more reliably.I used Jenkins as DevOps engine.
 
 What is Jenkins?
@@ -610,23 +619,27 @@ I worked with Jenkins and Tomcat as ec2 instances on AWS :
 when I commit and push any change on the back end to the GitHub, the jenkins server will build ,test and deploy it on the tomcat container.
 
 ---------------------------------------------------------------------------------------------------------
+
 # Effective Java Code Principles
  
 ## Effective Java Book : 
+
 THIS book is designed to help you make effective use of the Java programming language and its fundamental libraries: java.lang, java.util, and java.io, and subpackages such as java.util.concurrent and java.util.function. Other libraries are discussed from time to time.
 
 This book consists of ninety items, each of which conveys one rule. The rules capture practices generally held to be beneficial by the best and most experienced programmers. The items are loosely grouped into eleven chapters, each covering one broad aspect of software design. The book is not intended to be read from cover to cover: each item stands on its own, more or less. 
 
 
 ### Code principles:
+
 #### Creating and Destroying Objects :
+
 1. Item 3: Enforce the singleton property with a private constructor or an enum type:
 
-   a. Defention: A singleton is simply a class that is instantiated exactly once [Gamma95]. Singletons typically represent either a stateless object such as a function (Item 24) or a system component that is intrinsically unique. Making a class a singleton can make it difficult to test its clients because it’s impossible to substitute a mock implementation for a singleton unless it implements an interface that serves as its type.
-
+   a. Defention: A singleton is simply a class that is instantiated exactly once [Gamma95]. Singletons typically represent either a stateless object such as a function (Item 24) or a system component that is intrinsically unique. By providing a private constructor you prevent class instances from being created in any place other than this very class.
 
    b. Implementation:
 There are two common ways to implement singletons. Both are based on keeping the constructor private and exporting a public static member to provide access to the sole instance. 
+
 In the second approach to implementing singletons, the public member is a static factory method:
 
    All calls to Database.getDatabse() return the same object reference, and no other Databas instance will ever be created.
@@ -650,7 +663,8 @@ public class Database {
 constructor when creating a new instance, this allows for an easier code scalability when new
 requirements are needed in the project.
  
-   b. Implementation : since I used spring boot framework ,Dependency Injection is a fundamental aspect of the Spring framework, through which the Spring container “injects” objects into other objects or “dependencies”. Simply put, this allows for loose coupling of components and moves the responsibility of managing components onto the container. 
+   b. Implementation : since I used spring boot ,Dependency Injection is a fundamental aspect of the Spring framework, through which the Spring container “injects” objects into other objects or “dependencies”. Simply put, this allows for loose coupling of components and moves the responsibility of managing components onto the container. 
+   
   for example : 
   1- Constructor-Based Dependency Injection: In the case of constructor-based dependency injection, the container will invoke a constructor with arguments each representing a dependency we want to set. Spring resolves each argument primarily by type, followed by name of the attribute, and index for disambiguation. Let's see the configuration of a bean and its dependencies using annotations:
   
@@ -693,13 +707,14 @@ public class AdminController {
 
     @Autowired
     EmployeeTableDAO employeeTableDAO;
+    
     @Autowired
     DepartmentsTableDAO departmentTableDAO;
 ...
 
 }
 ```
- While constructing the AdminController object, if there's no constructor or setter method to inject the EmployeeTableDAO bean or DepartmentsTableDAO, the container will use reflection to inject them into AdminController.
+
 
 3. Item 6: Avoid creating unnecessary objects
 
@@ -786,7 +801,9 @@ public class Employee extends User {
    a.  Definition: Degenerate classes should not be public and should be replaced by accessor methods
 (getters) and mutators (setters). 
 
-   b. Implementation : as the previous point.
+   b. Implementation : Any class definition may be annotated with @Data to let lombok generate an implementation of accessor methods
+(getters) and mutators (setters). 
+
    
 3. Item 17: Minimize mutability :
 
@@ -825,8 +842,11 @@ Arrays differ from generic types in two important ways. First, arrays are covari
 ```
  
 #### Enums and Annotations:
+ 
  1. Item 34: Use enums instead of int constants :
+ 
   a. Definition : An enumerated type is a type whose legal values consist of a fixed set of constants.Enums provide compile-time type safety. 
+ 
   b. Implementation : I replaced the usage of (int constant) with enums as shown below :
  
  ```Java
@@ -891,6 +911,7 @@ Arrays differ from generic types in two important ways. First, arrays are covari
  ```
  
  #### Exceptions : 
+ 
 1. Item 69: Use exceptions only for exceptional conditions :
  
    a. Defintion : Exceptions are, as their name implies, to be used only for exceptional conditions; they should never be used for ordinary control flow. 
