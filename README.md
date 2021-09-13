@@ -743,8 +743,10 @@ public class Employee extends User {
 #### Classes and Interfaces :
 
 1. Item 15: Minimize the accessibility of classes and members : 
-  a. Definition : The single most important factor that distinguishes a well-designed component from a poorly designed one is the degree to which the component hides its internal data and other implementation details from other components. A well-designed component hides all its implementation details, cleanly separating its API from its implementation. Components then communicate only through their APIs and are oblivious to each others’ inner workings. This concept, known as information hiding or encapsulation, is a fundamental tenet of software design.
-  b. Implementation :I set the fields to be private and annotated them with @Getter ,and @Setter annotations to encapsualtes them as shown below :
+
+ a. Definition : The single most important factor that distinguishes a well-designed component from a poorly designed one is the degree to which the component hides its internal data and other implementation details from other components. A well-designed component hides all its implementation details, cleanly separating its API from its implementation. Components then communicate only through their APIs and are oblivious to each others’ inner workings. This concept, known as information hiding or encapsulation, is a fundamental tenet of software design.
+ 
+ b. Implementation :I set the fields to be private and annotated them with @Getter ,and @Setter annotations to encapsualtes them as shown below :
   
   ```Java
   
