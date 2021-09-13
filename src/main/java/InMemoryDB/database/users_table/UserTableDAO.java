@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserTableDAO {
 
-     User createUser(User user) throws IOException;
+    User createUser(User user) throws IOException;
 
     User readUser(String username) throws IOException;
 

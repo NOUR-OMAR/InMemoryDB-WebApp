@@ -18,7 +18,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         InMemoryDB.model.User user = null;
-        System.out.println(username);
         try {
             user = userTableDAO.readUser(username);
             System.out.println(user);

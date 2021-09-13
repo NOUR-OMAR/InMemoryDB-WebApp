@@ -26,7 +26,6 @@ public class DepartmentRecord implements RecordHandler {
         department.setName(departmentRecord[1]);
         department.setLocation(departmentRecord[2]);
         Department.departments.put(Integer.parseInt(departmentRecord[0]), department);
-//display(String.valueOf(Department.departments));
     }
 
     @Override

@@ -1,9 +1,10 @@
 package InMemoryDB.model;
 
 public enum Roles {
+
     EMPLOYEE("EMPLOYEE"), ADMIN("ADMIN");
 
-    private String role;
+    private final String role;
 
     Roles(String role) {
         this.role=role;

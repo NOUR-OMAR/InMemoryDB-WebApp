@@ -3,7 +3,6 @@ package InMemoryDB.database.departments_table;
 import InMemoryDB.database.Database;
 import InMemoryDB.model.Department;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -12,6 +11,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import static InMemoryDB.database.Database.getDatabase;
 import static InMemoryDB.utils.Display.display;
 
 
@@ -19,14 +19,14 @@ import static InMemoryDB.utils.Display.display;
 @Component
 public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
-    @Autowired
-    private final Database database;
+    //  @Autowired
+    //private final Database database;
 
     @Override
     public void createDepartment(Department department) throws IOException {
-        if (database.getDepartment(department.getId()) == null) {
+        if (getDatabase().getDepartment(department.getId()) == null) {
 
-            database.putInDepartmentsTable(department);
+            getDatabase().putInDepartmentsTable(department);
 
         } else {
             display("Can't create, department with id " + department.getId() + " already existed.");
@@ -35,14 +35,14 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
     @Override
     public Department readDepartment(int id) throws IOException {
-        return database.getDepartment(id);
+        return getDatabase().getDepartment(id);
     }
 
     @Override
     public void updateDepartment(Department department) throws IOException {
-        if (database.getDepartment(department.getId()) != null) {
+        if (getDatabase().getDepartment(department.getId()) != null) {
 
-            database.putInDepartmentsTable(department);
+            getDatabase().putInDepartmentsTable(department);
 
         } else {
             display("Can't create, department with id " + department.getId() + " already existed.");
@@ -52,11 +52,11 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
     @Override
     public void deleteDepartment(int id) throws IOException {
-        synchronized (database) {
+        synchronized (getDatabase()) {
             if (Database.getTableLRUCache().snapshot().containsKey(id)) {
-                database.removeFromTableCache(id);
+                getDatabase().removeFromTableCache(id);
             } else if (Database.getAllDepartments().containsKey(id)) {
-                database.removeFromDepartmentsTable(id);
+                getDatabase().removeFromDepartmentsTable(id);
             } else {
                 display("Can't delete,department with id " + id + " doesn't exist");
             }
@@ -70,7 +70,7 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
         Map<Integer, Department> departmentHashtable = new Hashtable<>();
 
-        for (Map.Entry<Integer, Department> department : database.getDepartmentsTable().entrySet()) {
+        for (Map.Entry<Integer, Department> department : getDatabase().getDepartmentsTable().entrySet()) {
             if (department.getValue().getName().toLowerCase().startsWith(name.toLowerCase())) {
                 departmentHashtable.put(department.getKey(), department.getValue());
             }
@@ -84,7 +84,7 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
         Map<Integer, Department> departmentHashtable = new Hashtable<>();
 
-        for (Map.Entry<Integer, Department> department : database.getDepartmentsTable().entrySet()) {
+        for (Map.Entry<Integer, Department> department : getDatabase().getDepartmentsTable().entrySet()) {
             if (department.getValue().getLocation().toLowerCase().startsWith(location.toLowerCase())) {
                 departmentHashtable.put(department.getKey(), department.getValue());
             }
@@ -96,13 +96,13 @@ public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
     @Override
     public void close() throws IOException {
-        database.close();
+        getDatabase().close();
     }
 
     @Override
     public List<Department> selectAll() throws IOException {
 
-        return new ArrayList<>(database.getDepartmentsTable().values());
+        return new ArrayList<>(getDatabase().getDepartmentsTable().values());
     }
 
 }

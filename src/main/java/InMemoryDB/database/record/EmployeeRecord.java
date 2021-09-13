@@ -31,11 +31,10 @@ public class EmployeeRecord implements RecordHandler {
         employee.setName(employeeRecord[1]);
         employee.setSalary(Integer.parseInt(employeeRecord[2]));
         employee.setDepartment(Department.departments.get(Integer.parseInt(employeeRecord[3])));
-      //  Employee.employeesDepartments.put(employee,Department.departments.get(employeeRecord[3]));
     }
 
     @Override
-    public Employee parseRecord(String record) throws IllegalArgumentException {//TODO was static
+    public Employee parseRecord(String record) throws IllegalArgumentException {
         employee = new Employee();
         tryParsingRecord(record);
         return employee;

@@ -19,18 +19,18 @@ public interface EmployeeTableDAO {
 
     void deleteEmployee(int id) throws IOException;
 
-    Employee readEmployee(int id);
+    Employee readEmployee(int id) throws IOException;
 
-    Map<Integer, Employee> filterByName(String name);
+    Map<Integer, Employee> filterByName(String name) throws IOException;
 
-    Map<Integer, Employee> filterBySalaryGT(int salary);
+    Map<Integer, Employee> filterBySalaryGT(int salary) throws IOException;
 
-    Map<Integer, Employee> filterBySalaryLT(int salary);
+    Map<Integer, Employee> filterBySalaryLT(int salary) throws IOException;
 
-    Map<Integer, Employee> filterBySalaryEQ(int salary);
+    Map<Integer, Employee> filterBySalaryEQ(int salary) throws IOException;
 
     void close() throws IOException;
 
-    List<Employee> selectAll();
+    List<Employee> selectAll() throws IOException;
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class NewUserDetails implements UserDetails {
 
-    private User user;
+    private final User user;
 
     public NewUserDetails(User user) {
         this.user = user;
@@ -20,10 +20,8 @@ public class NewUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
       String role = user.getRole();
-        System.out.println(role);
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority(role));
-        System.out.println(authorities);
         return authorities;    }
 
     @Override

@@ -14,6 +14,7 @@ import java.io.IOException;
 
 @Controller
 public class RegisterController {
+
     @Autowired
     UserTableDAO userTableDAO;
 
@@ -28,7 +29,7 @@ public class RegisterController {
         User user = new User(id, username, password, Roles.EMPLOYEE.getRole());
         userTableDAO.createUser(user);
         userTableDAO.close();
-        System.out.println(userTableDAO.selectAll());
+
         modelAndView.setViewName("redirect:/login?success");
         return modelAndView;
 

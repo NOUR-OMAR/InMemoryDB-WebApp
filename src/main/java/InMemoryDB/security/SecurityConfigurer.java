@@ -1,11 +1,8 @@
 package InMemoryDB.security;
 
-import InMemoryDB.database.users_table.UserTableDAO;
 import InMemoryDB.model.Roles;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,8 +16,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    UserTableDAO userTableDAO;
 
     public SecurityConfigurer() {
         super();
@@ -30,9 +25,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
 
-        auth.authenticationProvider(authenticationProvider());
-
-
+        auth.authenticationProvider(getAuthenticationProvider());
     }
 
 
@@ -53,20 +46,20 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService getUserDetails() {
         return new UserDetailsServiceImpl();
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider getAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(getUserDetails());
+        authProvider.setPasswordEncoder(getPasswordEncoder());
 
         return authProvider;
     }
@@ -76,9 +69,5 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         return new UrlAuthenticationSuccessHandler();
     }
 
-    @Bean("authenticationManager")
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+
 }
