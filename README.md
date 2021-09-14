@@ -24,9 +24,10 @@ web application.
 5- Extend the DB design to include another entity (table), that has a relation with the first table. i.e. primary key/ foreign key. 
 
 ------------------------------------------------------------------------------------
-# Back-End :
-Back end is implemented using Java.
 
+# Back-End :
+
+Back end is implemented using Java.
 ## In-MemoryDB Implementation:
 
 ### Database:
@@ -46,7 +47,7 @@ roles column in users table to define the role for each user to access the DB .
 
 I implemented the idea of in-memory Database using ConcurrentHashMap.
 
-```java
+```Java
  @Setter
     @Getter
     private static ConcurrentHashMap<Integer, Employee> allEmployees;
@@ -57,8 +58,7 @@ I implemented the idea of in-memory Database using ConcurrentHashMap.
 
     @Setter
     @Getter
-    private static ConcurrentHashMap<String, User> allUsers;
-    
+    private static ConcurrentHashMap<String, User> allUsers;   
  ```
 I used ConcurrentHashMap for the implementation because:
 
@@ -96,7 +96,6 @@ for example:
 in adding and removing:
 
 ```Java
-
 public void putInEmployeesTable(Employee employee) throws IOException {
         synchronized (getTableLRUCache()) {
 
@@ -114,8 +113,7 @@ public void putInEmployeesTable(Employee employee) throws IOException {
 ..
 }
 ..
-}
-    
+}   
 ```
 
 -----------------------------------------------------------------------------------------------------------
@@ -246,14 +244,16 @@ public class NewUserDetails implements UserDetails {
     ..
     ..
     
- ```
- ```Java
+```
+ 
+```Java
  public Collection<? extends GrantedAuthority> getAuthorities()
- ``` 
+``` 
+ 
  method ,returns the roles(authorities) of the user from the users table to be used by Spring Security in the authorization process.
  after that we need to code an implementation of the UserDetailsService interface defined by Spring Security with the following code:
  
- ```Java
+```Java
  @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -365,7 +365,7 @@ these methods are needed to configure an authentication provider :
 
 And in this method I configure HTTP Security for authentication and authorization then redirect the users based on their roles . Where the ``` getAuthenticationSuccessHandler ```  is called inside ``` successHandler ``` .
 
- ```Java
+```Java
  @Override
     protected void configure(HttpSecurity http)
 ```
@@ -388,7 +388,7 @@ and it is put in the ``` successHandler ``` method that accepts it to redirect e
 I give the Admin the access to every page ,and the employee to only the employee page .
 
  -------------
- #### 3. The Custom Authentication Success Handler
+#### 3. The Custom Authentication Success Handler
  
 Besides the AuthenticationSuccessHandler interface, Spring also provides a sensible default for this strategy component – the ``` AbstractAuthenticationTargetUrlRequestHandler ``` and a simple implementation – the ``` UrlAuthenticationSuccessHandler ```.so this implementations will determine the URL after login and perform a redirect to that URL.
 
@@ -397,7 +397,7 @@ This implementation is going to determine the URL to redirect the user to after 
 
 First of all, we need to override the ``` onAuthenticationSuccess ``` method:
 
- ```Java  
+```Java  
  public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     protected final Log logger = LogFactory.getLog(this.getClass());
@@ -450,7 +450,7 @@ In the implementation of ``` onAuthenticationSuccess ``` we call these methods:
      
 and the actaul mapping for role to its target URL is done in this method:
 
-``` Java 
+```Java 
 
 protected String determineTargetUrl(final Authentication authentication) {
 
@@ -470,15 +470,12 @@ protected String determineTargetUrl(final Authentication authentication) {
     }
 ```
 as we can see admin will be redirected to "/adminView" url ,
-
 ![Screenshot (185)](https://user-images.githubusercontent.com/77013882/132761827-cf977f39-87d8-4445-a9aa-16dcdef43dd3.png)
 
 
 
 and user to "/employeeView" url.
-
 ![Screenshot (189)](https://user-images.githubusercontent.com/77013882/132761776-cefc44bd-2207-4278-b94d-130c47164857.png)
-
 
 
 ## HandlerInterceptor:
@@ -489,7 +486,7 @@ In my app , I used custom interceptor implementation to add logged user's userna
 
 I extended HandlerInterceptorAdapter, as I only want to implement preHandle() and postHandle() methods.
 
-``` Java
+```Java
 public class UserInterceptor extends HandlerInterceptorAdapter {
 ..
 ..
@@ -627,7 +624,6 @@ when I commit and push any change on the back end to the GitHub, the jenkins ser
 THIS book is designed to help you make effective use of the Java programming language and its fundamental libraries: java.lang, java.util, and java.io, and subpackages such as java.util.concurrent and java.util.function. Other libraries are discussed from time to time.
 
 This book consists of ninety items, each of which conveys one rule. The rules capture practices generally held to be beneficial by the best and most experienced programmers. The items are loosely grouped into eleven chapters, each covering one broad aspect of software design. The book is not intended to be read from cover to cover: each item stands on its own, more or less. 
-
 
 ### Code principles:
 
@@ -775,7 +771,7 @@ public class Employee extends User {
  
    b. Implementation :I set the fields to be private and annotated them with @Getter ,and @Setter annotations to encapsualtes them as shown below :
   
-  ```Java
+```Java
   
     @Getter
     private static final LRUCache<Integer, Object> tableLRUCache = new LRUCache<>(CacheMaxSize.CACHE_MAX_SIZE.getSize());
@@ -822,7 +818,7 @@ class resides in the class hierarchy.
 
    b. Implementation : I didn't use abstarct classes , and I used alot of interface classes : 
    
-   ![image](https://user-images.githubusercontent.com/77013882/132748879-cdf9411c-f130-4781-9f4c-3d23b8812a28.png)
+![image](https://user-images.githubusercontent.com/77013882/132748879-cdf9411c-f130-4781-9f4c-3d23b8812a28.png)
  
  
 #### Generics :
@@ -834,7 +830,7 @@ Arrays differ from generic types in two important ways. First, arrays are covari
  
    b. Implementation: I didn't use arrays in the code , and I used Lists when needed :
  
- ```Java
+```Java
   @Override
     public List<Employee> selectAll() {
         return new ArrayList<>(database.getEmployeesTable().values());
@@ -849,7 +845,7 @@ Arrays differ from generic types in two important ways. First, arrays are covari
  
   b. Implementation : I replaced the usage of (int constant) with enums as shown below :
  
- ```Java
+```Java
  public enum RecordLength {
 
 
@@ -867,7 +863,7 @@ Arrays differ from generic types in two important ways. First, arrays are covari
 }
 ```
  
-####  Methods :
+#### Methods :
  
  1. Item 51: Design method signatures carefully :
  
@@ -877,7 +873,6 @@ Arrays differ from generic types in two important ways. First, arrays are covari
  
     3- Avoid long parameter lists. Aim for four parameters or fewer.
  Some of the rules are discussed in clean code section in details.
- 
  
 #### General prgramming :
 
@@ -908,9 +903,9 @@ Arrays differ from generic types in two important ways. First, arrays are covari
                                                          
 ```Java
   private static ConcurrentHashMap<Integer, Department> allDepartments;
- ```
+```
  
- #### Exceptions : 
+#### Exceptions : 
  
 1. Item 69: Use exceptions only for exceptional conditions :
  
@@ -918,26 +913,26 @@ Arrays differ from generic types in two important ways. First, arrays are covari
  
     b. Implementation : I used I/O exceptions to handle reading and writing exceptions on files.
  
- ```Java
+```Java
  public interface FileHandler {
     void initialize() throws IOException;
 
     void write(String fileName) throws IOException;
 }
- ```
+```
 2. Item 75: Include failure-capture information in detail messages :
  
    a. Definition: To capture a failure, the detail message of an exception should contain the values of all parameters and fields that contributed to the exception.  
  
    b. Implementation : I write specific messages for failure to be displayed on the console , but since it is a web app I need to update it to be displayed on the client side . for example :
  
- ```Java
+```Java
 display("Can't update, employee with id " + employee.getId() + " doesn't exist.");
 ```
  
- #### Concurrency: 
+#### Concurrency: 
  
- 1. Item 78: Synchronize access to shared mutable data :
+1. Item 78: Synchronize access to shared mutable data :
  
     a. Definetion : The synchronized keyword ensures that only a single thread can execute a method or block at one time. Synchronization is required for reliable communication between threads as well as for mutual exclusion. This is due to a part of the language specification known as the memory model, which specifies when and how changes made by one thread become visible to others.
  
@@ -961,9 +956,10 @@ display("Can't update, employee with id " + employee.getId() + " doesn't exist."
     }
  ```                       
 
-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------
 
 # Clean Code
+ 
 >Even bad code can function. But if code isn't clean, it can bring a development organization to its knees.
 
 In this section I will discuss all the code smells that are mentioned in Robert Martin’s Clean Code book and how I tried to avoid them and satisfy clean code principles.
@@ -1236,7 +1232,9 @@ In general, we follow the below steps to create a singleton class:
 1.	Create the private constructor to avoid any new object creation with new operator.
 2.	Declare a private static instance of the same class.
 3.	Provide a public static method that will return the singleton class instance variable. If the variable is not initialized then initialize it or else simply return the instance variable.
+ 
 #### Using the above steps I have created a singleton class that looks like below:
+ 
 ##### Singelton for Database Class:
 
 ```Java
@@ -1368,14 +1366,17 @@ If S is a subtype of T, then objects of type T may be replaced with objects of t
 *In Dependency Inversion design pattern [dependency-injection](#3-dependency-injection)
 
 ------------------------------------------------------------------------------------------------------
+ 
 # A.C.I.D
+ 
 ![image](https://user-images.githubusercontent.com/77013882/127051353-5572bc1f-70b9-4ce0-8393-ea42eaa304fb.png)
 
 The ACID properties describe the transaction management well. ACID stands for Atomicity, Consistency, isolation and durability.
 Advantage of Transaction Management:
 fast performance It makes the performance fast because database is hit at the time of commit.
 
-## A.C.I.D:
+ ## A.C.I.D:
+ 
 1. A-Atomicity means either all successful or none. Transactions are often composed of multiple statements. Atomicity guarantees that each transaction is treated as a single "unit", which either succeeds completely, or fails completely.
  - How I implemented it: If the user enters wrong data type for any argument, the statement will not succeed.
  
@@ -1389,14 +1390,15 @@ fast performance It makes the performance fast because database is hit at the ti
 IMDBs can be said to lack support for the "durability" portion of the ACID (atomicity, consistency, isolation, durability) properties. Volatile memory-based IMDBs can, and often do, support the other three ACID properties of atomicity, consistency and isolation.
  -	How I handled it: I tried to make a logger file to back up all the transactions and whenever the system crashes all the data in the logger file are saved in the database file(csv file).
  
- ```java
+```java
  public interface TransactionLogger {
     void writeToCSV();
 }
- ```
+```
 
 
 ----------------------------------------------
+
 ## How I worked :
  I tried to work in agile way with myself :
  Agile: 
@@ -1417,6 +1419,7 @@ IMDBs can be said to lack support for the "durability" portion of the ACID (atom
  
  
  -------------------------------------
+ 
 ## Future Work :
  
  My code still needs more enhancements and as I put them as issues to work on them in the future , such as UI design and some developments and updates on the backend.
