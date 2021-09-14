@@ -59,7 +59,7 @@ I implemented the idea of in-memory Database using ConcurrentHashMap.
     @Setter
     @Getter
     private static ConcurrentHashMap<String, User> allUsers;   
- ```
+```
 I used ConcurrentHashMap for the implementation because:
 
 - ConcurrentHashMap class is thread-safe i.e. multiple threads can operate on a single object without any complications. It is a thread-safe without synchronizing the whole map.
@@ -954,10 +954,10 @@ display("Can't update, employee with id " + employee.getId() + " doesn't exist."
         }
         
     }
- ```                       
+```                       
 
------------------------------------------------------------------
-
+------------------------------------------------------------------------------------
+ 
 # Clean Code
  
 >Even bad code can function. But if code isn't clean, it can bring a development organization to its knees.
@@ -1365,8 +1365,7 @@ If S is a subtype of T, then objects of type T may be replaced with objects of t
 2- Abstractions should not depend on details. Details should depend on abstractions.
 *In Dependency Inversion design pattern [dependency-injection](#3-dependency-injection)
 
-------------------------------------------------------------------------------------------------------
- 
+------------------------------------------------------------------------------------ 
 # A.C.I.D
  
 ![image](https://user-images.githubusercontent.com/77013882/127051353-5572bc1f-70b9-4ce0-8393-ea42eaa304fb.png)
@@ -1375,7 +1374,7 @@ The ACID properties describe the transaction management well. ACID stands for At
 Advantage of Transaction Management:
 fast performance It makes the performance fast because database is hit at the time of commit.
 
- ## A.C.I.D:
+## A.C.I.D:
  
 1. A-Atomicity means either all successful or none. Transactions are often composed of multiple statements. Atomicity guarantees that each transaction is treated as a single "unit", which either succeeds completely, or fails completely.
  - How I implemented it: If the user enters wrong data type for any argument, the statement will not succeed.
