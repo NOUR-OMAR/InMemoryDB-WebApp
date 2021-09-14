@@ -1139,17 +1139,41 @@ Don’t pick names that communicate implementation; choose names the reflect the
 •	Class names should be nouns, in mixed case with the first letter of each internal word capitalised. Interfaces name should also be capitalised just like class names.
 •	Use whole words and must avoid acronyms and abbreviations.
 
-for example:
+for example :
+ 
+ ```Java
+ 
+ public class LoginController {..}
+ 
+ public class FileIOHandler { ..}
 
-![image](https://user-images.githubusercontent.com/77013882/127117471-fd9b837f-a12e-461a-85ba-49ffd88954e2.png)
-
-
+ 
+ 
+```
 #### Methods :
 Methods should be verbs, in mixed case with the first letter lowercase and with the first letter of each internal word capitalised.
+ for example :
+ 
+```Java
+ 
+  void createDepartment(Department department) throws IOException;
 
-for example:
+    void updateDepartment(Department department) throws IOException;
 
-![image](https://user-images.githubusercontent.com/77013882/127117644-90af990e-c0d5-4992-9c41-86a3fbedf20c.png)
+    void deleteDepartment(int id) throws IOException;
+
+    Department readDepartment(int id) throws IOException;
+
+    Map<Integer, Department> filterByName(String name) throws IOException;
+
+    Map<Integer, Department> filterByLocation(String location) throws IOException;
+
+    void close() throws IOException;
+
+    List<Department> selectAll() throws IOException;
+```
+ 
+ 
 
 #### Variables : Variable names should be short yet meaningful.
 •	Variables can also start with either underscore(‘_’) or dollar sign ‘$’ characters.
@@ -1173,9 +1197,7 @@ example of nammes
 #### Packages:
 The prefix of a unique package name is always written in all-lowercase ASCII letters .
 
-for example:
 
-![image](https://user-images.githubusercontent.com/77013882/127118233-022266af-47fd-46b4-bc97-e3d786902785.png)
 
 --------------------------------------------------
 
@@ -1191,7 +1213,7 @@ I didn't write tests .
 Project Lombok is a java library tool that is used to minimize/remove the boilerplate code and save the precious time of developers during development by just using some annotations. In addition to it, it also increases the readability of the source code and saves space. 
 
 I used lombok tool to increase the application of clean code and reduce code smells as much as possible.
-
+ 
 ------------------------------------------------------------------------
 
 ## Conclusion 
@@ -1217,7 +1239,8 @@ In general, we follow the below steps to create a singleton class:
 #### Using the above steps I have created a singleton class that looks like below:
 ##### Singelton for Database Class:
 
-```java
+```Java
+ 
 public static synchronized Database getDatabase() throws IOException {
         if (database == null) {
             database = new Database();
@@ -1228,6 +1251,7 @@ public static synchronized Database getDatabase() throws IOException {
 And I used synchronized key word to make it thread-safe , so that only one thread can execute this method at a time and access the Database.
 
 ### DAO design pattern:
+ 
 DAO stands for Data Access Object. DAO Design Pattern is used to separate the data persistence logic in a separate layer. This way, the service remains completely in dark about how the low-level operations to access the database is done. This is known as the principle of Separation of Logic.
 #### Advantages of DAO pattern
 There are many advantages for using DAO pattern. Let’s state some of them here:
@@ -1241,7 +1265,7 @@ here is an example for using it for Employee Table
 #### ``EmployeeTableDAO`` interface :
 #####  provides CRUD (Create, Read, Update, Delete) operations as well as other operations for the table Employee in the database.
 
-```java
+```Java
 public interface EmployeeTableDAO {
     void createEmployee(Employee employee) throws IOException;
 
@@ -1282,7 +1306,8 @@ The single-responsibility principle says that these two aspects of the problem a
 I tried to make every class has a single job to do by making the classes as small as I could. And put all the related logic in the same class to make the classes smaller and follow the single responsibility priniciple.
 for example strategy pattern which I used ,and model classes implements single responsibility,
 class ``Employee ``:
-```java
+ 
+```Java
 public class Employee extends User {
     private int id;
     private String name;
@@ -1329,18 +1354,13 @@ Robert C. Martin has defined the OCP in many different writings over the years. 
 >Open for extension.” This means that the behavior of the module can be extended. As the requirements of the application change, we are able to extend the module with new behaviors that satisfy those changes. In other words, we are able to change what the module does.
 “Closed for modification.” Extending the behavior of a module does not result in changes to the source or binary code of the module. The binary executable version of the module, whether in a linkable library, a DLL, or a Java .jar, remains untouched.
 
-In my implementation , using the strategy pattern implements the idea of OCP ,because programming by interface and not by implementation is a best practice that we can use to design and implement code open to extension.and The context(Menu) is open for extensions and closed for modifications since it does not need to be changed to use new types of strategies.If I want to add new strategies afterwards ("open for extentions") I can do that without the need to change the internals of the context ("closed for modifications").
-Also, programming by interface is the key factor of the strategy pattern.
-also I tried to use implement interfaces as much as I can.
 
 ## L-Liskov substitution :
 If S is a subtype of T, then objects of type T may be replaced with objects of type S, without breaking the program.
-in Strategy :All concrete strategies implement the same interface and should be substitutable without affecting the system’s correctness.
 
 ## I-Interface segregation:
 >“Clients should not be forced to depend upon interfaces that they do not use.”
-
-in Strategy: is fulfilled when the strategy base class offers only a small, single-purpose interface .
+ 
 
 ## D-Dependency inversion principle states:
 1- High-level modules should not depend on low-level modules. Both should depend on abstractions.
@@ -1371,8 +1391,6 @@ IMDBs can be said to lack support for the "durability" portion of the ACID (atom
  
  ```java
  public interface TransactionLogger {
-    void write();
-
     void writeToCSV();
 }
  ```
@@ -1381,6 +1399,9 @@ IMDBs can be said to lack support for the "durability" portion of the ACID (atom
 ----------------------------------------------
 ## How I worked :
  I tried to work in agile way with myself :
+ Agile: 
+ The Agile software development methodology is one of the simplest and effective processes to turn a vision for a business need into software solutions. Agile is a term used to describe software development approaches that employ continual planning, learning, improvement, team collaboration, evolutionary development, and early delivery. It encourages flexible responses to change.
+ 
  ![image](https://user-images.githubusercontent.com/77013882/132762043-0fd195c4-fb18-4d23-8ac4-d76bafb7a06e.png)
 1- I put the requirementes as issues on github :
 ![image](https://user-images.githubusercontent.com/77013882/132762545-0188860f-ca2a-40e3-ad03-20f7ebd521aa.png)
