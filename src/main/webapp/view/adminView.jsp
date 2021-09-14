@@ -104,7 +104,7 @@
                                <!-- <td><a href="<c:url value='/updateEmployee-${employee.id}' />" class="btn btn-success custom-width">update</a></td> -->
                           <td>   <button onclick="document.getElementById('id01').style.display='block'" class="btn btn-success custom-width" >update</button>
 </td>
-                                 <td><a href="<c:url value='/deleteEmployee-${employee.id}' />" class="btn btn-danger custom-width">delete</a></td>
+                                 <td><a href="<c:url value='<%=request.getContextPath()%>/deleteEmployee-${employee.id}' />" class="btn btn-danger custom-width">delete</a></td>
 
             						</tr>
             					</c:forEach>
@@ -127,7 +127,7 @@
     		<div class="card">
     			<div class="card-body">
 
-    					<form action="/addEmployee" >
+    					<form action="<%=request.getContextPath()%>/addEmployee" >
 
     				<caption>
     					<h2>
@@ -183,7 +183,7 @@
 
                 <div  id="id01" class="modal"  role="dialog">
                   <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
-                    <form class="modal-content animate" action="/updateEmployee">
+                    <form class="modal-content animate" action="<%=request.getContextPath()%>/updateEmployee">
                         <div class="container">
                         <fieldset class="form-group">
                             <label><b>ID</b></label>
@@ -218,7 +218,7 @@
 
  <div  id="id02" class="modal"  role="dialog">
                   <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">×</span>
-                    <form class="modal-content animate" action="/filterSalaryEQ">
+                    <form class="modal-content animate" action="<%=request.getContextPath()%>/filterSalaryEQ">
                         <div class="container">
                         <fieldset class="form-group">
                             <label><b>salary</b></label>
@@ -236,7 +236,7 @@
 
  <div  id="id03" class="modal"  role="dialog">
                   <span onclick="document.getElementById('id03').style.display='none'" class="close" title="Close Modal">×</span>
-                    <form class="modal-content animate" action="/filterSalaryGT">
+                    <form class="modal-content animate" action="<%=request.getContextPath()%>/filterSalaryGT">
                         <div class="container">
                         <fieldset class="form-group">
                             <label><b>salary</b></label>
@@ -255,7 +255,7 @@
 
 <div  id="id04" class="modal"  role="dialog">
                   <span onclick="document.getElementById('id04').style.display='none'" class="close" title="Close Modal">×</span>
-                    <form class="modal-content animate" action="/filterSalaryLT">
+                    <form class="modal-content animate" action="<%=request.getContextPath()%>/filterSalaryLT">
                         <div class="container">
                         <fieldset class="form-group">
                             <label><b>salary</b></label>
@@ -273,7 +273,7 @@
 
                 <div  id="id05" class="modal"  role="dialog">
                                   <span onclick="document.getElementById('id05').style.display='none'" class="close" title="Close Modal">×</span>
-                                    <form class="modal-content animate" action="/listNames">
+                                    <form class="modal-content animate" action="<%=request.getContextPath()%>/listNames">
                                         <div class="container">
                                         <fieldset class="form-group">
                                             <label><b>name</b></label>

@@ -88,7 +88,7 @@
             							<td><c:out value="${department.location}" /></td>
                           <td>   <button onclick="document.getElementById('id01').style.display='block'" class="btn btn-success custom-width" >update</button>
 </td>
-                                 <td><a href="<c:url value='/deleteDepartment-${department.id}' />" class="btn btn-danger custom-width">delete</a></td>
+                                 <td><a href="<c:url value='<%=request.getContextPath()%>/deleteDepartment-${department.id}' />" class="btn btn-danger custom-width">delete</a></td>
 
             						</tr>
             					</c:forEach>
@@ -106,7 +106,7 @@
     		<div class="card">
     			<div class="card-body">
 
-    					<form action="/addDepartment" >
+    					<form action="<%=request.getContextPath()%>/addDepartment" >
 
     				<caption>
     					<h2>
@@ -145,7 +145,7 @@
 
                 <div  id="id01" class="modal"  role="dialog">
                   <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">×</span>
-                    <form class="modal-content animate" action="/updateDepartment">
+                    <form class="modal-content animate" action="<%=request.getContextPath()%>/updateDepartment">
                         <div class="container">
                         <fieldset class="form-group">
                             <label><b>ID</b></label>
@@ -171,7 +171,7 @@
 
  <div  id="id02" class="modal"  role="dialog">
                   <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">×</span>
-                    <form class="modal-content animate" action="/filterByName">
+                    <form class="modal-content animate" action="<%=request.getContextPath()%>/filterByName">
                         <div class="container">
                         <fieldset class="form-group">
                             <label><b>name</b></label>
