@@ -19,7 +19,7 @@ public class RegisterController {
     UserTableDAO userTableDAO;
 
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "**/register", method = RequestMethod.POST)
     public ModelAndView register(@RequestParam("id") final int id,
                                  @RequestParam("username") final String username,
                                  @RequestParam("password") final String password
