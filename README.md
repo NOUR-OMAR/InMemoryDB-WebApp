@@ -1381,6 +1381,9 @@ IMDBs can be said to lack support for the "durability" portion of the ACID (atom
 ----------------------------------------------
 ## How I worked :
  I tried to work in agile way with myself :
+ Agile: 
+ The Agile software development methodology is one of the simplest and effective processes to turn a vision for a business need into software solutions. Agile is a term used to describe software development approaches that employ continual planning, learning, improvement, team collaboration, evolutionary development, and early delivery. It encourages flexible responses to change.
+ 
  ![image](https://user-images.githubusercontent.com/77013882/132762043-0fd195c4-fb18-4d23-8ac4-d76bafb7a06e.png)
 1- I put the requirementes as issues on github :
 ![image](https://user-images.githubusercontent.com/77013882/132762545-0188860f-ca2a-40e3-ad03-20f7ebd521aa.png)
