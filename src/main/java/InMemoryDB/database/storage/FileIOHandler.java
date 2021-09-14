@@ -23,8 +23,8 @@ public class FileIOHandler {
     }
 
     public static String toEmployeeRecord(Employee employee) {
-        if (employee.getDepartment()==null)
-         employee.setDepartment(new Department());
+        if (employee.getDepartment() == null)
+            employee.setDepartment(new Department());
         return employee.getId() + ";" +
                 employee.getName() + ";" +
                 employee.getSalary() + ";" +
@@ -45,7 +45,7 @@ public class FileIOHandler {
         }
     }
 
-    protected static void buildDepartmentRecordString(StringBuilder stringBuilder) {
+    public static void buildDepartmentRecordString(StringBuilder stringBuilder) {
 
         for (Integer integer : Database.getTableLRUCache().snapshot().keySet()) {
             if (Database.getTableLRUCache().snapshot() instanceof Department)
@@ -59,7 +59,7 @@ public class FileIOHandler {
         }
     }
 
-    protected static void buildUsersRecordString(StringBuilder stringBuilder) {
+    public static void buildUsersRecordString(StringBuilder stringBuilder) {
         for (Map.Entry<String, User> entry : Database.getAllUsers().entrySet()) {
             User user = entry.getValue();
             stringBuilder.append(user.getId()).append(";").append(user.getUsername()).append(";").append(user.getPassword()).append(";").append(user.getRole()).append("\n");

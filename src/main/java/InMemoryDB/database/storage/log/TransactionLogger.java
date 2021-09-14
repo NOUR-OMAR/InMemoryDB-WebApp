@@ -1,9 +1,8 @@
 package InMemoryDB.database.storage.log;
 
-import java.io.IOException;
+import InMemoryDB.database.storage.FileHandler;
 
-public interface TransactionLogger {
-    void write(String fileName) throws IOException;
+public interface TransactionLogger extends FileHandler {
 
     void writeToCSV();
 }

@@ -26,8 +26,6 @@ public class NewUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        System.out.println(user.getPassword());
-
         return  new BCryptPasswordEncoder().encode(user.getPassword());
 
     }

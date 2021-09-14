@@ -19,9 +19,6 @@ import static InMemoryDB.utils.Display.display;
 @Component
 public class DepartmentsTableDAOImpl implements DepartmentsTableDAO {
 
-    //  @Autowired
-    //private final Database database;
-
     @Override
     public void createDepartment(Department department) throws IOException {
         if (getDatabase().getDepartment(department.getId()) == null) {

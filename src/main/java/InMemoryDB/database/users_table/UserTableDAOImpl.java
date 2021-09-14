@@ -14,10 +14,6 @@ import static InMemoryDB.utils.Display.display;
 @Data
 @Component
 public class UserTableDAOImpl implements UserTableDAO {
-    //@Autowired
-    //private final Database database;
-
-
     @Override
     public User createUser(User user) throws IOException {
 

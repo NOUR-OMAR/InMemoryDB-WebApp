@@ -20,7 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         InMemoryDB.model.User user = null;
         try {
             user = userTableDAO.readUser(username);
-            System.out.println(user);
 
         } catch (IOException e) {
             e.printStackTrace();

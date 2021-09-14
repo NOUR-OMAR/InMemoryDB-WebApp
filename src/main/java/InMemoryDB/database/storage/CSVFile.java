@@ -33,6 +33,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     private static long usersCSVRowCount = 0;
 
     public TransactionLogger transactionLog = new TransactionLog();
+
     RecordHandler employeeRecordHandler = new EmployeeRecord();
     RecordHandler departmentRecordHandler = new DepartmentRecord();
     RecordHandler userRecordHandler = new UsersRecord();
@@ -41,7 +42,6 @@ public class CSVFile extends FileIOHandler implements FileHandler {
     }
 
 
-    @Override
     public void initialize() throws IOException {
         display("Loading data from file " + FilesPaths.USERS_FILE_PATH.getPath());
         loadData(FilesPaths.USERS_FILE_PATH.getPath());
@@ -109,7 +109,7 @@ public class CSVFile extends FileIOHandler implements FileHandler {
         } else if (fileName.equalsIgnoreCase(FilesPaths.USERS_FILE_PATH.getPath())) {
             buildUsersRecordString(stringBuilder);
         }
-        tryWritingToFile(stringBuilder, fileName);
+        super.tryWritingToFile(stringBuilder, fileName);
 
     }
 
