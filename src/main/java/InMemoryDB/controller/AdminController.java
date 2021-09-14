@@ -22,7 +22,7 @@ public class AdminController {
     @Autowired
     DepartmentsTableDAO departmentTableDAO;
 
-    @GetMapping(value = "**/adminView")
+    @GetMapping(value = "/adminView")
     public ModelAndView showAdminView() throws IOException {
 
         ModelAndView modelAndView = new ModelAndView();

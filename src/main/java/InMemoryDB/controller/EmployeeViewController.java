@@ -21,7 +21,7 @@ public class EmployeeViewController {
     @Autowired
     UserTableDAO userTableDAO;
 
-    @GetMapping(value = "**/employeeView")
+    @GetMapping(value = "/employeeView")
     public ModelAndView showEmployeeInfo(final HttpServletRequest request) throws IOException {
         HttpSession session = request.getSession(true);
         String username = String.valueOf(session.getAttribute("username"));

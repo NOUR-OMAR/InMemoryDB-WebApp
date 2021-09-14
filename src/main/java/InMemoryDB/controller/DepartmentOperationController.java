@@ -21,7 +21,7 @@ public class DepartmentOperationController {
     @Autowired
     DepartmentsTableDAO departmentTableDAO;
 
-    @RequestMapping(value = "**/departmentView")
+    @RequestMapping(value = "/departmentView")
     public ModelAndView showDepartmentsView() throws IOException {
         ModelAndView modelAndView = new ModelAndView("departmentView");
 
@@ -32,7 +32,7 @@ public class DepartmentOperationController {
 
     }
 
-    @GetMapping(value = "**/addDepartment")
+    @GetMapping(value = "/addDepartment")
     public ModelAndView addDepartment(Department department) throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
         modelAndView.addObject("department", department);
@@ -51,7 +51,7 @@ public class DepartmentOperationController {
     }
 
 
-    @GetMapping(value = "**/deleteDepartment-{id}")
+    @GetMapping(value = "/deleteDepartment-{id}")
     public ModelAndView deleteDepartment(@PathVariable int id) throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/departmentView");
 
@@ -60,7 +60,7 @@ public class DepartmentOperationController {
         return modelAndView;
     }
 
-    @GetMapping(value = "**/filterByName")
+    @GetMapping(value = "/filterByName")
     public ModelAndView filterDepartmentsByName(@RequestParam String name) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListDepartmentsView");
 
@@ -70,7 +70,7 @@ public class DepartmentOperationController {
         return modelAndView;
     }
 
-    @GetMapping(value = "**/filterByLocation")
+    @GetMapping(value = "/filterByLocation")
     public ModelAndView filterDepartmentsByLocation(@RequestParam String location) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListDepartmentsView");
 
@@ -81,7 +81,7 @@ public class DepartmentOperationController {
     }
 
 
-    @GetMapping(value = "**/back")
+    @GetMapping(value = "/back")
     public ModelAndView close() throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/adminView");
 

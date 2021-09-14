@@ -23,7 +23,7 @@ public class EmployeeOperationController {
     @Autowired
     EmployeeTableDAO employeeTableDAO;
 
-    @GetMapping(value = "**/addEmployee")
+    @GetMapping(value = "/addEmployee")
     public ModelAndView addEmployee(@RequestParam int id,
                               @RequestParam String name,
                               @RequestParam int salary,
@@ -46,7 +46,7 @@ public class EmployeeOperationController {
     }
 
 
-    @GetMapping(value = "**/updateEmployee")
+    @GetMapping(value = "/updateEmployee")
     public ModelAndView updateEmployee(@RequestParam int id,
                                  @RequestParam String name,
                                  @RequestParam int salary,
@@ -66,7 +66,7 @@ public class EmployeeOperationController {
     }
 
 
-    @GetMapping(value = "**/deleteEmployee-{id}")
+    @GetMapping(value = "/deleteEmployee-{id}")
     public ModelAndView deleteEmployee(@PathVariable int id) throws IOException {
         ModelAndView modelAndView = new ModelAndView("redirect:/adminView");
         employeeTableDAO.deleteEmployee(id);
@@ -74,7 +74,7 @@ public class EmployeeOperationController {
         return modelAndView;
     }
 
-    @GetMapping(value = "**/filterSalaryEQ")
+    @GetMapping(value = "/filterSalaryEQ")
     public ModelAndView filterSalaryEQ(@RequestParam int salary) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListView");
         List<Employee> employees = new ArrayList<>(employeeTableDAO.filterBySalaryEQ(salary).values());
@@ -83,7 +83,7 @@ public class EmployeeOperationController {
         return modelAndView;
     }
 
-    @GetMapping(value = "**/filterSalaryLT")
+    @GetMapping(value = "/filterSalaryLT")
     public ModelAndView filterSalaryLT(@RequestParam int salary) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListView");
         List<Employee> employees = new ArrayList<>(employeeTableDAO.filterBySalaryLT(salary).values());
@@ -92,7 +92,7 @@ public class EmployeeOperationController {
         return modelAndView;
     }
 
-    @GetMapping(value = "**/filterSalaryGT")
+    @GetMapping(value = "/filterSalaryGT")
     public ModelAndView filterSalaryGT(@RequestParam int salary) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListView");
         List<Employee> employees = new ArrayList<>(employeeTableDAO.filterBySalaryGT(salary).values());
@@ -101,7 +101,7 @@ public class EmployeeOperationController {
     }
 
 
-    @GetMapping(value = "**/listNames")
+    @GetMapping(value = "/listNames")
     public ModelAndView showNames(@RequestParam String name) throws IOException {
         ModelAndView modelAndView = new ModelAndView("ListView");
         List<Employee> employees = new ArrayList<>(employeeTableDAO.filterByName(name).values());
